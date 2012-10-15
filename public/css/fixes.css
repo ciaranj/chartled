@@ -1,0 +1,55 @@
+.popover {
+    z-index: 12000;
+}
+.metric {
+    cursor: hand; 
+    cursor: pointer; 
+}
+
+.metricEditor.modal { overflow: visible !important; }
+.metricEditor .modal-body { overflow-y: visible; }
+.metricEditor ul.dropdown-menu{ 
+    max-height: 200px;
+    overflow-y: scroll;
+}
+
+.metricEditor div.btn-group[data-toggle=buttons-radio] input[type=radio] {
+  display:    block;
+  position:   absolute;
+  top:        0;
+  left:       0;
+  width:      100%;
+  height:     100%;
+  opacity:    hidden;
+  visibility: hidden;
+}
+body {
+  padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
+}
+
+#index .x_tick {
+  border-left: 1px dotted rgba(255, 255, 255, .2);
+}
+.x_tick .title {
+  color: white;
+}
+
+.y_ticks text {
+  fill: white;
+}
+.legendContainer {
+    min-height: 100px;
+    max-height: 100px;
+    overflow-y: hidden;
+    overflow-x: hidden;
+    
+}
+
+#index .rickshaw_legend {
+    padding: 0px;
+    background: none;
+}
+
+#index .rickshaw_legend .label {
+    background: none;
+}

@@ -1,0 +1,66 @@
+!!!5
+html
+  head
+    title #{title} - My Site
+    link(rel='stylesheet', href='/stylesheets/rickshaw.min.css')
+    link(rel='stylesheet', href='/css/bootstrap.min.css')
+    link(rel='stylesheet', href='/css/fixes.css')
+    script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js')
+    script(type='text/javascript', src='/javascripts/d3.v2.min.js')
+    script(type='text/javascript', src='/javascripts/rickshaw.min.js')
+    script(type='text/javascript', src='/js/bootstrap.min.js')
+    script(type='text/javascript', src='/js/bootbox.min.js')
+    script(type='text/javascript', src='/javascripts/chartdFunctions.js')
+    script(type='text/javascript', src='/metrics')
+    script(type='text/javascript', src='/javascripts/chartd-client.js')
+  body#index
+    div.navbar.navbar-inverse.navbar-fixed-top
+      div.navbar-inner
+        div.container
+          a.brand(href="#") ChartD
+          ul.nav
+            li.active.dropdown
+              a.dropdown-toggle(href="#",data-toggle="dropdown") Graphs
+                b.caret
+              ul.dropdown-menu
+                li
+                  a(href='#', onclick='addNewChart([]);configureChart(chartCounter);') Create new Chart
+                li.divider
+                li
+                  a(href='#', onclick='addChart(0)') Overwatch
+                li
+                  a(href='#', onclick='addChart(1)') Workitem Creation
+                li
+                  a(href='#', onclick='addChart(2)') Mediation
+                li
+                  a(href='#', onclick='addChart(3)') Cache Hit Rate
+                li
+                  a(href='#', onclick='addChart(4)') Network Traffic
+                li
+                  a(href='#', onclick='addChart(5)') Gateways
+                li
+                  a(href='#', onclick='addChart(6)') CPU
+                li
+                  a(href='#', onclick='addChart(7)') Successful Workflows
+                li
+                  a(href='#', onclick='addChart(8)') Failed Workflows
+    .container
+      p How long back ? &nbsp;
+        input#lookback(value=1800)
+        &nbsp;&nbsp; 1800= 30 mins, 43200= 12 Hours, 604800= 1 week.
+      div#charts.container
+  script(type='text/javascript')
+    var offThePegCharts= [
+      [{value:'alias(stats.gauges.overwatch.*,"Overwatch Backlog")',renderer:'line'},  {value:'alias(stats_counts.overwatch.*,"Overwatch Processed")', renderer:'line'}],
+      [{value:'alias(stats_counts.workitem.save,"Workitem Saved")', renderer:'bar'},{value:'alias(stats_counts.workitem.create,"Workitem Created")', renderer:'bar'}],
+      [{value:'alias(sum(stats.gauges.queue.ProcessProxy.Mediation.*.size), "Mediation Queue Size")',renderer:'bar'}],
+      [{value:'alias(asPercent(stats_counts.cache.hit,sum(stats_counts.cache.{hit,miss})), "Cache Hit %age")',renderer:'area'}],
+      [{value:'alias(scale(sum(stats.*.network_interface.*.bytes_total_sec),1000000),"Network Traffic B/s")', renderer:'line'}],
+      [{value:'alias(sum(stats_counts.gateway.*), "Gateway Hit")',renderer:'bar'}],
+      [{value:'alias(scale(sum(stats_counts.*.processor.*.pct_user_time),100000),"CPU %age Used (User)")',renderer:'area'}],
+      [{value:'stats_counts.workflows.*.success',renderer:'bar'}],
+      [{value:'stats_counts.workflows.*.failure',renderer:'bar'}]
+    ];
+    function addChart(chartIndex) {
+      addNewChart( offThePegCharts[chartIndex] );
+    }

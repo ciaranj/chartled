@@ -1,0 +1,20 @@
+{
+  "name": "chartd",
+  "description": "A poor substitute for graphite",
+  "author": "ciaranj@gmail.com",
+  "version": "0.0.1",
+  "dependencies": {
+    "hoard": "git://github.com/ciaranj/hoard.git#add_aggregation_type_support" ,
+    "express": "=3.0.0rc5" ,
+    "jade": "=0.27.6",
+    "pegjs": "=0.7.0",
+    "q":"=0.8.9"
+  },
+  "devDependencies": {
+    "mocha" :"=1.6.0",
+    "should" :"=1.2.0"
+  },
+  "engine": {
+    "node" : ">=0.8"
+  }
+}
