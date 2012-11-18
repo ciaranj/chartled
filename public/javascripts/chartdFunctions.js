@@ -5,6 +5,7 @@ try {
 } 
 chartd.functions = [
     { name: 'alias', example: 'alias(metric*,\'Aliased Metric Name\')', description: "Aliases a series (or set of series)"},
+    { name: 'aliasByNode', example: 'aliasByNode(metric.*,1)', description: "Aliases a series (or set of series) by taking the specific node segment"},
     { name: 'asPercent', example: 'asPercent(metric*, metric/constant/nothing)', description: "Return the series as a percentage of either the sum of those series, or of a constant, or of another series"},
     { name: 'averageSeries', example: 'averageSeries(metric*)', description: "Averages a series (mean)"},
     { name: 'avg', example: 'avg(metric*)', description: "Averages a series (mean)" },

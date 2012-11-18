@@ -47,7 +47,7 @@ spaceFunctionName = ws* functionName:functionName
     { return functionName; }
 
 functionName
-    = "sumSeries" / "sum" / "averageSeries" / "avg" / "scale" / "alias" / "asPercent"
+    = "sumSeries" / "sum" / "averageSeries" / "avg" / "scale" / "aliasByNode" / "asPercent" / "alias"
 
 spaceexpression  = ws* expression:expression
     { return expression; }
