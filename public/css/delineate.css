@@ -1,0 +1,38 @@
+.x-axis line,
+.y-axis line,
+.y-axis path,
+.x-axis path {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+.axis text,
+.x-axis text,
+.y-axis text { 
+	font-family: sans-serif; font-size: 9px; 
+}
+
+.arrow {
+  stroke: #000;
+  stroke-width: 1.5px;
+}
+
+.outer,
+.inner {
+  shape-rendering: crispEdges;
+}
+
+.outer {
+  fill: none;
+  stroke: #000;
+}
+
+.inner {
+  fill: #ccc;
+  stroke: #000;
+  stroke-dasharray: 3, 4;
+}
+
+svg {
+	background-color: white;
+}

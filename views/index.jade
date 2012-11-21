@@ -5,9 +5,10 @@ html
     link(rel='stylesheet', href='/stylesheets/rickshaw.min.css')
     link(rel='stylesheet', href='/css/bootstrap.min.css')
     link(rel='stylesheet', href='/css/fixes.css')
+    link(rel='stylesheet', href='/css/delineate.css')
     script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js')
     script(type='text/javascript', src='/javascripts/d3.v2.min.js')
-    script(type='text/javascript', src='/javascripts/rickshaw.min.js')
+    script(type='text/javascript', src='/javascripts/delineate.js')
     script(type='text/javascript', src='/js/bootstrap.min.js')
     script(type='text/javascript', src='/js/bootbox.min.js')
     script(type='text/javascript', src='/javascripts/chartdFunctions.js')
@@ -61,6 +62,7 @@ html
       [{value:'stats_counts.workflows.*.success',renderer:'bar'}],
       [{value:'stats_counts.workflows.*.failure',renderer:'bar'}]
     ];
+    addNewChart( [{ renderer:'line', value:'stats.gauges.squeak.local.load.load.0' }] );
     function addChart(chartIndex) {
       addNewChart( offThePegCharts[chartIndex] );
     }

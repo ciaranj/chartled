@@ -6,14 +6,13 @@ beginDisplayRollingChart= function(metric, w, h, chartId) {
     metrics: metric,
     w: w,
     h: h,
-    maxAgeInSeconds: previousValue
+    maxAgeInSeconds: previousValue,
+    chart: new Chart( "chart" + chartId, w, h )
   };
-
   displayRollingChart( chartId );
 }
 
 displayRollingChart= function( chartId ) {
-    
     var chart= charts[chartId];
     var metric= chart.metrics;
     var w= chart.w;
@@ -25,7 +24,17 @@ displayRollingChart= function( chartId ) {
     for( var k in metric ) {
         dataUrl += "&target=" + metric[k].value;
     }
-    $.ajax( {
+    d3.json(dataUrl, function( data ) {
+      if( data ) {
+        // Happy path
+        chart.chart.refreshData( data );
+      } else {
+        // Error path.
+        console.log( "Problem calling: " + dataUrl );
+      }
+      queueChartRefresh( chartId );
+    });
+/*    $.ajax( {
         url:dataUrl,
         dataType: 'json',
         success: function( data ) {
@@ -104,16 +113,15 @@ displayRollingChart= function( chartId ) {
             });
             
 
-   /*         var order = new Rickshaw.Graph.Behavior.Series.Order({
+            var order = new Rickshaw.Graph.Behavior.Series.Order({
                 graph: graph,
                 legend: legend
             });
-*/
-            /*            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
+            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
                 graph: graph,
                 legend: legend
             });
-*/
+
             var hoverDetail = new Rickshaw.Graph.HoverDetail.Multi( {
                 graph: graph
             } );
@@ -126,7 +134,7 @@ displayRollingChart= function( chartId ) {
         error: function( err ) {
             console.log(  err );
         }
-    } );
+    } );*/
 } 
 function queueChartRefresh( chartId ) {
     setTimeout( function() {
@@ -154,7 +162,8 @@ function cloneChart( chart ) {
         w: chart.w,
         h: chart.h,
         maxAgeInSeconds: chart.maxAgeInSeconds,
-        metrics: []
+        metrics: [],
+        chart: chart.chart        
     };
     for(var i=0;i< chart.metrics.length; i++ ) {
         clonedChart.metrics[i]= {
@@ -247,7 +256,7 @@ function configureChart( chartId ) {
 function addNewChart( metrics ) {
     chartCounter ++;
     var charts= $("#charts");
-    charts.append( "<div class='row span11'><div class='span2 well legendContainer'><div id='legend" + chartCounter+ "'/></div><div class='span7 well'><div id='chart"+ chartCounter + "' onclick=\"configureChart("+chartCounter +")\"/></div></div>");
+    charts.append( "<div class='row span11'><div class='span7 well'><div id='chart"+ chartCounter + "' onclick=\"configureChart("+chartCounter +")\"/></div></div>");
     beginDisplayRollingChart( metrics, 520, 100, chartCounter )    
 }
 function encodeHtml(str) {
@@ -260,7 +269,6 @@ function encodeHtml(str) {
 }
 function appendMetricText( txt ) {
     var metricEditor= $('#editingMetric');
-    console.log( txt );
     metricEditor.val( metricEditor.val() + txt );
 }
 
