@@ -1,14 +1,34 @@
 Chart= function(parentEl, outerWidth, outerHeight ) {
-    
-  var margin = {top: 20, right: 40, bottom: 20, left: 40};
-  
-  this.width = outerWidth - margin.left - margin.right,
-  this.height = outerHeight - margin.top - margin.bottom;
+  this.outerWidth= outerWidth;
+  this.outerHeight= outerHeight;
 
-  this._buildScales();
-  this._buildGraph( parentEl, outerWidth, outerHeight, margin );
+  var graphContainer = d3.select("#" + parentEl).append("svg")
+      .attr("width", this.outerWidth)
+      .attr("height", this.outerHeight);
+
+  this.svg= graphContainer.append("g")
+       .classed("canvasArea", true);
+
+  this.graph = this.svg.append("g")
+                      .classed("chartArea", true);
+  
   this._buildBackground();
+  this._buildScales();
+  this._buildChart();
   this._buildAxes(); 
+  this._updateChartAreaSize();
+}
+
+Chart.prototype._updateChartAreaSize= function( margins ) {
+  margins= margins || {top: 5, right: 40, bottom: 20, left: 40};
+  this.width = this.outerWidth - margins.left - margins.right,
+  this.height = this.outerHeight - margins.top - margins.bottom;
+  
+  // Update our transformation that 'simplifies' width + height  calculations elsewhere.
+  this.svg.attr("transform", "translate(" + margins.left + "," + margins.top + ")");
+  this.x.range([0, this.width]);
+  this.y.range([this.height, 0]);
+  this.svg.select("g.x-axis").attr("transform", "translate(0," + this.height + ")");
 }
 
 Chart.prototype._buildAxes= function() {
@@ -29,7 +49,6 @@ Chart.prototype._buildAxes= function() {
   // X Axis
   this.svg.append("g")
           .attr("class", "x-axis")
-          .attr("transform", "translate(0," + this.height + ")")
           .call(this.xAxis)
   // Y Axes.
 //  this.svg.append("g")
@@ -49,34 +68,33 @@ Chart.prototype._buildBackground= function() {
             .attr("height", this.height); */
 }
 
-Chart.prototype._buildGraph= function( el, w, h, margin ) {
-  this.svg = d3.select("#" + el).append("svg")
-      .attr("width", w)
-      .attr("height", h)
-      .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");          
-  this.graph = this.svg.append("g")
+Chart.prototype._buildChart= function() {
+
   var that= this;
   
   this.line = d3.svg.line()
                    .x(function(d) {
                      return that.x( new Date(d[1]*1000) ); })
                    .y(function(d) {
-                      return that.y(d[0]); })  
-  this.graph.append("path")
-            .attr("fill", "none")
-            .attr("stroke", "#000");
-            
-  //.attr("d", this.line([]));                   
+                      return that.y(d[0]); })
+  this.area = d3.svg.area()
+    .x(this.line.x())
+    .y1(this.line.y())
+    .y0(this.y(0));
+
+  var c= d3.rgb("#9CC1E0")
+  this.areaPath= this.graph.append("path")
+                      .attr("fill", c.toString() );
+
+  this.linePath= this.graph.append("path")
+                       .attr("fill", "none")
+                       .attr("stroke-width", "2px")
+                       .attr("stroke", c.darker().toString() );
 }  
 
 Chart.prototype._buildScales= function() {
-  console.log( this.width );
   this.x = d3.time.scale()
-      .range([0, this.width]);
-
   this.y = d3.scale.linear()
-      .range([this.height, 0]);
 }
 
 Chart.prototype.refreshData= function( data ) {
@@ -85,18 +103,29 @@ Chart.prototype.refreshData= function( data ) {
                       new Date( data[0].datapoints[data[0].datapoints.length-1][1]* 1000 )] );
 
       this.y.domain([0, d3.max(data[0].datapoints, function(d) { return d[0]; })]);
+//      this._updateChartAreaSize(
+//       { left:Math.random()*40, right:Math.random()*40, top:Math.random()*40, bottom:Math.random()*40 }
+//       );
+      
       this.yAxis.scale(this.y);
       this.xAxis.scale(this.x);
 
       this.svg.select("g.x-axis").call(this.xAxis);
-      this.svg.select("g.y-axis").call(this.yAxis);      
+      this.svg.select("g.y-axis").call(this.yAxis);
+      this.area.y0(this.y(0));
+      
+      
+      
   /*
       graph.selectAll("path")
       					.data([data]) // set the new data
       					.attr("d", line); /
 */
-      this.graph.selectAll("path")
-      					.attr("d", this.line(data[0].datapoints) ); // set the new data
+      this.linePath
+          .attr("d", this.line(data[0].datapoints) ); // set the new data
+      this.areaPath
+          .attr("d", this.area(data[0].datapoints) ); // set the new data
+          
 /*
       					.attr("transform", "translate(" + x(1) + ")") // set the transform to the right by x(1) pixels (6 for the scale we've set) to hide the new value
       					.attr("d", line) // apply the new data values ... but the new value is hidden at this point off the right of the canvas
