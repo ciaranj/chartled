@@ -10,7 +10,9 @@ beginDisplayRollingChart= function(metric, w, h, chartId) {
     chart: new Chart( "chart" + chartId, w, h )
   };
   displayRollingChart( chartId );
+  queueChartRefresh( chartId );
 }
+
 
 displayRollingChart= function( chartId ) {
     var chart= charts[chartId];
@@ -24,6 +26,7 @@ displayRollingChart= function( chartId ) {
     for( var k in metric ) {
         dataUrl += "&target=" + metric[k].value;
     }
+    chart.loading= true;
     d3.json(dataUrl, function( data ) {
       if( data ) {
         // Happy path
@@ -32,7 +35,7 @@ displayRollingChart= function( chartId ) {
         // Error path.
         console.log( "Problem calling: " + dataUrl );
       }
-      queueChartRefresh( chartId );
+      chart.loading= false;
     });
 /*    $.ajax( {
         url:dataUrl,
@@ -137,8 +140,10 @@ displayRollingChart= function( chartId ) {
     } );*/
 } 
 function queueChartRefresh( chartId ) {
-    setTimeout( function() {
-                displayRollingChart( chartId );
+    setInterval( function() {
+        if( !charts[chartId].loading ) {
+          displayRollingChart( chartId );
+        }
     }, 10000 );
 }
 
