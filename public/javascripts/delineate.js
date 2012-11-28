@@ -1,4 +1,5 @@
-Chart= function(parentEl, outerWidth, outerHeight ) {
+Chart= function(parentEl, outerWidth, outerHeight, config ) {
+  this._setConfig( config );
   this.outerWidth= outerWidth;
   this.outerHeight= outerHeight;
 
@@ -11,12 +12,39 @@ Chart= function(parentEl, outerWidth, outerHeight ) {
 
   this.chartArea = this.canvasArea.append("g")
                       .classed("chartArea", true);
-  
-  this._buildBackground();
+
   this._buildScales();
   this._buildChart();
   this._buildAxes(); 
   this._updateChartAreaSize();
+}
+
+Chart.prototype._setConfig= function( config ) {
+  var tmpConfig= config || { };
+
+  if( !tmpConfig.axes ) {
+    tmpConfig.axes= {
+        x : {display:true},
+        y : [{display:"left"}]
+    };
+  }
+
+  // Validate the config. (enforces at least one [non-visible] y-axis)
+  if( !tmpConfig.axes.y || tmpConfig.axes.y.length == 0 ) tmpConfig.axes.y= [{}];
+
+  var lDisplay= 0;
+  var rDisplay= 0;
+  for( var k in tmpConfig.axes.y ) {
+    if( tmpConfig.axes.y[k].display ) {
+      if( tmpConfig.axes.y[k].display == "left" ) lDisplay++;
+      else if( tmpConfig.axes.y[k].display == "right" ) rDisplay++;
+    }
+  }
+  if(lDisplay > 1) throw new Error("Only 1 left-hand visual axis is allowed at a time.")
+  if(rDisplay > 1) throw new Error("Only 1 right-hand visual axis is allowed at a time.")
+
+
+  this.config= tmpConfig;
 }
 
 Chart.prototype._updateChartAreaSize= function( margins ) {
@@ -26,75 +54,83 @@ Chart.prototype._updateChartAreaSize= function( margins ) {
   
   // Update our transformation that 'simplifies' width + height  calculations elsewhere.
   this.canvasArea.attr("transform", "translate(" + margins.left + "," + margins.top + ")");
-  this.x.range([0, this.width]);
-  this.y.range([this.height, 0]);
+  this.scales.x.range([0, this.width]);
+  this.scales.y[0].range([this.height, 0]);
   this.canvasArea.select("g.x-axis").attr("transform", "translate(0," + this.height + ")");
+  this.canvasArea.select("g.y-axis.y-axis-right").attr("transform", "translate(" + this.width + ",0)");
 }
 
 Chart.prototype._buildAxes= function() {
 
   this.xAxis = d3.svg.axis()
-      .scale(this.x)
       .orient("bottom");
 
-  this.yAxis = d3.svg.axis()
-      .scale(this.y)
+  this.yAxisLeft = d3.svg.axis()
       .ticks(5)
       .orient("left");
 
-//  this.yAxis2 = d3.svg.axis()
-//      .scale(this.y)
-//      .orient("right");
-      
-  // X Axis
-  this.canvasArea.append("g")
-          .attr("class", "x-axis")
-          .call(this.xAxis)
-  // Y Axes.
-//  this.canvasArea.append("g")
-//          .attr("class", "y axis")
-//          .attr("transform", "translate(" + this.width + ",0)")
-//          .call(this.yAxis);
+  this.yAxisRight = d3.svg.axis()
+      .ticks(5)
+      .orient("right");
 
   this.canvasArea.append("g")
-          .attr("class", "y-axis")
-          .call(this.yAxis);
-}
+          .classed("axis", true)
+          .classed("x-axis", true);
 
-Chart.prototype._buildBackground= function() {
-/*  this.chartArea.append("rect")
-            .attr("class", "inner")
-            .attr("width", this.width)
-            .attr("height", this.height); */
+  this.canvasArea.append("g")
+          .classed("axis", true)
+          .classed("y-axis", true)          
+          .classed("y-axis-left", true);
+
+  this.canvasArea.append("g")
+          .classed("axis", true)
+          .classed("y-axis", true)          
+          .classed("y-axis-right", true);
+
 }
 
 Chart.prototype._buildChart= function() {
 
   var that= this;
   
-  this.line = d3.svg.line()
-                   .x(function(d) {
-                     return that.x( new Date(d[1]*1000) ); })
-                   .y(function(d) {
-                      return that.y(d[0]); })
-  this.area = d3.svg.area()
-    .x(this.line.x())
-    .y1(this.line.y())
-    .y0(this.y(0));
 
-  var c= d3.rgb("#9CC1E0")
-  this.areaPath= this.chartArea.append("path")
-                      .attr("fill", c.toString() );
-
-  this.linePath= this.chartArea.append("path")
-                       .attr("fill", "none")
-                       .attr("stroke-width", "2px")
-                       .attr("stroke", c.darker().toString() );
 }  
 
 Chart.prototype._buildScales= function() {
-  this.x = d3.time.scale()
-  this.y = d3.scale.linear()
+  this.scales= {};
+  this.scales.y=[]; // There can be >=1 y scales
+  this.scales.x= d3.time.scale();
+  this.scales.y[0] = d3.scale.linear();
+}
+var yCoord= function(point) {
+  return point[0] == null ? 0 : point[0];
+}
+var xCoord= function(point) {
+  return point[1] * 1000;
+}
+
+Chart.prototype._getLayerForMetric= function( metric ) {
+  for(var key in this.config.metrics ) {
+    if( this.config.metrics[key].value == metric.targetSource ) {
+      return this.config.metrics[key].layer;
+    }
+  }
+  // If we got here we couldn't find the layer configuration.. assume layer 0.
+  return 0;
+}
+
+Chart.prototype._getLeftAxis= function( ) {
+  for(var k in this.config.axes.y ) {
+    if( this.config.axes.y[k].display == "left" ) return k;
+  }
+  return null;
+}
+
+Chart.prototype._getRightAxis= function( ) {
+  for(var k in this.config.axes.y ) {
+    if( this.config.axes.y[k].display == "right" ) return k;
+  }
+  return null;
 }
 
 Chart.prototype._sampleData= function( data ) {
@@ -134,35 +170,89 @@ Chart.prototype._sampleData= function( data ) {
 Chart.prototype.refreshData= function( data ) {
     if( data && data.length > 0 ) {
       this._sampleData( data );
-      this.x.domain(  [new Date( data[0].datapoints[0][1]* 1000 ),  
-                      new Date( data[0].datapoints[data[0].datapoints.length-1][1]* 1000 )] );
 
-      this.y.domain([0, d3.max(data[0].datapoints, function(d) { return d[0]; })]);
-//      this._updateChartAreaSize(
-//       { left:Math.random()*40, right:Math.random()*40, top:Math.random()*40, bottom:Math.random()*40 }
-//       );
 
-      this.yAxis.scale(this.y);
-      this.xAxis.scale(this.x);
+/*      var stack = d3.layout.stack()
+          .x( xCoord )
+          .y( yCoord )
+          .out( function(d, y0, y) {
+            d.oy= d[0];
+            d[0] = y+y0;
+          })
+          .values(function(d) { 
+            return d.datapoints; });
 
-      this.canvasArea.select("g.x-axis").call(this.xAxis);
-      this.canvasArea.select("g.y-axis").call(this.yAxis);
-      this.area.y0(this.y(0));
+      var data= stack(data);
+  */
+
+      // Assumes that all the data coming back is the same timespan.
+      this.scales.x.domain( [xCoord(data[0].datapoints[0]),  
+                             xCoord(data[0].datapoints[data[0].datapoints.length-1]) ] );
+      // This will only work for non-stacked areas (presumably)
+      var minY= 100000000;
+      var maxY= -10000000;
+      for( var key in data ) {
+        maxY= d3.max([d3.max(data[key].datapoints, yCoord), maxY])
+      }
+      this.scales.y[0].domain([0, maxY]);
+
+      var leftAxis= this._getLeftAxis();
+      var rightAxis= this._getRightAxis();
       
+      this._updateChartAreaSize({
+        top: 5, 
+        right: (rightAxis ? 40 : 5), 
+        bottom: (this.config.axes.x.display ? 20: 5), 
+        left:  (leftAxis ? 40 : 5)
+      });
 
-      this.linePath
-          .attr("d", this.line(data[0].datapoints) ); // set the new data
-      this.areaPath
-          .attr("d", this.area(data[0].datapoints) ); // set the new data
-          
-/*
-      					.attr("transform", "translate(" + x(1) + ")") // set the transform to the right by x(1) pixels (6 for the scale we've set) to hide the new value
-      					.attr("d", line) // apply the new data values ... but the new value is hidden at this point off the right of the canvas
-      					.transition() // start a transition to bring the new value into view
-      					.ease("linear")
-      					.duration(transitionDelay) // for this demo we want a continual slide so set this to the same as the setInterval amount below
-      					.attr("transform", "translate(" + x(0) + ")"); // animate a slide to the left back to x(0) pixels to reveal the new value
-  */    
+      var that= this;
+      var line = d3.svg.line()
+                       .x(function(d) {
+                         return that.scales.x( xCoord(d) );  
+                       })
+                       .y(function(d) {
+                          return that.scales.y[0]( yCoord(d) ); 
+                        })
+      var area = d3.svg.area()
+        .x(line.x())
+        .y1(line.y())
+        .y0(this.scales.y[0](0));
+
+      // Render layers
+      var colours= d3.scale.category10().domain(d3.range(10));
+      this.chartArea.selectAll("path").remove();
+      for( var key in data ) {
+        var c= d3.rgb(colours(key));
+        var areaPath= this.chartArea.append("path")
+                          .attr("fill", c.toString() )
+                          .attr("opacity", 0.6)
+                          .attr("d", area(data[key].datapoints) ); // set the new data
+        var linePath= this.chartArea.append("path")
+                           .attr("fill", "none")
+                           .attr("stroke-width", "2px")
+                           .attr("stroke", c.darker().toString() )
+                           .attr("d", line(data[key].datapoints) ); // set the new data
+      }        
+
+      // Redraw the axes
+      if( leftAxis ) {
+        this.yAxisLeft.scale(this.scales.y[leftAxis]);
+        this.canvasArea.select(".y-axis-left").call(this.yAxisLeft);
+      } else {
+        this.canvasArea.select(".y-axis-left").selectAll("*").remove();
+      }
+      if( rightAxis ) {
+        this.yAxisRight.scale(this.scales.y[rightAxis]);
+        this.canvasArea.select(".y-axis-right").call(this.yAxisRight);
+      }  
+      else {
+          this.canvasArea.select(".y-axis-right").selectAll("*").remove();
+      }
+      if( this.config.axes.x.display === true) {
+        this.xAxis.scale(this.scales.x);
+        this.canvasArea.select(".x-axis").call(this.xAxis);
+      }
     }
     else { 
       // TODO: no data returned

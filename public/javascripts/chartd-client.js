@@ -2,12 +2,24 @@ var charts= [];
 
 beginDisplayRollingChart= function(metric, w, h, chartId) {
   
+  for(var key in metric) {
+    metric[key].axis= 0;
+    metric[key].layer= 0;
+  }
   charts[chartId]= {
     metrics: metric,
     w: w,
     h: h,
     maxAgeInSeconds: previousValue,
-    chart: new Chart( "chart" + chartId, w, h )
+    chart: new Chart( "chart" + chartId, w, h, {
+      metrics: metric,
+      layers: [{renderer : "line"}],
+      axes: {
+        x:{display: true}, 
+        y:[{
+            display: "left"
+           }]}
+    })
   };
   displayRollingChart( chartId );
   queueChartRefresh( chartId );
