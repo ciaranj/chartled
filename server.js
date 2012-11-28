@@ -72,7 +72,8 @@ app.get('/series', function(req, res){
                         var series= {
                                 datapoints : [],
                                 target: seriesList[i].name,
-                                targetSource: metric
+                                targetSource: metric,
+                                aggregationMethod: seriesList[i].info.aggregationMethod
                         };
                         results[results.length]= series;
                         var runningTime= seriesList[i].data.tInfo[0];

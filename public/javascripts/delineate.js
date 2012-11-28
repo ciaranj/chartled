@@ -97,8 +97,43 @@ Chart.prototype._buildScales= function() {
   this.y = d3.scale.linear()
 }
 
+Chart.prototype._sampleData= function( data ) {
+  for( var key in data ) {                     
+      //TODO: A better approach might be to 'throw away' some older data to allow for several updates with the same
+      // sample boundaries, rather than re-sample for *each* update always having a window offset 1 less than the
+      // previous sample-set ?
+      if( data[key].datapoints.length > this.width && data[key].aggregationMethod == 'average' ) {
+        var rawLength= data[key].datapoints.length;
+        var skipFactor= Math.round( rawLength / this.width );
+        var skipFactorCounter= 0;
+        var cumulative= 0;
+        var cumulativeX= data[key].datapoints[0][1];
+        var newDataPoints= [];
+        for( var i =0; i<rawLength; i++ ) {
+            cumulative += yCoord( data[key].datapoints[i] );
+            if( skipFactorCounter++ >= skipFactor ) {
+                newDataPoints[newDataPoints.length]= [cumulative/skipFactorCounter, cumulativeX];
+                skipFactorCounter= 0;
+                cumulative= 0;
+                if( i <=  rawLength ) {
+                    cumulativeX= data[key].datapoints[i][1];
+                }
+                else {
+                    cumulativeX= -1;
+                }
+            }
+        }
+        if( cumulativeX != -1 && skipFactorCounter != 0 ) {
+          newDataPoints[newDataPoints.length]= [cumulative/skipFactorCounter, cumulativeX];
+        }
+        data[key].datapoints= newDataPoints;
+      }
+    }
+}
+
 Chart.prototype.refreshData= function( data ) {
     if( data && data.length > 0 ) {
+      this._sampleData( data );
       this.x.domain(  [new Date( data[0].datapoints[0][1]* 1000 ),  
                       new Date( data[0].datapoints[data[0].datapoints.length-1][1]* 1000 )] );
 
