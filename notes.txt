@@ -4,6 +4,11 @@ There is at least 1 vertical axis, but there can be many. Each axis has an assoc
 however only 2 vertical axes can be visible at a given time, one on the left and one on the right.
 
 A metric source is associated with a single axis and with a single layer.
-A Layer can have metric sources on it that are associated to different axes.
-Multiple metric sources can be associated with the same axis and same layers.
-Layers can be stacked, or grouped, streamed or spanned..depending on the type  of layer (bar or line ?)
+
+A Layer can contain multiple metric sources.
+An axis can be associated with multiple metric sources
+
+Layers can be stacked, or grouped, streamed or spanned..depending on the type  of layer (bar or line ?) 
+
+So given the data, we need to to group by layer to calculate any layout specifics, such as stacking.  
+Apply scale by axis (after stacking etc.), then render in layout order.

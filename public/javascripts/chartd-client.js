@@ -4,7 +4,16 @@ beginDisplayRollingChart= function(metric, w, h, chartId) {
   
   for(var key in metric) {
     metric[key].axis= 0;
-    metric[key].layer= 0;
+    var val= Math.random();
+    if( val < 0.3 ) {
+      metric[key].layer= 0;
+    }
+    else if( val >= 0.3 && val <0.6 ) {
+      metric[key].layer= 1;
+    }
+    else {
+      metric[key].layer= 2;
+    }
   }
   charts[chartId]= {
     metrics: metric,
@@ -13,7 +22,7 @@ beginDisplayRollingChart= function(metric, w, h, chartId) {
     maxAgeInSeconds: previousValue,
     chart: new Chart( "chart" + chartId, w, h, {
       metrics: metric,
-      layers: [{renderer : "line"}],
+      layers: [{renderer : "area"},{renderer : "bar"}, {renderer : "line"}],
       axes: {
         x:{display: true}, 
         y:[{

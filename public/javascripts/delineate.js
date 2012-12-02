@@ -11,7 +11,12 @@ Chart= function(parentEl, outerWidth, outerHeight, config ) {
        .classed("canvasArea", true);
 
   this.chartArea = this.canvasArea.append("g")
-                      .classed("chartArea", true);
+                      .classed("layers", true);
+  // Add in layer containers.
+  for(var k in this.config.layers){
+    this.chartArea.append("g")
+                .classed("layer" + k, true);
+  }
 
   this._buildScales();
   this._buildChart();
@@ -48,7 +53,7 @@ Chart.prototype._setConfig= function( config ) {
 }
 
 Chart.prototype._updateChartAreaSize= function( margins ) {
-  margins= margins || {top: 5, right: 40, bottom: 20, left: 40};
+  margins= margins || {top: 2, right: 40, bottom: 20, left: 40};
   this.width = this.outerWidth - margins.left - margins.right,
   this.height = this.outerHeight - margins.top - margins.bottom;
   
@@ -57,7 +62,7 @@ Chart.prototype._updateChartAreaSize= function( margins ) {
   this.scales.x.range([0, this.width]);
   this.scales.y[0].range([this.height, 0]);
   this.canvasArea.select("g.x-axis").attr("transform", "translate(0," + this.height + ")");
-  this.canvasArea.select("g.y-axis.y-axis-right").attr("transform", "translate(" + this.width + ",0)");
+  this.canvasArea.select(".y-axis-right").attr("transform", "translate(" + this.width + ",0)");
 }
 
 Chart.prototype._buildAxes= function() {
@@ -79,14 +84,13 @@ Chart.prototype._buildAxes= function() {
 
   this.canvasArea.append("g")
           .classed("axis", true)
-          .classed("y-axis", true)          
+          .classed("y-axis", true)
           .classed("y-axis-left", true);
 
   this.canvasArea.append("g")
           .classed("axis", true)
-          .classed("y-axis", true)          
+          .classed("y-axis", true)
           .classed("y-axis-right", true);
-
 }
 
 Chart.prototype._buildChart= function() {
@@ -115,6 +119,7 @@ Chart.prototype._getLayerForMetric= function( metric ) {
       return this.config.metrics[key].layer;
     }
   }
+
   // If we got here we couldn't find the layer configuration.. assume layer 0.
   return 0;
 }
@@ -186,7 +191,7 @@ Chart.prototype.refreshData= function( data ) {
   */
 
       // Assumes that all the data coming back is the same timespan.
-      this.scales.x.domain( [xCoord(data[0].datapoints[0]),  
+      this.scales.x.domain( [xCoord(data[0].datapoints[0]),
                              xCoord(data[0].datapoints[data[0].datapoints.length-1]) ] );
       // This will only work for non-stacked areas (presumably)
       var minY= 100000000;
@@ -200,10 +205,10 @@ Chart.prototype.refreshData= function( data ) {
       var rightAxis= this._getRightAxis();
       
       this._updateChartAreaSize({
-        top: 5, 
-        right: (rightAxis ? 40 : 5), 
-        bottom: (this.config.axes.x.display ? 20: 5), 
-        left:  (leftAxis ? 40 : 5)
+        top: 5,
+        right: (rightAxis ? 40 : 2),
+        bottom: (this.config.axes.x.display ? 20: 2),
+        left:  (leftAxis ? 40 : 2)
       });
 
       var that= this;
@@ -221,40 +226,82 @@ Chart.prototype.refreshData= function( data ) {
 
       // Render layers
       var colours= d3.scale.category10().domain(d3.range(10));
-      this.chartArea.selectAll("path").remove();
+
+      for( var k=0 ; k< this.config.layers.length; k++ ) {
+        var layerEl= this.chartArea.select( "g.layer" + k );
+        layerEl.selectAll("*").remove();
+      }
+
       for( var key in data ) {
         var c= d3.rgb(colours(key));
-        var areaPath= this.chartArea.append("path")
+        var metricLayer= this._getLayerForMetric( data[key] );
+        var renderer= this.config.layers[metricLayer].renderer;
+        var layerEl= this.chartArea.select( "g.layer" + metricLayer );
+        if( renderer == "line" ) {
+          var linePath= layerEl.append("path")
+                             .attr("fill", "none")
+                             .attr("stroke-width", "2px")
+                             .attr("stroke", c )
+                             .attr("d", line(data[key].datapoints) ); // set the new data
+        }
+        else if( renderer == "area" ){
+          var areaPath= layerEl.append("path")
                           .attr("fill", c.toString() )
                           .attr("opacity", 0.6)
-                          .attr("d", area(data[key].datapoints) ); // set the new data
-        var linePath= this.chartArea.append("path")
+                          .attr("d", area(data[key].datapoints) );
+          var linePath= layerEl.append("path")
                            .attr("fill", "none")
                            .attr("stroke-width", "2px")
                            .attr("stroke", c.darker().toString() )
-                           .attr("d", line(data[key].datapoints) ); // set the new data
-      }        
-
-      // Redraw the axes
-      if( leftAxis ) {
-        this.yAxisLeft.scale(this.scales.y[leftAxis]);
-        this.canvasArea.select(".y-axis-left").call(this.yAxisLeft);
-      } else {
-        this.canvasArea.select(".y-axis-left").selectAll("*").remove();
+                           .attr("d", line(data[key].datapoints) );
+        }
+        else {
+          var barPadding = 1;
+          layerEl.selectAll("rect.d"+key)
+             .data( data[key].datapoints )
+             .enter()
+             .append("rect")
+             .classed("d"+key, true)
+             .attr("x", function(d, i) {
+                 return i * (that.width / data[key].datapoints.length);
+             })
+             .attr("y", function(d) {
+                 return that.scales.y[0](yCoord(d));
+             })
+             .attr("width", that.width / data[key].datapoints.length - barPadding)
+             .attr("height", function(d) {
+                 return that.height - that.scales.y[0](yCoord(d));
+             })
+             .attr("opacity", 0.6)
+             .attr("fill", function(d) {
+                 return c;
+             });
+        }
       }
-      if( rightAxis ) {
-        this.yAxisRight.scale(this.scales.y[rightAxis]);
-        this.canvasArea.select(".y-axis-right").call(this.yAxisRight);
-      }  
-      else {
-          this.canvasArea.select(".y-axis-right").selectAll("*").remove();
-      }
-      if( this.config.axes.x.display === true) {
-        this.xAxis.scale(this.scales.x);
-        this.canvasArea.select(".x-axis").call(this.xAxis);
-      }
+      this._redrawAxes( leftAxis, rightAxis );
     }
     else { 
       // TODO: no data returned
     }
+}
+
+Chart.prototype._redrawAxes= function( leftAxis, rightAxis ) {
+  // Redraw the axes
+  if( leftAxis ) {
+    this.yAxisLeft.scale(this.scales.y[leftAxis]);
+    this.canvasArea.select(".y-axis-left").call(this.yAxisLeft);
+  } else {
+    this.canvasArea.select(".y-axis-left").selectAll("*").remove();
+  }
+  if( rightAxis ) {
+    this.yAxisRight.scale(this.scales.y[rightAxis]);
+    this.canvasArea.select(".y-axis-right").call(this.yAxisRight);
+  }
+  else {
+      this.canvasArea.select(".y-axis-right").selectAll("*").remove();
+  }
+  if( this.config.axes.x.display === true) {
+    this.xAxis.scale(this.scales.x);
+    this.canvasArea.select(".x-axis").call(this.xAxis);
+  }
 }
