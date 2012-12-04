@@ -231,51 +231,55 @@ Chart.prototype.refreshData= function( data ) {
         var layerEl= this.chartArea.select( "g.layer" + k );
         layerEl.selectAll("*").remove();
       }
-
+      
+      // Group by layers
+      var layered= [];
       for( var key in data ) {
-        var c= d3.rgb(colours(key));
         var metricLayer= this._getLayerForMetric( data[key] );
+        if( !layered[metricLayer] ) layered[metricLayer]= [];
+        layered[metricLayer].push( key );
+      }
+
+      for( var metricLayer in layered ) {
         var renderer= this.config.layers[metricLayer].renderer;
-        var layerEl= this.chartArea.select( "g.layer" + metricLayer );
-        if( renderer == "line" ) {
-          var linePath= layerEl.append("path")
-                             .attr("fill", "none")
-                             .attr("stroke-width", "2px")
-                             .attr("stroke", c )
-                             .attr("d", line(data[key].datapoints) ); // set the new data
-        }
-        else if( renderer == "area" ){
-          var areaPath= layerEl.append("path")
-                          .attr("fill", c.toString() )
-                          .attr("opacity", 0.6)
-                          .attr("d", area(data[key].datapoints) );
-          var linePath= layerEl.append("path")
-                           .attr("fill", "none")
-                           .attr("stroke-width", "2px")
-                           .attr("stroke", c.darker().toString() )
-                           .attr("d", line(data[key].datapoints) );
+        if( renderer == "bar" ) {
+          this._renderBarsLayer( data, metricLayer, layered[metricLayer], colours )
         }
         else {
-          var barPadding = 1;
-          layerEl.selectAll("rect.d"+key)
-             .data( data[key].datapoints )
-             .enter()
-             .append("rect")
-             .classed("d"+key, true)
-             .attr("x", function(d, i) {
-                 return i * (that.width / data[key].datapoints.length);
-             })
-             .attr("y", function(d) {
-                 return that.scales.y[0](yCoord(d));
-             })
-             .attr("width", that.width / data[key].datapoints.length - barPadding)
-             .attr("height", function(d) {
-                 return that.height - that.scales.y[0](yCoord(d));
-             })
-             .attr("opacity", 0.6)
-             .attr("fill", function(d) {
-                 return c;
-             });
+          var layerEl= this.chartArea.select( "g.layer" + metricLayer );
+          for( var key in layered[metricLayer] ) {
+            var c= d3.rgb(colours(key));
+            if( renderer == "line" ) {
+              var lPath= line(data[key].datapoints);
+               if( this.config.layers[metricLayer].dropShadow ) {
+                  layerEl.append("path")
+                         .classed("shadow", true)
+                         .attr("fill", "none")
+                         .attr("stroke-width", "2px")
+                         .attr("stroke", "black" )
+                         .attr("d", lPath )
+                         .attr("opacity", 0.6)
+                         .attr("transform", "translate(1,1)");
+               }
+               layerEl.append("path")
+                      .attr("fill", "none")
+                      .attr("stroke-width", "2px")
+                      .attr("stroke", c )
+                      .attr("d", lPath );
+            }
+            else if( renderer == "area" ){
+              var areaPath= layerEl.append("path")
+                              .attr("fill", c.toString() )
+                              .attr("opacity", 0.6)
+                              .attr("d", area(data[key].datapoints) );
+                          
+              var linePath= layerEl.append("path")
+                               .attr("fill", "none")
+                               .attr("stroke-width", "2px")
+                               .attr("stroke", c.darker().toString() )
+                               .attr("d", line(data[key].datapoints) );
+            }
+          }
         }
       }
       this._redrawAxes( leftAxis, rightAxis );
@@ -283,6 +287,36 @@ Chart.prototype.refreshData= function( data ) {
     else { 
       // TODO: no data returned
     }
+}
+Chart.prototype._renderBarsLayer= function( data, metricLayer, dataKeys, colours )  {
+  var barPadding = 1;
+  var layerEl= this.chartArea.select( "g.layer" + metricLayer );
+  var that= this;
+  var maxBarWidth= that.width / data[0].datapoints.length - barPadding;
+  var barOffset= 0;
+  for( var key in dataKeys ) {
+    var c= d3.rgb(colours(key));
+    layerEl.selectAll("rect.d" + key)
+       .data( data[key].datapoints )
+       .enter()
+       .append("rect")
+       .classed("d"+key, true)
+       .attr("x", function(d, i) {
+           return (i * (that.width / data[key].datapoints.length))+ barOffset;
+       })
+       .attr("y", function(d) {
+           return that.scales.y[0](yCoord(d));
+       })
+       .attr("width", maxBarWidth)
+       .attr("height", function(d) {
+           return that.height - that.scales.y[0](yCoord(d));
+       })
+       .attr("fill", function(d) {
+           return c;
+       });
+       maxBarWidth -= 4;
+       barOffset +=2;
+   }
 }
 
 Chart.prototype._redrawAxes= function( leftAxis, rightAxis ) {

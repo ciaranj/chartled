@@ -22,7 +22,7 @@ beginDisplayRollingChart= function(metric, w, h, chartId) {
     maxAgeInSeconds: previousValue,
     chart: new Chart( "chart" + chartId, w, h, {
       metrics: metric,
-      layers: [{renderer : "area"},{renderer : "bar"}, {renderer : "line"}],
+      layers: [{renderer : "area"},{renderer : "bar"}, {renderer : "line", dropShadow: true}],
       axes: {
         x:{display: true}, 
         y:[{
