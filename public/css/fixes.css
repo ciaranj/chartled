@@ -53,3 +53,10 @@ body {
 #index .rickshaw_legend .label {
     background: none;
 }
+
+.draggable
+{
+    margin-bottom: 20px;
+		height: 140px;
+    float: left;
+}

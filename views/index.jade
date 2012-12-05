@@ -6,7 +6,9 @@ html
     link(rel='stylesheet', href='/css/bootstrap.min.css')
     link(rel='stylesheet', href='/css/fixes.css')
     link(rel='stylesheet', href='/css/delineate.css')
-    script(type='text/javascript', src='https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js')
+    script(type='text/javascript', src='http://code.jquery.com/jquery-1.8.3.js')
+    script(type='text/javascript', src='http://code.jquery.com/ui/1.9.2/jquery-ui.js')
+    
     script(type='text/javascript', src='/javascripts/d3.v2.min.js')
     script(type='text/javascript', src='/javascripts/delineate.js')
     script(type='text/javascript', src='/js/bootstrap.min.js')
@@ -50,6 +52,36 @@ html
         input#lookback(value=1800)
         &nbsp;&nbsp; 1800= 30 mins, 43200= 12 Hours, 604800= 1 week.
       div#charts.container
+        div.span2(style='background-color:blue', class='draggable')
+          li.hpl h+
+          li.hmi h-
+          li.wpl w+
+          li.wmi w-
+        div.span2(style='background-color:red', class='draggable')
+          li.hpl h+
+          li.hmi h-
+          li.wpl w+
+          li.wmi w-
+        div.span2(style='background-color:green', class='draggable')
+          li.hpl h+
+          li.hmi h-
+          li.wpl w+
+          li.wmi w-
+        div.span2(style='background-color:yellow', class='draggable')
+          li.hpl h+
+          li.hmi h-
+          li.wpl w+
+          li.wmi w-
+        div.span2(style='background-color:white', class='draggable')
+          li.hpl h+
+          li.hmi h-
+          li.wpl w+
+          li.wmi w-
+        div.span2(style='background-color:pink', class='draggable')
+          li.hpl h+
+          li.hmi h-
+          li.wpl w+
+          li.wmi w-
   script(type='text/javascript')
     var offThePegCharts= [
       [{value:'alias(stats.gauges.overwatch.*,"Overwatch Backlog")',renderer:'line'},  {value:'alias(stats_counts.overwatch.*,"Overwatch Processed")', renderer:'line'}],
@@ -63,6 +95,36 @@ html
       [{value:'stats_counts.workflows.*.failure',renderer:'bar'}]
     ];
     addNewChart( [{ renderer:'line', value:'stats.gauges.squeak.local.load.load.0' }] );
-    function addChart(chartIndex) {
-      addNewChart( offThePegCharts[chartIndex] );
-    }
+    addNewChart( [{ renderer:'line', value:'stats.gauges.squeak.local.load.load.*' }] );
+    addNewChart( [{ renderer:'line', value:'alias(asPercent(sum(stats.gauges.squeak.local.memory.memory.{active,wired,inactive}),sum(stats.gauges.squeak.local.memory.memory.*)), "Used")'},
+                  { renderer:'line', value:'alias(asPercent(stats.gauges.squeak.local.memory.memory.free,sum(stats.gauges.squeak.local.memory.memory.*)),"Free")'},] );
+      $("#charts").sortable();
+      var margin= 20;
+      var size= 140;
+      $(".hpl").click( function() {
+          var el= $(this).parent();
+          el.height( el.height() + size + margin );
+          $("#charts").refresh();
+      });
+      $(".hmi").click( function() {
+          var el= $(this).parent();
+          if( el.height() > size ) {
+            el.height( el.height() - size - margin );
+            $("#charts").refresh();
+            }
+      });
+      $(".wmi").click( function() {
+          var el= $(this).parent();
+          if( el.width() > size ) {
+            el.width( el.width() - size - margin );
+            $("#charts").refresh();
+          }
+      });    
+      $(".wpl").click( function() {
+          var el= $(this).parent();
+          el.width( el.width() + size + margin );
+          $("#charts").refresh();
+      });    
+      function addChart(chartIndex) {
+        addNewChart( offThePegCharts[chartIndex] );
+      }

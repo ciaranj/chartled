@@ -282,8 +282,8 @@ function configureChart( chartId ) {
 function addNewChart( metrics ) {
     chartCounter ++;
     var charts= $("#charts");
-    charts.append( "<div class='row span11'><div class='span7 well'><div id='chart"+ chartCounter + "' onclick=\"configureChart("+chartCounter +")\"/></div></div>");
-    beginDisplayRollingChart( metrics, 520, 100, chartCounter )    
+    charts.append( "<div class='draggable span2'><div id='chart"+ chartCounter + "' onclick=\"configureChart("+chartCounter +")\"/>");
+    beginDisplayRollingChart( metrics, 140, 140, chartCounter )    
 }
 function encodeHtml(str) {
     return String(str)
