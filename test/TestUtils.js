@@ -4,6 +4,7 @@ function buildTargetParseContext( targetString, metrics, metricValues ) {
     var realMetrics= {};
     for( var k in metrics ) {
         realMetrics[metrics[k].name]= metrics[k];
+        realMetrics[metrics[k].name].info= {aggregationMethod: "average"};
     }
     var mStore= {
         getAvailableMetrics: function( callback ) {
@@ -13,7 +14,9 @@ function buildTargetParseContext( targetString, metrics, metricValues ) {
         },
         fetchMetricData:function( metric, from, to, dataCallback  ) {
             process.nextTick(function() {
-                dataCallback( null, {values: (metricValues === undefined || metricValues[metric] === undefined ) ? []:metricValues[metric] , tInfo: []} );
+                dataCallback( null, {
+                                    values: (metricValues === undefined || metricValues[metric] === undefined ) ? []:metricValues[metric] , 
+                                    tInfo: []} );
             });
         }
     }

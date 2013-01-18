@@ -3,11 +3,11 @@ Chart= function(parentEl, outerWidth, outerHeight, config ) {
   this.outerWidth= outerWidth;
   this.outerHeight= outerHeight;
 
-  var graphContainer = d3.select("#" + parentEl).append("svg")
+  this.graphContainer = d3.select("#" + parentEl).append("svg")
       .attr("width", this.outerWidth)
       .attr("height", this.outerHeight);
 
-  this.canvasArea= graphContainer.append("g")
+  this.canvasArea= this.graphContainer.append("g")
        .classed("canvasArea", true);
 
   this.chartArea = this.canvasArea.append("g")
@@ -22,6 +22,24 @@ Chart= function(parentEl, outerWidth, outerHeight, config ) {
   this._buildChart();
   this._buildAxes(); 
   this._updateChartAreaSize();
+}
+
+Chart.prototype.resize= function( outerWidth, outerHeight ) {
+  this.outerWidth= outerWidth;
+  this.outerHeight= outerHeight;
+  this.graphContainer
+      .attr("height", this.outerHeight) 
+      .attr("width", this.outerWidth);
+ /* Setting the width with attr. doesn't seem to correctly shrink the displayed area in chrome! 
+  * ( http://stackoverflow.com/questions/11622227/force-reflow-of-the-dom-container-for-a-resized-svg-element-in-chrome )
+  */
+  var containerEl= $(this.graphContainer[0][0]);
+  containerEl.css("width", this.outerWidth)
+  containerEl.css("height", this.outerHeight); 
+  this._updateChartAreaSize();
+  if( this.previousData ) {
+    this.refreshData( this.previousData );
+  }
 }
 
 Chart.prototype._setConfig= function( config ) {
@@ -173,6 +191,7 @@ Chart.prototype._sampleData= function( data ) {
 }
 
 Chart.prototype.refreshData= function( data ) {
+    var unsampledData= data;
     if( data && data.length > 0 ) {
       this._sampleData( data );
 
@@ -287,6 +306,7 @@ Chart.prototype.refreshData= function( data ) {
     else { 
       // TODO: no data returned
     }
+    this.previousData= unsampledData;
 }
 Chart.prototype._renderBarsLayer= function( data, metricLayer, dataKeys, colours )  {
   var barPadding = 1;

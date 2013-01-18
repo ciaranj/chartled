@@ -17,7 +17,7 @@ var doneCountDown= function ( count, done ) {
 function convertFromArrayToIndexedCollectionOfLiterals( arr ) {
     var result= {};
     for( var k in arr ) {
-        result[arr[k]]= new MetricInfo( arr[k] );
+        result[arr[k]]= new MetricInfo( arr[k], "", {aggregationMethod: "average"} );
     }
     return result;
 }
@@ -25,7 +25,7 @@ function convertFromArrayToIndexedCollectionOfLiterals( arr ) {
 function convertFromArrayToCollectionOfLiterals( arr ) {
     var result= [];
     for( var k in arr ) {
-        var r= new MetricInfo( arr[k] );
+        var r= new MetricInfo( arr[k], "", {aggregationMethod: "average"} );
         r.data= { values:[], tInfo:[]};
         result[result.length]=  r;
     }

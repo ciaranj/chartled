@@ -52,37 +52,48 @@ html
         input#lookback(value=1800)
         &nbsp;&nbsp; 1800= 30 mins, 43200= 12 Hours, 604800= 1 week.
       div#charts.container
-        div.span2(style='background-color:blue', class='draggable')
-          li.hpl h+
-          li.hmi h-
-          li.wpl w+
-          li.wmi w-
-        div.span2(style='background-color:red', class='draggable')
-          li.hpl h+
-          li.hmi h-
-          li.wpl w+
-          li.wmi w-
-        div.span2(style='background-color:green', class='draggable')
-          li.hpl h+
-          li.hmi h-
-          li.wpl w+
-          li.wmi w-
-        div.span2(style='background-color:yellow', class='draggable')
-          li.hpl h+
-          li.hmi h-
-          li.wpl w+
-          li.wmi w-
-        div.span2(style='background-color:white', class='draggable')
-          li.hpl h+
-          li.hmi h-
-          li.wpl w+
-          li.wmi w-
-        div.span2(style='background-color:pink', class='draggable')
-          li.hpl h+
-          li.hmi h-
-          li.wpl w+
-          li.wmi w-
+        div(style='background-color:#777;width:70px;height:70px', class='draggable')
+          ul.buttons
+            li.hpl h+
+            li.hmi h-
+            li.wpl w+
+            li.wmi w-
+        div(style='background-color:red;width:70px;height:70px', class='draggable')
+          ul.buttons
+            li.hpl h+
+            li.hmi h-
+            li.wpl w+
+            li.wmi w-
+        div(style='background-color:green;width:70px;height:70px', class='draggable')
+          ul.buttons
+            li.hpl h+
+            li.hmi h-
+            li.wpl w+
+            li.wmi w-
+        div(style='background-color:yellow;width:70px;height:70px', class='draggable')
+          ul.buttons
+            li.hpl h+
+            li.hmi h-
+            li.wpl w+
+            li.wmi w-
+        div(style='background-color:white;width:70px;height:70px', class='draggable')
+          ul.buttons
+            li.hpl h+
+            li.hmi h-
+            li.wpl w+
+            li.wmi w-
+        div(style='background-color:pink;width:70px;height:70px', class='draggable')
+          ul.buttons
+            li.hpl h+
+            li.hmi h-
+            li.wpl w+
+            li.wmi w-
   script(type='text/javascript')
+    $("#charts").sortable({
+      start: function(e, ui){
+           ui.placeholder.height(ui.item.height());
+           ui.placeholder.width(ui.item.width());
+      }});
     var offThePegCharts= [
       [{value:'alias(stats.gauges.overwatch.*,"Overwatch Backlog")',renderer:'line'},  {value:'alias(stats_counts.overwatch.*,"Overwatch Processed")', renderer:'line'}],
       [{value:'alias(stats_counts.workitem.save,"Workitem Saved")', renderer:'bar'},{value:'alias(stats_counts.workitem.create,"Workitem Created")', renderer:'bar'}],
@@ -98,33 +109,7 @@ html
     addNewChart( [{ renderer:'line', value:'stats.gauges.squeak.local.load.load.*' }] );
     addNewChart( [{ renderer:'line', value:'alias(asPercent(sum(stats.gauges.squeak.local.memory.memory.{active,wired,inactive}),sum(stats.gauges.squeak.local.memory.memory.*)), "Used")'},
                   { renderer:'line', value:'alias(asPercent(stats.gauges.squeak.local.memory.memory.free,sum(stats.gauges.squeak.local.memory.memory.*)),"Free")'},] );
-      $("#charts").sortable();
-      var margin= 20;
-      var size= 140;
-      $(".hpl").click( function() {
-          var el= $(this).parent();
-          el.height( el.height() + size + margin );
-          $("#charts").refresh();
-      });
-      $(".hmi").click( function() {
-          var el= $(this).parent();
-          if( el.height() > size ) {
-            el.height( el.height() - size - margin );
-            $("#charts").refresh();
-            }
-      });
-      $(".wmi").click( function() {
-          var el= $(this).parent();
-          if( el.width() > size ) {
-            el.width( el.width() - size - margin );
-            $("#charts").refresh();
-          }
-      });    
-      $(".wpl").click( function() {
-          var el= $(this).parent();
-          el.width( el.width() + size + margin );
-          $("#charts").refresh();
-      });    
+
       function addChart(chartIndex) {
         addNewChart( offThePegCharts[chartIndex] );
       }

@@ -4,6 +4,7 @@ beginDisplayRollingChart= function(metric, w, h, chartId) {
   
   for(var key in metric) {
     metric[key].axis= 0;
+/*    
     var val= Math.random();
     if( val < 0.3 ) {
       metric[key].layer= 0;
@@ -13,12 +14,12 @@ beginDisplayRollingChart= function(metric, w, h, chartId) {
     }
     else {
       metric[key].layer= 2;
-    }
-  }
+    }  */
+    
+    metric[key].layer =2;
+  }   
   charts[chartId]= {
     metrics: metric,
-    w: w,
-    h: h,
     maxAgeInSeconds: previousValue,
     chart: new Chart( "chart" + chartId, w, h, {
       metrics: metric,
@@ -38,10 +39,9 @@ beginDisplayRollingChart= function(metric, w, h, chartId) {
 displayRollingChart= function( chartId ) {
     var chart= charts[chartId];
     var metric= chart.metrics;
-    var w= chart.w;
-    var h= chart.h;
+/*    var w= chart.w;
+    var h= chart.h; */
     var maxAgeInSeconds= chart.maxAgeInSeconds - 20;
-    
     var now= Math.round( new Date().getTime() / 1000 ) - 20;
     var dataUrl=  "/series?from=" + ( now - maxAgeInSeconds ) + "&to=" + now;
     for( var k in metric ) {
@@ -58,107 +58,7 @@ displayRollingChart= function( chartId ) {
       }
       chart.loading= false;
     });
-/*    $.ajax( {
-        url:dataUrl,
-        dataType: 'json',
-        success: function( data ) {
-            var palette = new Rickshaw.Color.Palette( { scheme: 'munin'} );
-            var chartEl= $("#chart"+chartId);
-            chartEl.empty();
-            var legendEl= $("#legend"+chartId);
-            legendEl.empty();
-            var actualMetric= null;
-            for( var key in data ) {
-              for( var mK in metric ) {
-                if( metric[mK].value == data[key].targetSource ) {
-                  actualMetric= metric[mK];
-                  break;
-                }
-              }
-                var rawLength= data[key].datapoints.length;
-                var skipFactor = 0;
-                if( rawLength > w ) {
-                    skipFactor= Math.round( rawLength / w );
-                }
-                var series= [];
-                data[key].data= series;
-                var skipFactorCounter= 0;
-                var cumulative= 0;
-                //TODO: make this aware of how aggregation should be applied.
-                var cumulativeX= data[key].datapoints[0][1];
-                for( var i in data[key].datapoints ) {
-                    cumulative += ( data[key].datapoints[i][0] == null ? 0: data[key].datapoints[i][0] );
-                    if( skipFactorCounter++ >= skipFactor ) {
-                        series[series.length]= { x: cumulativeX, y: cumulative }
-                        skipFactorCounter= 0;
-                        cumulative= 0;
-                        if( i <=  data[key].datapoints.length ) {
-                            cumulativeX= data[key].datapoints[i][1];
-                        }
-                        else {
-                            cumulativeX= -1;
-                        }
-                    }
-                }
-                if( cumulativeX != -1 && skipFactorCounter != 0 ) {
-                    series[series.length]= { x: cumulativeX, y: cumulative }
-                }
-                data[key].datapoints= [];
-                data[key].color= palette.color();
-                data[key].name= data[key].target;
-                
-                data[key].renderer= actualMetric.renderer;
-                delete data[key].target;
-                
-            }
 
-            var graph = new Rickshaw.Graph( {
-                element: chartEl[0], 
-                width: w, 
-                height: h,
-                stroke: true,
-                series: data,
-                renderer: "multi"
-            });
-            graph.render();
-            var yAxis = new Rickshaw.Graph.Axis.Y({
-                graph: graph,
-                tickFormat: Rickshaw.Fixtures.Number.formatKMBT
-            });
-            yAxis.render();
-            var xAxis = new Rickshaw.Graph.Axis.Time({
-                graph: graph
-            });
-            xAxis.render();
- 
-            var legend = new Rickshaw.Graph.Legend({
-                graph: graph,
-                element: document.getElementById('legend'+chartId)
-            });
-            
-
-            var order = new Rickshaw.Graph.Behavior.Series.Order({
-                graph: graph,
-                legend: legend
-            });
-            var shelving = new Rickshaw.Graph.Behavior.Series.Toggle({
-                graph: graph,
-                legend: legend
-            });
-
-            var hoverDetail = new Rickshaw.Graph.HoverDetail.Multi( {
-                graph: graph
-            } );
-            var highlighter = new Rickshaw.Graph.Behavior.Series.Highlight({
-                graph: graph,
-                legend: legend
-            });
-            queueChartRefresh( chartId );
-        },
-        error: function( err ) {
-            console.log(  err );
-        }
-    } );*/
 } 
 function queueChartRefresh( chartId ) {
     setInterval( function() {
@@ -185,8 +85,6 @@ var originalChart;
 
 function cloneChart( chart ) {
     var clonedChart= {
-        w: chart.w,
-        h: chart.h,
         maxAgeInSeconds: chart.maxAgeInSeconds,
         metrics: [],
         chart: chart.chart        
@@ -194,7 +92,7 @@ function cloneChart( chart ) {
     for(var i=0;i< chart.metrics.length; i++ ) {
         clonedChart.metrics[i]= {
           value:chart.metrics[i].value,
-          renderer: chart.metrics[i].renderer
+          layer: chart.metrics[i].layer
         };
     }
     return clonedChart;
@@ -214,6 +112,9 @@ function buildMetrics() {
 }
 
 function updateUnderlyingChart( chartId, chart ){
+  //TODO: THIS IS A BROKEN HACK .. the config is not being properly
+  // dealt with.
+    chart.chart.config.metrics= chart.metrics;
     charts[chartId]= chart;
     displayRollingChart( chartId );
 }
@@ -278,12 +179,52 @@ function configureChart( chartId ) {
     ], {"backdrop": false, "animate":false, "classes":"graphEditor"});
     buildMetrics();
 }
-
+function resizeChart( el ) {
+  var id= el.attr("id");
+  if( id && id.length > 5 && id.substring(0, 5) == "chart") {
+    var chart= charts[id.substring(5)].chart;
+    chart.resize( el.width(), el.height() );
+  }
+}
+var margin= 30;
+var size= 70;
+function nS( val ){
+  return Math.floor(val/10) * 10;
+}
 function addNewChart( metrics ) {
     chartCounter ++;
     var charts= $("#charts");
-    charts.append( "<div class='draggable span2'><div id='chart"+ chartCounter + "' onclick=\"configureChart("+chartCounter +")\"/>");
-    beginDisplayRollingChart( metrics, 140, 140, chartCounter )    
+    charts.append( "<div class='draggable' style='width:170px;height:70px;background-color:white' id='chart"+ chartCounter + "' onclick=\"configureChart("+chartCounter +")\"><ul class='buttons'><li class='hpl'>h+</li><li class='hmi'>h-</li><li class='wpl'>w+</li><li class='wmi'>w-</li></ul></div>");
+    $(".hpl").unbind("click").click( function(e) {
+        e.stopPropagation();
+        var el= $(this).parent().parent();
+        el.height( nS(el.height() + size + margin) );
+        resizeChart( el );
+    });
+    $(".hmi").unbind("click").click( function(e) {
+      e.stopPropagation();
+      var el= $(this).parent().parent();
+        if( nS(el.height()) > size ) {
+          el.height(  nS(el.height() - (size + margin)) );
+          resizeChart( el );
+          }
+    });
+    $(".wmi").unbind("click").click( function(e) {
+      e.stopPropagation();
+      var el= $(this).parent().parent();
+      console.log( el.width() )
+        if( nS(el.width()) > size ) {
+          el.width( nS(el.width() - (size + margin)) );
+          resizeChart( el );
+        }
+    });    
+    $(".wpl").unbind("click").click( function(e) {
+      e.stopPropagation();
+      var el= $(this).parent().parent();
+      el.width( nS(el.width() + size + margin) );
+      resizeChart( el );
+    });
+    beginDisplayRollingChart( metrics, 170, size, chartCounter )    
 }
 function encodeHtml(str) {
     return String(str)
@@ -342,7 +283,7 @@ function configureMetric( metricId ) {
         html += "<h2>Configure Metric #" + (metricId + 1) + "</h2>";
     }
     
-    var metric= {value:"", renderer:'line'};
+    var metric= {value:"", layer:2};
     if( metricId != -1) {
         metric= activeEditedChart.metrics[ metricId ];
     }
@@ -378,11 +319,12 @@ function configureMetric( metricId ) {
                     "class" : "btn-primary",
                     "callback": function() {
                         var newMetricValue= $('#editingMetric').val().replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-                        var newMetricRenderer= metricChartTypes[$('.metricEditor div.btn-group .btn.active input').val()].type;
+//                        var newMetricRenderer= metricChartTypes[$('.metricEditor div.btn-group .btn.active input').val()].type;
+                        var newMetricRenderer=2;
                         if( newMetricValue != "" ) {
                             //TODO: assert valid  here..
                             if( metricId == -1 ) metricId= activeEditedChart.metrics.length;
-                            activeEditedChart.metrics[metricId]= { value: newMetricValue, renderer:newMetricRenderer };
+                            activeEditedChart.metrics[metricId]= { value: newMetricValue, layer:newMetricRenderer };
                         }
                         buildMetrics();
                         showChartEditor();
