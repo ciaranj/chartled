@@ -256,8 +256,18 @@ function getMetricsDropDown() {
     if( metricsDropDownString == null ) {
         metricsDropDownString= "";
         var metrics= chartd.metrics
-        for( var f in metrics ) {
-            metricsDropDownString += "<li><a href='#' onclick='appendMetricText(\"" + encodeHtml(f) + "\")'>"+ encodeHtml(f)+"</a></li>"
+
+        var sortedMetrics= [];
+        for( var k in metrics ) {
+            sortedMetrics.push( metrics[k] );
+        }
+        sortedMetrics.sort(function(a,b){
+            var va = (a.name === null) ? "" : "" + a.name;
+            var vb = (b.name === null) ? "" : "" + b.name;
+            return va > vb ? 1 : ( va === vb ? 0 : -1 );
+        });
+        for( var f in sortedMetrics ) {
+            metricsDropDownString += "<li><a href='#' onclick='appendMetricText(\"" + encodeHtml(sortedMetrics[f].name) + "\")'>"+ encodeHtml(sortedMetrics[f].name)+"</a></li>"
         }
     }
     return metricsDropDownString;
