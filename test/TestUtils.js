@@ -1,26 +1,26 @@
-var TargetParseContext= require("../lib/TargetParseContext");
+var TargetParseContext= require("../lib/TargetParseContext"),
+    MetricStore= require("../lib/MetricsStore");
 
-function buildTargetParseContext( targetString, metrics, metricValues ) {
+function buildTargetParseContext( targetString, metrics, metricValues) {
     var realMetrics= {};
     for( var k in metrics ) {
         realMetrics[metrics[k].name]= metrics[k];
         realMetrics[metrics[k].name].info= {aggregationMethod: "average"};
+        realMetrics[metrics[k].name].filename= metrics[k].name;
     }
-    var mStore= {
-        getAvailableMetrics: function( callback ) {
-            process.nextTick(function() {
-                callback( null, realMetrics );
-            });
-        },
-        fetchMetricData:function( metric, from, to, dataCallback  ) {
-            process.nextTick(function() {
-                dataCallback( null, {
-                                    values: (metricValues === undefined || metricValues[metric] === undefined ) ? []:metricValues[metric] , 
-                                    tInfo: []} );
-            });
-        }
+
+
+    var hoardStub= {
+      fetch: function( filename, from, to, cb ) {
+        cb( null, [], (metricValues === undefined || metricValues[filename] === undefined ) ? []:metricValues[filename] );
+      },
+      info: function( filename, cb ) {
+        cb( null, {} );
+      }
     }
-    return new TargetParseContext( mStore, targetString, 0, 0 );
+    var ms= new MetricStore( "/tmp", hoardStub);
+    ms.availableMetrics= realMetrics;
+    return new TargetParseContext( ms, targetString, 0, 0 ) ;
 }
 
 module.exports.buildTargetParseContext= buildTargetParseContext;

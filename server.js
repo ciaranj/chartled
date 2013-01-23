@@ -6,10 +6,7 @@ var express = require('express'),
     TargetParseContext= require("./lib/TargetParseContext"),
     TargetParser= require("./lib/TargetParser");
   
-var metricsStore= new MetricsStore( __dirname + path.sep + ".." + path.sep + "statsd"+ path.sep+ "wsp_data", function() {
-    app.listen(3000);
-    console.log('Listening on port 3000');
-});
+var metricsStore= new MetricsStore( __dirname + path.sep + ".." + path.sep + "statsd"+ path.sep+ "wsp_data", hoard);
 
 var app = express();
 app.use(express.static(__dirname + '/public'));
@@ -96,3 +93,6 @@ app.get('/series', function(req, res){
 process.on('uncaughtException', function (err) {
   console.log( err.stack );
 });
+
+app.listen(3000);
+console.log('Listening on port 3000');

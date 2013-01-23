@@ -10,12 +10,12 @@ describe('TargetParseContext', function(){
         var metric=  "aliasByNode(scale(foo.bar, 2),0)";
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
-                    .then(function (result) {
-                            assert.deepEqual( [2,4,6,8], result.seriesList[0].data.values );
-                            assert.equal( "foo", result.seriesList[0].name );
-                            done();
-                    })
-                    .end();
+                  .then(function (result) {
+                          assert.deepEqual( [2,4,6,8], result.seriesList[0].data.values );
+                          assert.equal( "foo", result.seriesList[0].name );
+                          done();
+                  })
+                  .end();
     })
     it('should alias a single metric (complex) by 1 node', function(done) {
         var metric=  "aliasByNode(scale(foo.bar,2),1)";
