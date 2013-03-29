@@ -30,64 +30,17 @@ html
                   a(href='#', onclick='addNewChart([]);configureChart(chartCounter);') Create new Chart
                 li.divider
                 li
-                  a(href='#', onclick='addChart(0)') Overwatch
+                  a(href='#', onclick='addChart(0)') Cache Hit Rate
                 li
-                  a(href='#', onclick='addChart(1)') Workitem Creation
+                  a(href='#', onclick='addChart(1)') Network Traffic
                 li
-                  a(href='#', onclick='addChart(2)') Mediation
-                li
-                  a(href='#', onclick='addChart(3)') Cache Hit Rate
-                li
-                  a(href='#', onclick='addChart(4)') Network Traffic
-                li
-                  a(href='#', onclick='addChart(5)') Gateways
-                li
-                  a(href='#', onclick='addChart(6)') CPU
-                li
-                  a(href='#', onclick='addChart(7)') Successful Workflows
-                li
-                  a(href='#', onclick='addChart(8)') Failed Workflows
+                  a(href='#', onclick='addChart(2)') CPU
     .container
       p How long back ? &nbsp;
         input#lookback(value=1800)
         &nbsp;&nbsp; 1800= 30 mins, 43200= 12 Hours, 604800= 1 week.
       div#charts.container
-        div(style='background-color:#777;width:70px;height:70px', class='draggable')
-          ul.buttons
-            li.hpl h+
-            li.hmi h-
-            li.wpl w+
-            li.wmi w-
-        div(style='background-color:red;width:70px;height:70px', class='draggable')
-          ul.buttons
-            li.hpl h+
-            li.hmi h-
-            li.wpl w+
-            li.wmi w-
-        div(style='background-color:green;width:70px;height:70px', class='draggable')
-          ul.buttons
-            li.hpl h+
-            li.hmi h-
-            li.wpl w+
-            li.wmi w-
-        div(style='background-color:yellow;width:70px;height:70px', class='draggable')
-          ul.buttons
-            li.hpl h+
-            li.hmi h-
-            li.wpl w+
-            li.wmi w-
-        div(style='background-color:white;width:70px;height:70px', class='draggable')
-          ul.buttons
-            li.hpl h+
-            li.hmi h-
-            li.wpl w+
-            li.wmi w-
-        div(style='background-color:pink;width:70px;height:70px', class='draggable')
-          ul.buttons
-            li.hpl h+
-            li.hmi h-
-            li.wpl w+
-            li.wmi w-
+
   script(type='text/javascript')
     $("#charts").sortable({
       start: function(e, ui){
@@ -95,20 +48,12 @@ html
            ui.placeholder.width(ui.item.width());
       }});
     var offThePegCharts= [
-      [{value:'alias(stats.gauges.overwatch.*,"Overwatch Backlog")',renderer:'line'},  {value:'alias(stats_counts.overwatch.*,"Overwatch Processed")', renderer:'line'}],
-      [{value:'alias(stats_counts.workitem.save,"Workitem Saved")', renderer:'bar'},{value:'alias(stats_counts.workitem.create,"Workitem Created")', renderer:'bar'}],
-      [{value:'alias(sum(stats.gauges.queue.ProcessProxy.Mediation.*.size), "Mediation Queue Size")',renderer:'bar'}],
       [{value:'alias(asPercent(stats_counts.cache.hit,sum(stats_counts.cache.{hit,miss})), "Cache Hit %age")',renderer:'area'}],
       [{value:'alias(scale(sum(stats.*.network_interface.*.bytes_total_sec),1000000),"Network Traffic B/s")', renderer:'line'}],
-      [{value:'alias(sum(stats_counts.gateway.*), "Gateway Hit")',renderer:'bar'}],
-      [{value:'alias(scale(sum(stats_counts.*.processor.*.pct_user_time),100000),"CPU %age Used (User)")',renderer:'area'}],
-      [{value:'stats_counts.workflows.*.success',renderer:'bar'}],
-      [{value:'stats_counts.workflows.*.failure',renderer:'bar'}]
+      [{value:'alias(scale(sum(stats_counts.*.processor.*.pct_user_time),100000),"CPU %age Used (User)")',renderer:'area'}]
     ];
-    addNewChart( [{ renderer:'line', value:'stats.gauges.squeak.local.load.load.0' }] );
-    addNewChart( [{ renderer:'line', value:'stats.gauges.squeak.local.load.load.*' }] );
-    addNewChart( [{ renderer:'line', value:'alias(asPercent(sum(stats.gauges.squeak.local.memory.memory.{active,wired,inactive}),sum(stats.gauges.squeak.local.memory.memory.*)), "Used")'},
-                  { renderer:'line', value:'alias(asPercent(stats.gauges.squeak.local.memory.memory.free,sum(stats.gauges.squeak.local.memory.memory.*)),"Free")'},] );
+    addNewChart( [{ renderer:'line', value:'sin("Foo")' }] );
+    addNewChart( [{ renderer:'line', value:'sin("Bar",4)' }] );
 
       function addChart(chartIndex) {
         addNewChart( offThePegCharts[chartIndex] );

@@ -193,7 +193,7 @@ Chart.prototype._sampleData= function( data ) {
 Chart.prototype.refreshData= function( data ) {
     var unsampledData= data;
     if( data && data.length > 0 ) {
-      this._sampleData( data );
+//      this._sampleData( data );
 
 
 /*      var stack = d3.layout.stack()
@@ -217,8 +217,9 @@ Chart.prototype.refreshData= function( data ) {
       var maxY= -10000000;
       for( var key in data ) {
         maxY= d3.max([d3.max(data[key].datapoints, yCoord), maxY])
+        minY= d3.min([d3.min(data[key].datapoints, yCoord), minY])
       }
-      this.scales.y[0].domain([0, maxY]);
+      this.scales.y[0].domain([minY, maxY]);
 
       var leftAxis= this._getLeftAxis();
       var rightAxis= this._getRightAxis();
