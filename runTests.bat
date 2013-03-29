@@ -1,1 +1,0 @@
-./node_modules/.bin/mocha --require should --reporter list  --timeout 200

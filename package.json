@@ -1,5 +1,5 @@
 {
-  "name": "chartd",
+  "name": "chartled",
   "description": "A poor substitute for graphite",
   "author": "ciaranj@gmail.com",
   "version": "0.0.1",
@@ -16,5 +16,11 @@
   },
   "engine": {
     "node" : ">=0.8"
+  }, 
+  "scripts" : {
+    "test" : "mocha --require should --reporter list  --timeout 200",
+    "prepublish" : "node scripts/prepublish.js",
+    "generateparser": "pegjs grammars/TargetParser.pegjs lib/TargetParser.js",
+    "postinstall" : "node scripts/prepublish.js"
   }
 }
