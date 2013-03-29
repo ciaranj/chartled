@@ -39,7 +39,7 @@ app.get('/series', function(req, res){
     var to= parseInt(req.query.to);
     var metrics= req.query.target;
     var now= new Date().getTime();
-    //TODO: deal with multiple metrics...
+
     var results= [];
     if( !Array.isArray( metrics ) ) {
         metrics= [metrics];

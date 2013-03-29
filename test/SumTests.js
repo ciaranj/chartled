@@ -6,6 +6,18 @@ var assert= require("assert"),
 
 describe('TargetParseContext', function(){
   describe('sum', function(){
+    it('should sum nulls as we expect', function(done) {
+        // We treat all nulls as resulting in a null, any other sum results in the addition occuring as if there was no null.
+        var metric=  "sum(foo.{bar,tar})";
+        var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,null,null,4], "foo.tar":[null,null,30,50]} );
+        TargetParser.parse( metric )(ctx)
+                    .then(function (result) {
+                            assert.equal( 1, result.seriesList.length );
+                            assert.deepEqual( [1,null,30,54], result.seriesList[0].data.values );
+                            done();
+                    })
+                    .end();
+    })    
     it('should sum the metric values in the given series list (multiple)', function(done) {
         var metric=  "sum(foo.{bar,tar})";
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );

@@ -36,7 +36,7 @@ function checkExpandMetrics( availableMetrics, metricsToTest, expectedResults, d
     var doneCnt= doneCountDown( metricsToTest.length, done );
     for( var k in metricsToTest ) {
       (function( metric, expectedResult) {
-         var ctx= Utils.buildTargetParseContext( metric, convertFromArrayToIndexedCollectionOfLiterals(availableMetrics) );
+         var ctx= Utils.buildTargetParseContext( metric, convertFromArrayToIndexedCollectionOfLiterals(availableMetrics), undefined, [] );
          TargetParser.parse( metric )(ctx).then(
             function (result) {
                 assert.deepEqual( expectedResult, result.seriesList);
