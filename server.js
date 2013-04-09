@@ -6,7 +6,7 @@ var express = require('express'),
     TargetParseContext= require("./lib/TargetParseContext"),
     TargetParser= require("./lib/TargetParser");
   
-var metricsStore= new MetricsStore( __dirname + path.sep + ".." + path.sep + "statsd"+ path.sep+ "wsp_data", hoard);
+var metricsStore= new MetricsStore( __dirname + path.sep + ".." + path.sep + "builds"+ path.sep +"statsd"+ path.sep+ "wsp_data", hoard);
 
 var app = express();
 app.use(express.static(__dirname + '/public'));

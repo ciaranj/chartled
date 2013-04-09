@@ -1,6 +1,6 @@
 var charts= [];
 
-beginDisplayRollingChart= function(metric, w, h, chartId) {
+beginDisplayRollingChart= function(metric, chartId) {
   
   for(var key in metric) {
     metric[key].axis= 0;
@@ -17,11 +17,12 @@ beginDisplayRollingChart= function(metric, w, h, chartId) {
     }  */
     
     metric[key].layer =2;
-  }   
+  }
+  var el= $("#"+chartId);
   charts[chartId]= {
     metrics: metric,
     maxAgeInSeconds: previousValue,
-    chart: new Chart( "chart" + chartId, w, h, {
+    chart: new Chart( chartId, el.width(), el.height(), {
       metrics: metric,
       layers: [{renderer : "area"},{renderer : "bar"}, {renderer : "line", dropShadow: true}],
       axes: {
@@ -182,7 +183,7 @@ function configureChart( chartId ) {
 function resizeChart( el ) {
   var id= el.attr("id");
   if( id && id.length > 5 && id.substring(0, 5) == "chart") {
-    var chart= charts[id.substring(5)].chart;
+    var chart= charts[id].chart;
     chart.resize( el.width(), el.height() );
   }
 }
@@ -191,40 +192,74 @@ var size= 70;
 function nS( val ){
   return Math.floor(val/10) * 10;
 }
+var previous_width;
+var previous_height;
 function addNewChart( metrics ) {
     chartCounter ++;
-    var charts= $("#charts");
-    charts.append( "<div class='draggable' style='width:170px;height:70px;background-color:white' id='chart"+ chartCounter + "' onclick=\"configureChart("+chartCounter +")\"><ul class='buttons'><li class='hpl'>h+</li><li class='hmi'>h-</li><li class='wpl'>w+</li><li class='wmi'>w-</li></ul></div>");
-    $(".hpl").unbind("click").click( function(e) {
-        e.stopPropagation();
-        var el= $(this).parent().parent();
-        el.height( nS(el.height() + size + margin) );
-        resizeChart( el );
-    });
-    $(".hmi").unbind("click").click( function(e) {
-      e.stopPropagation();
-      var el= $(this).parent().parent();
-        if( nS(el.height()) > size ) {
-          el.height(  nS(el.height() - (size + margin)) );
-          resizeChart( el );
+    var widget= layout.add_widget("<div class='new layout_block' id='chart"+ chartCounter + "' onclick=\"configureChart('chart"+chartCounter +"')\" style='background-color: rgb(210, 71, 38);'/>", 2, 1);
+
+    widget.resizable({
+        grid: [grid_size + (grid_margin * 2), grid_size + (grid_margin * 2)],
+        animate: false,
+        minWidth: grid_size,
+        minHeight: grid_size,
+        autoHide: true,
+        start: function(event, ui) {
+          grid_height = layout.$el.height();
+          previous_width= $(this).width();
+          previous_height= $(this).height();
+          layout.enable();
+        },
+        resize: function(event, ui) {
+          //set new grid height along the dragging period
+          var delta = grid_size + grid_margin * 2;
+          if(typeof event.offsetX === "undefined" || typeof event.offsetY === "undefined") {
+             var targetOffset = $(event.target).offset();
+             event.offsetX = event.pageX - targetOffset.left;
+             event.offsetY = event.pageY - targetOffset.top;
+          }          
+          if (event.offsetY > layout.$el.height()) {
+            var extra = Math.floor((event.offsetY - grid_height) / delta + 1);
+            var new_height = grid_height + extra * delta;
+            layout.$el.css('height', new_height);
           }
-    });
-    $(".wmi").unbind("click").click( function(e) {
-      e.stopPropagation();
-      var el= $(this).parent().parent();
-      console.log( el.width() )
-        if( nS(el.width()) > size ) {
-          el.width( nS(el.width() - (size + margin)) );
-          resizeChart( el );
+          if( $(this).width() != previous_width || $(this).height() != previous_height) resizeBlock( $(this) );
+          previous_width= $(this).width();
+          previous_height= $(this).height();
+        },
+        stop: function(event, ui) {
+            var resized = $(this);
+            setTimeout(function() {
+                resizeBlock(resized);
+				resizeChart(resized);
+            }, 300);
         }
-    });    
-    $(".wpl").unbind("click").click( function(e) {
-      e.stopPropagation();
-      var el= $(this).parent().parent();
-      el.width( nS(el.width() + size + margin) );
-      resizeChart( el );
     });
-    beginDisplayRollingChart( metrics, 170, size, chartCounter )    
+    $('#chart'+chartCounter+' > div.ui-resizable-handle').hover(function() {
+        layout.disable();
+    }, function() {
+        layout.enable();
+    });
+  
+    beginDisplayRollingChart( metrics, "chart"+ chartCounter )    
+}  
+
+function resizeBlock(elmObj) {
+    var elmObj = $(elmObj);
+    var w = elmObj.width() - grid_size;
+    var h = elmObj.height() - grid_size;
+
+    for (var grid_w = 1; w > 0; w -= (grid_size + (grid_margin * 2))) {
+        grid_w++;
+    }
+
+    for (var grid_h = 1; h > 0; h -= (grid_size + (grid_margin * 2))) {
+        grid_h++;
+    }
+    layout.enable();
+    layout.resize_widget(elmObj, grid_w, grid_h);
+    layout.set_dom_grid_height();
+ //   resizeChart( elmObj );
 }
 function encodeHtml(str) {
     return String(str)

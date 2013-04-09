@@ -6,9 +6,11 @@ html
     link(rel='stylesheet', href='/css/bootstrap.min.css')
     link(rel='stylesheet', href='/css/fixes.css')
     link(rel='stylesheet', href='/css/delineate.css')
+    link(rel='stylesheet', href='http://code.jquery.com/ui/1.9.0/themes/base/jquery-ui.css')
+    link(rel='stylesheet', href='/css/jquery.gridster.min.css')
+
     script(type='text/javascript', src='http://code.jquery.com/jquery-1.8.3.js')
     script(type='text/javascript', src='http://code.jquery.com/ui/1.9.2/jquery-ui.js')
-    
     script(type='text/javascript', src='/javascripts/d3.v2.min.js')
     script(type='text/javascript', src='/javascripts/delineate.js')
     script(type='text/javascript', src='/js/bootstrap.min.js')
@@ -16,6 +18,8 @@ html
     script(type='text/javascript', src='/javascripts/chartdFunctions.js')
     script(type='text/javascript', src='/metrics')
     script(type='text/javascript', src='/javascripts/chartd-client.js')
+    script(type='text/javascript', src='/javascripts/jquery.gridster.min.js')
+
   body#index
     div.navbar.navbar-inverse.navbar-fixed-top
       div.navbar-inner
@@ -27,7 +31,7 @@ html
                 b.caret
               ul.dropdown-menu
                 li
-                  a(href='#', onclick='addNewChart([]);configureChart(chartCounter);') Create new Chart
+                  a(href='#', onclick="addNewChart([]);configureChart('chart'+chartCounter);") Create new Chart
                 li.divider
                 li
                   a(href='#', onclick='addChart(0)') Cache Hit Rate
@@ -39,21 +43,31 @@ html
       p How long back ? &nbsp;
         input#lookback(value=1800)
         &nbsp;&nbsp; 1800= 30 mins, 43200= 12 Hours, 604800= 1 week.
-      div#charts.container
+      div#container.gridster
+        ul
 
   script(type='text/javascript')
-    $("#charts").sortable({
-      start: function(e, ui){
-           ui.placeholder.height(ui.item.height());
-           ui.placeholder.width(ui.item.width());
-      }});
+    var layout;
+    var grid_size = 100;
+    var grid_margin = 5;
+    var grid_height;
+
+    $(function() {
+      layout = $(".gridster > ul").gridster({
+        widget_margins: [grid_margin, grid_margin],
+        widget_base_dimensions: [grid_size, grid_size]
+      }).data('gridster');
+      addNewChart( [{ renderer:'line', value:'sin("Foo")' }] );
+      addNewChart( [{ renderer:'line', value:'sin("Bar",4)' }] );
+    });
+
+
+
     var offThePegCharts= [
       [{value:'alias(asPercent(stats_counts.cache.hit,sum(stats_counts.cache.{hit,miss})), "Cache Hit %age")',renderer:'area'}],
       [{value:'alias(scale(sum(stats.*.network_interface.*.bytes_total_sec),1000000),"Network Traffic B/s")', renderer:'line'}],
       [{value:'alias(scale(sum(stats_counts.*.processor.*.pct_user_time),100000),"CPU %age Used (User)")',renderer:'area'}]
     ];
-    addNewChart( [{ renderer:'line', value:'sin("Foo")' }] );
-    addNewChart( [{ renderer:'line', value:'sin("Bar",4)' }] );
 
       function addChart(chartIndex) {
         addNewChart( offThePegCharts[chartIndex] );
