@@ -37,23 +37,6 @@ body {
 .y_ticks text {
   fill: white;
 }
-.legendContainer {
-    min-height: 100px;
-    max-height: 100px;
-    overflow-y: hidden;
-    overflow-x: hidden;
-    
-}
-
-#index .rickshaw_legend {
-    padding: 0px;
-    background: none;
-}
-
-#index .rickshaw_legend .label {
-    background: none;
-}
-
 
 .buttons {
 	position:absolute;
@@ -64,3 +47,25 @@ body {
 .buttons li {
 	line-height: 12px;
 }
+
+#index .ui-state-disabled.layout_block {
+  opacity: 1;
+}
+#index .layout_block {
+  overflow: hidden;
+}
+
+.hallotoolbar { z-index: 8040; }
+
+body.pageMode-layout {
+  background-color: rgba(123, 179, 61, 0.24);
+}
+
+body.pageMode-readonly {
+  background-color: white;
+}
+
+body.pageMode-content {
+  background-color: rgba(236, 92, 0, 0.24);
+}
+

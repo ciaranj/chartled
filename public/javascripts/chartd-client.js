@@ -70,6 +70,7 @@ function queueChartRefresh( chartId ) {
 }
 
 var chartCounter= 0;
+var textBoxCounter= 0;
 function removeMetric ( metricIndex ) {
   
   var currentMetrics= activeEditedChart.metrics;
@@ -139,7 +140,7 @@ function addMetricClick() {
 }
  
 function configureChart( chartId ) {
-    if( configuringChart ) return;
+    if( configuringChart || page_mode != "content" ) return;
     else configuringChart= true;
     activeEditedChart= cloneChart( charts[chartId] );
     originalChart= cloneChart( charts[chartId] );
@@ -196,14 +197,14 @@ var previous_width;
 var previous_height;
 function addNewChart( metrics ) {
     chartCounter ++;
-    var widget= layout.add_widget("<div class='new layout_block' id='chart"+ chartCounter + "' onclick=\"configureChart('chart"+chartCounter +"')\" style='background-color: rgb(210, 71, 38);'/>", 2, 1);
-
+    var widget= layout.add_widget("<div class='new layout_block chart' id='chart"+ chartCounter + "' onclick=\"configureChart('chart"+chartCounter +"')\" style='background-color: rgb(210, 71, 38);'/>", 4, 2);
     widget.resizable({
         grid: [grid_size + (grid_margin * 2), grid_size + (grid_margin * 2)],
         animate: false,
         minWidth: grid_size,
         minHeight: grid_size,
         autoHide: true,
+        disabled: page_mode != "layout",
         start: function(event, ui) {
           grid_height = layout.$el.height();
           previous_width= $(this).width();
@@ -238,7 +239,7 @@ function addNewChart( metrics ) {
     $('#chart'+chartCounter+' > div.ui-resizable-handle').hover(function() {
         layout.disable();
     }, function() {
-        layout.enable();
+        if( page_mode == "layout") layout.enable();
     });
   
     beginDisplayRollingChart( metrics, "chart"+ chartCounter )    
@@ -256,7 +257,6 @@ function resizeBlock(elmObj) {
     for (var grid_h = 1; h > 0; h -= (grid_size + (grid_margin * 2))) {
         grid_h++;
     }
-    layout.enable();
     layout.resize_widget(elmObj, grid_w, grid_h);
     layout.set_dom_grid_height();
  //   resizeChart( elmObj );
@@ -398,5 +398,65 @@ if( lookback ) {
             }
         }
     }, 250);
+}
+
+function addNewTextBox() {
+    textBoxCounter++;
+    var widget= layout.add_widget("<div class='new layout_block textbox' id='textbox"+ textBoxCounter + "'><h4>Some Awesome Text</h4></div>", 4, 1);
+    widget.hallo({
+      plugins: {
+        'halloformat': {
+            formattings: {"bold": true, "italic": true, "strikethrough": true, "underline": true}
+        },
+        halloheadings : {headers:  [1,2,3,4,5]},
+        hallolists: {},
+        hallojustify: {},
+        halloreundo: {}
+      }
+    });
+    widget.resizable({
+        grid: [grid_size + (grid_margin * 2), grid_size + (grid_margin * 2)],
+        animate: false,
+        minWidth: grid_size,
+        minHeight: grid_size,
+        autoHide: true,
+        disabled: page_mode != "layout",
+        start: function(event, ui) {
+          grid_height = layout.$el.height();
+          previous_width= $(this).width();
+          previous_height= $(this).height();
+          layout.enable();
+        },
+        resize: function(event, ui) {
+          //set new grid height along the dragging period
+          var delta = grid_size + grid_margin * 2;
+          if(typeof event.offsetX === "undefined" || typeof event.offsetY === "undefined") {
+             var targetOffset = $(event.target).offset();
+             event.offsetX = event.pageX - targetOffset.left;
+             event.offsetY = event.pageY - targetOffset.top;
+          }          
+          if (event.offsetY > layout.$el.height()) {
+            var extra = Math.floor((event.offsetY - grid_height) / delta + 1);
+            var new_height = grid_height + extra * delta;
+            layout.$el.css('height', new_height);
+          }
+          if( $(this).width() != previous_width || $(this).height() != previous_height) resizeBlock( $(this) );
+          previous_width= $(this).width();
+          previous_height= $(this).height();
+        },
+        stop: function(event, ui) {
+            var resized = $(this);
+            setTimeout(function() {
+                resizeBlock(resized);
+//                resizeChart(resized);
+            }, 300);
+        }
+    });
+
+    $('#textbox'+textBoxCounter+' > div.ui-resizable-handle').hover(function() {
+        layout.disable();
+    }, function() {
+        if( page_mode == "layout") layout.enable();
+    });
 }
 
