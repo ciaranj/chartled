@@ -69,3 +69,8 @@ body.pageMode-content {
   background-color: rgba(236, 92, 0, 0.24);
 }
 
+body.pageMode-layout .layout_block {
+  border: 1px dotted gray;
+  margin:-1px;
+}
+

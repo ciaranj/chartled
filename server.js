@@ -1,12 +1,11 @@
-var express = require('express'),
-    hoard   = require('hoard'),
+var express = require('express')
     fs      = require('fs'),
     MetricsStore= require('./lib/MetricsStore'),
     path    = require('path'),
     TargetParseContext= require("./lib/TargetParseContext"),
     TargetParser= require("./lib/TargetParser");
   
-var metricsStore= new MetricsStore( __dirname + path.sep + ".." + path.sep + "builds"+ path.sep +"statsd"+ path.sep+ "wsp_data", hoard);
+var metricsStore= new MetricsStore( __dirname + path.sep + ".." + path.sep +"statsd"+ path.sep+ "ceres_tree");
 
 var app = express();
 app.use(express.static(__dirname + '/public'));
@@ -27,7 +26,12 @@ app.get('/explorer', function(req, res){
 app.get('/metrics', function(req, res){
   metricsStore.getAvailableMetrics( function( err, metrics ) {
     res.set({'Content-Type': 'text/javascript' });
-    var js= "try { if( chartd == undefined) chartd= {};} catch (e ) { chartd= {}; }  chartd.metrics= " + JSON.stringify( metrics ) + ";";
+    var results= {};
+    
+    for(var k in metrics ) {
+      results[k] = { "name": metrics[k].name};
+    }
+    var js= "try { if( chartd == undefined) chartd= {};} catch (e ) { chartd= {}; }  chartd.metrics= " + JSON.stringify( results ) + ";";
     res.send( js );
   });
 });

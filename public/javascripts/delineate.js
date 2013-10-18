@@ -161,7 +161,7 @@ Chart.prototype._sampleData= function( data ) {
       //TODO: A better approach might be to 'throw away' some older data to allow for several updates with the same
       // sample boundaries, rather than re-sample for *each* update always having a window offset 1 less than the
       // previous sample-set ?
-      if( data[key].datapoints.length > this.width && data[key].aggregationMethod == 'average' ) {
+      if( data[key].datapoints.length > this.width && data[key].aggregationMethod == 'avg' ) {
         var rawLength= data[key].datapoints.length;
         var skipFactor= Math.round( rawLength / this.width );
         var skipFactorCounter= 0;

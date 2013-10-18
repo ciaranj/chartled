@@ -70,10 +70,14 @@ html
     $(function() {
       layout = $(".gridster > ul").gridster({
         widget_margins: [grid_margin, grid_margin],
-        widget_base_dimensions: [grid_size, grid_size]
+        widget_base_dimensions: [grid_size, grid_size],
+        max_size_x: 24,
+        max_size_y: 24
       }).data('gridster');
       addNewChart( [{ renderer:'line', value:'sin("Foo")' }] );
       addNewChart( [{ renderer:'line', value:'sin("Bar",4)' }] );
+      addNewChart( [{ renderer:'line', value:'stats.statsd.ceres.flushTime' }] );
+
 
       // Start in read-only mode
       $("#pageModeReadOnly").button('toggle')

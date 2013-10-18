@@ -17,7 +17,7 @@ var doneCountDown= function ( count, done ) {
 function convertFromArrayToIndexedCollectionOfLiterals( arr ) {
     var result= {};
     for( var k in arr ) {
-        result[arr[k]]= new MetricInfo( arr[k], arr[k], {aggregationMethod: "average"} );
+        result[arr[k]]= new MetricInfo( arr[k], arr[k], {aggregationMethod: "avg"} );
     }
     return result;
 }
@@ -25,7 +25,7 @@ function convertFromArrayToIndexedCollectionOfLiterals( arr ) {
 function convertFromArrayToCollectionOfLiterals( arr ) {
     var result= [];
     for( var k in arr ) {
-        var r= new MetricInfo( arr[k], arr[k], {aggregationMethod: "average"} );
+        var r= new MetricInfo( arr[k], arr[k], {aggregationMethod: "avg"} );
         r.data= { values:[], tInfo:[]};
         result[result.length]=  r;
     }
@@ -39,8 +39,10 @@ function checkExpandMetrics( availableMetrics, metricsToTest, expectedResults, d
          var ctx= Utils.buildTargetParseContext( metric, convertFromArrayToIndexedCollectionOfLiterals(availableMetrics), undefined, [] );
          TargetParser.parse( metric )(ctx).then(
             function (result) {
-                assert.deepEqual( expectedResult, result.seriesList);
-                doneCnt();
+              assert.equal( expectedResult.realName, result.seriesList.realName);
+              assert.equal( expectedResult.name, result.seriesList.name);
+              assert.deepEqual( expectedResult.info, result.seriesList.info);
+              doneCnt();
             })
         .end( );
       })( metricsToTest[k], convertFromArrayToCollectionOfLiterals(expectedResults[k]));

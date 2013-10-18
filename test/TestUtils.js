@@ -7,8 +7,15 @@ function buildTargetParseContext( targetString, metrics, metricValues, tInfo, fr
     for( var k in metrics ) {
         if( firstK == null ) firstK= metrics[k].name;
         realMetrics[metrics[k].name]= metrics[k];
-        realMetrics[metrics[k].name].info= {aggregationMethod: "average"};
+        realMetrics[metrics[k].name].info= {aggregationMethod: "avg"};
         realMetrics[metrics[k].name].filename= metrics[k].name;
+        
+        realMetrics[metrics[k].name].node = (function(name){
+          return {
+            read: function( from, to, cb ) {
+              cb( null, {"tInfo": tInfo, values:(metricValues === undefined || metricValues[name] === undefined ) ? []:metricValues[name]});
+            }};
+        })(metrics[k].name);
     }
     if( tInfo === undefined ) {
       var t= Math.floor( new Date().getTime() / 1000 );
@@ -19,16 +26,7 @@ function buildTargetParseContext( targetString, metrics, metricValues, tInfo, fr
     if( from === undefined ) from= 0;
     if( to === undefined ) to= 0;
 
-
-    var hoardStub= {
-      fetch: function( filename, from, to, cb ) {
-        cb( null, tInfo, (metricValues === undefined || metricValues[filename] === undefined ) ? []:metricValues[filename] );
-      },
-      info: function( filename, cb ) {
-        cb( null, {} );
-      }
-    }
-    var ms= new MetricStore( "/tmp", hoardStub);
+    var ms= new MetricStore( "/tmp" );
     ms.availableMetrics= realMetrics;
     return new TargetParseContext( ms, targetString, from, to ) ;
 }
