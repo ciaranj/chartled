@@ -5,40 +5,61 @@ var assert= require("assert"),
     Utils= require("./TestUtils");
 
 describe('TargetParseContext', function(){
-  describe('scale', function(){
-    it('should scale the metric values in the given series list (multiple)', function(done) {
-        var metric=  "scale(foo.{bar,tar}, 2)";
+  describe('offset', function(){
+    it('should offset the metric values in the given series list (multiple)', function(done) {
+        var metric=  "offset(foo.{bar,tar}, 2)";
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.deepEqual( [2,4,6,8], result.seriesList[0].data.values );
-                            assert.deepEqual( [20,40,60,100], result.seriesList[1].data.values );
+                            assert.deepEqual( [3,4,5,6], result.seriesList[0].data.values );
+                            assert.deepEqual( [12,22,32,52], result.seriesList[1].data.values );
                             done();
                     })
                     .end();
     })
-    it('should scale the metric values in the given series list (single)', function(done) {
-        var metric=  "scale(foo.bar, 2)";
+    it('should offset the metric values in the given series list (single)', function(done) {
+        var metric=  "offset(foo.bar, 2)";
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.deepEqual( [2,4,6,8], result.seriesList[0].data.values );
+                            assert.deepEqual( [3,4,5,6], result.seriesList[0].data.values );
                             done();
                     })
                     .end();
     })
-    it('should scale the metric values in the given series list (single), ignoring nulls ', function(done) {
-        var metric=  "scale(foo.bar, 2)";
+    it('should offset the metric values in the given series list (single), ignoring nulls ', function(done) {
+        var metric=  "offset(foo.bar, 2)";
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,null,3,null], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.deepEqual( [2,null,6,null], result.seriesList[0].data.values );
+                            assert.deepEqual( [3,null,5,null], result.seriesList[0].data.values );
                             done();
                     })
                     .end();
     })	
-    it('should scale the metric values in the given series list (none)', function(done) {
-        var metric=  "scale(foo.{xar}, 2)";
+    
+	it('should offset the metric values in the given series list (single), negative', function(done) {
+        var metric=  "offset(foo.bar, -2)";
+        var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
+        TargetParser.parse( metric )(ctx)
+                    .then(function (result) {
+                            assert.deepEqual( [-1,0,1,2], result.seriesList[0].data.values );
+                            done();
+                    })
+                    .end();
+    })
+	it('should offset the metric values in the given series list (single), zero', function(done) {
+        var metric=  "offset(foo.bar, 0)";
+        var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
+        TargetParser.parse( metric )(ctx)
+                    .then(function (result) {
+                            assert.deepEqual( [1,2,3,4], result.seriesList[0].data.values );
+                            done();
+                    })
+                    .end();
+    })		
+    it('should offset the metric values in the given series list (none)', function(done) {
+        var metric=  "offset(foo.{xar}, 2)";
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
@@ -48,34 +69,34 @@ describe('TargetParseContext', function(){
                     .end();
     })
     it('should update the metric name correctly for alternatives', function(done) {
-        var metric=  "scale(foo.{bar,tar}, 2)";
+        var metric=  "offset(foo.{bar,tar}, 2)";
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( "scale(foo.bar,2)", result.seriesList[0].name );
-                            assert.equal( "scale(foo.tar,2)", result.seriesList[1].name );
+                            assert.equal( "offset(foo.bar,2)", result.seriesList[0].name );
+                            assert.equal( "offset(foo.tar,2)", result.seriesList[1].name );
                             done();
                     })
                     .end();
     })
     it('should update the metric name correctly for wildcards', function(done) {
-        var metric=  "scale(foo.*, 2)";
+        var metric=  "offset(foo.*, 2)";
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( "scale(foo.bar,2)", result.seriesList[0].name );
-                            assert.equal( "scale(foo.tar,2)", result.seriesList[1].name );
+                            assert.equal( "offset(foo.bar,2)", result.seriesList[0].name );
+                            assert.equal( "offset(foo.tar,2)", result.seriesList[1].name );
                             done();
                     })
                     .end();
     })
     it('should update the metric name correctly for ranges', function(done) {
-        var metric=  "scale(foo.[2], 2)";
+        var metric=  "offset(foo.[2], 2)";
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.1"), new MetricInfo("foo.2")], {"foo.1":[1,2,3,4], "foo.2":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( "scale(foo.1,2)", result.seriesList[0].name );
-                            assert.equal( "scale(foo.2,2)", result.seriesList[1].name );
+                            assert.equal( "offset(foo.1,2)", result.seriesList[0].name );
+                            assert.equal( "offset(foo.2,2)", result.seriesList[1].name );
                             done();
                     })
                     .end();
