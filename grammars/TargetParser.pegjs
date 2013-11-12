@@ -31,11 +31,13 @@ atom =
     metric /
     number
 
+sign = [+-]
+
 number =
-    digits: digit+ "." decimals: digit+
+    signs:sign? digits:digit+ "." decimals: digit+
     { return digits.join("")+"."+ decimals.join(""); } /
-    digits: digit+ 
-    { return "ctx.$("+digits.join("") +")" }
+    signs:sign? digits: digit+ 
+    { return "ctx.$("+ signs + digits.join("") +")" }
 
 
 digit= [0-9]
@@ -47,7 +49,7 @@ spaceFunctionName = ws* functionName:functionName
     { return functionName; }
 
 functionName
-    = "sumSeries" / "sum" / "averageSeries" / "avg" / "scale" / "aliasByNode" / "asPercent" / "alias" / "bestFit" / "sinFunction" / "sin"
+    = "sumSeries" / "sum" / "averageSeries" / "avg" / "scale" / "aliasByNode" / "asPercent" / "alias" / "bestFit" / "sinFunction" / "sin" / "constantLine"
 
 spaceexpression  = ws* expression:expression
     { return expression; }
