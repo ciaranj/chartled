@@ -1,7 +1,10 @@
-var express = require('express')
+var CSVResponseRenderer = require("./lib/response_renderers/csv"),
+	express = require('express')
     fs      = require('fs'),
+	JSONResponseRenderer= require("./lib/response_renderers/json"),
     MetricsStore= require('./lib/MetricsStore'),
     path    = require('path'),
+	RawResponseRenderer= require("./lib/response_renderers/raw"),
     TargetParseContext= require("./lib/TargetParseContext"),
     TargetParser= require("./lib/TargetParser");
   
@@ -43,6 +46,23 @@ app.get('/series', function(req, res){
     var to= parseInt(req.query.to);
     var metrics= req.query.target;
     var now= new Date().getTime();
+	var format= req.query.format;
+
+	if( !format ) format= "json";
+	
+	var responseRenderer= null;
+	
+	switch( format.toLowerCase() ) {
+		case "csv":
+			responseRenderer= CSVResponseRenderer;
+			break;
+		case "raw":
+			responseRenderer= RawResponseRenderer;
+			break;
+		case "json":
+		default:
+			responseRenderer= JSONResponseRenderer;
+	}
 
     var results= [];
     if( !Array.isArray( metrics ) ) {
@@ -53,13 +73,13 @@ app.get('/series', function(req, res){
     var carryOn= function() {
         metricsCountDown--;
         if( metricsCountDown <=0 ) {
-            res.set({'Content-Type': 'application/json' });
-            //TODO: think results should come back in target order. (wildcards alpha sorted)
-            results= results.sort( function compare(a,b) {
-                return (a.target<b.target?-1:(a.target>b.target?1:0));
-            });
-            res.send( results )
-            console.log(req.url + " completed in: " + (new Date().getTime() - now) + "ms");
+			//TODO: think results should come back in target order. (wildcards alpha sorted)
+			var r= results.sort( function compare(a,b) {
+				return (a.target<b.target?-1:(a.target>b.target?1:0));
+			});
+			responseRenderer.renderResults( res, r, function(err) {
+				console.log(req.url + " completed in: " + (new Date().getTime() - now) + "ms");
+			});
         }
     };
     
@@ -74,7 +94,9 @@ app.get('/series', function(req, res){
                                 datapoints : [],
                                 target: seriesList[i].name,
                                 targetSource: metric,
-                                aggregationMethod: seriesList[i].info.aggregationMethod
+                                aggregationMethod: seriesList[i].info.aggregationMethod,
+								// Assumes all timeseries are the same shape (they should be!)
+								tInfo: seriesList[i].data.tInfo
                         };
                         results[results.length]= series;
                         var runningTime= seriesList[i].data.tInfo[0];
