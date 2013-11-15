@@ -19,7 +19,7 @@ html
     script(type='text/javascript', src='/javascripts/chartdFunctions.js')
     script(type='text/javascript', src='/metrics')
     script(type='text/javascript', src='/javascripts/chartd-client.js')
-    script(type='text/javascript', src='/javascripts/jquery.gridster.min.js')
+    script(type='text/javascript', src='/javascripts/jquery.gridster.with-extras.min.js')
     script(type='text/javascript', src='/javascripts/hallo.js')
 
   body#index
@@ -68,16 +68,9 @@ html
     var page_mode= "readOnly"; // readOnly, layout, content
 
     $(function() {
-      layout = $(".gridster > ul").gridster({
-        widget_margins: [grid_margin, grid_margin],
-        widget_base_dimensions: [grid_size, grid_size],
-        max_size_x: 24,
-        max_size_y: 24
-      }).data('gridster');
       addNewChart( [{ renderer:'line', value:'sin("Foo")' }] );
       addNewChart( [{ renderer:'line', value:'sin("Bar",4)' }] );
       addNewChart( [{ renderer:'line', value:'stats.statsd.ceres.flushTime' }] );
-
 
       // Start in read-only mode
       $("#pageModeReadOnly").button('toggle')
@@ -98,24 +91,24 @@ html
     function setPageModeReadOnly() {
       page_mode= "readonly";
       layout.disable();
-      $( ".layout_block" ).resizable( "option", "disabled", true );
-      $( ".layout_block.textbox" ).hallo({editable: false});
+      layout.disable_resize();
+      $( ".textbox" ).hallo({editable: false});
       updatePageCss();
     }
 
     function setPageModeLayout() {
       page_mode= "layout";
       layout.enable();
-      $( ".layout_block" ).resizable( "option", "disabled", false );
-      $( ".layout_block.textbox" ).hallo({editable: false});
+      layout.enable_resize();
+      $( ".textbox" ).hallo({editable: false});
       updatePageCss();
     }
 
     function setPageModeContent() {
         page_mode= "content";
         layout.disable();
-        $( ".layout_block" ).resizable( "option", "disabled", true );
-        $( ".layout_block.textbox" ).hallo({editable: true});
+        layout.disable_resize();
+        $( ".textbox" ).hallo({editable: true});
         updatePageCss();
     }
 

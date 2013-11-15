@@ -48,13 +48,6 @@ body {
 	line-height: 12px;
 }
 
-#index .ui-state-disabled.layout_block {
-  opacity: 1;
-}
-#index .layout_block {
-  overflow: hidden;
-}
-
 .hallotoolbar { z-index: 8040; }
 
 body.pageMode-layout {
@@ -68,9 +61,3 @@ body.pageMode-readonly {
 body.pageMode-content {
   background-color: rgba(236, 92, 0, 0.24);
 }
-
-body.pageMode-layout .layout_block {
-  border: 1px dotted gray;
-  margin:-1px;
-}
-

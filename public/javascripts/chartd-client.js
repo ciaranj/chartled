@@ -1,4 +1,27 @@
-var charts= [];
+var chartles= [];
+$(function() {
+  layout = $(".gridster > ul").gridster({
+    widget_margins: [grid_margin, grid_margin],
+    widget_base_dimensions: [grid_size, grid_size],
+    max_size_x: 24,
+    max_size_y: 24,
+    resize: {
+        enabled: true,
+        start: function(e, ui, $widget) {
+        },
+        resize: function(e, ui, $widget) {
+        },
+        stop: function(e, ui, $widget) {
+            var el= $widget[0];
+            var c= chartles[el.id];
+            // Oddness here, have to do the actual content resize outside of this method (and after a delay)?
+            setTimeout(function() {
+                c.resize( $(el).width(), $(el).height() );
+            }, 250);
+        }
+    }
+  }).data('gridster');
+});
 
 beginDisplayRollingChart= function(metric, chartId) {
   
@@ -19,7 +42,7 @@ beginDisplayRollingChart= function(metric, chartId) {
     metric[key].layer =2;
   }
   var el= $("#"+chartId);
-  charts[chartId]= {
+  chartles[chartId]= {
     metrics: metric,
     maxAgeInSeconds: previousValue,
     chart: new Chart( chartId, el.width(), el.height(), {
@@ -30,7 +53,10 @@ beginDisplayRollingChart= function(metric, chartId) {
         y:[{
             display: "left"
            }]}
-    })
+    }),
+    resize: function( width, height ) {
+        this.chart.resize( width, height );
+    }
   };
   displayRollingChart( chartId );
   queueChartRefresh( chartId );
@@ -63,7 +89,7 @@ displayRollingChart= function( chartId ) {
 } 
 function queueChartRefresh( chartId ) {
     setInterval( function() {
-        if( !charts[chartId].loading ) {
+        if( !chartles[chartId].loading ) {
           displayRollingChart( chartId );
         }
     }, 10000 );
@@ -72,7 +98,7 @@ function queueChartRefresh( chartId ) {
 var chartCounter= 0;
 var textBoxCounter= 0;
 function removeMetric ( metricIndex ) {
-  
+
   var currentMetrics= activeEditedChart.metrics;
   var newMetrics= [];
   for( var i=0;i< currentMetrics.length; i++ ){
@@ -117,7 +143,7 @@ function updateUnderlyingChart( chartId, chart ){
   //TODO: THIS IS A BROKEN HACK .. the config is not being properly
   // dealt with.
     chart.chart.config.metrics= chart.metrics;
-    charts[chartId]= chart;
+    chartles[chartId]= chart;
     displayRollingChart( chartId );
 }
 var configuringChart= false;
@@ -142,8 +168,8 @@ function addMetricClick() {
 function configureChart( chartId ) {
     if( configuringChart || page_mode != "content" ) return;
     else configuringChart= true;
-    activeEditedChart= cloneChart( charts[chartId] );
-    originalChart= cloneChart( charts[chartId] );
+    activeEditedChart= cloneChart( chartles[chartId] );
+    originalChart= cloneChart( chartles[chartId] );
     var chart= originalChart;
     var metrics= chart.metrics;
     
@@ -181,13 +207,6 @@ function configureChart( chartId ) {
     ], {"backdrop": false, "animate":false, "classes":"graphEditor"});
     buildMetrics();
 }
-function resizeChart( el ) {
-  var id= el.attr("id");
-  if( id && id.length > 5 && id.substring(0, 5) == "chart") {
-    var chart= charts[id].chart;
-    chart.resize( el.width(), el.height() );
-  }
-}
 var margin= 30;
 var size= 70;
 function nS( val ){
@@ -197,70 +216,11 @@ var previous_width;
 var previous_height;
 function addNewChart( metrics ) {
     chartCounter ++;
-    var widget= layout.add_widget("<div class='new layout_block chart' id='chart"+ chartCounter + "' onclick=\"configureChart('chart"+chartCounter +"')\" style='background-color: rgb(210, 71, 38);'/>", 4, 2);
-    widget.resizable({
-        grid: [grid_size + (grid_margin * 2), grid_size + (grid_margin * 2)],
-        animate: false,
-        minWidth: grid_size,
-        minHeight: grid_size,
-        autoHide: true,
-        disabled: page_mode != "layout",
-        start: function(event, ui) {
-          grid_height = layout.$el.height();
-          previous_width= $(this).width();
-          previous_height= $(this).height();
-          layout.enable();
-        },
-        resize: function(event, ui) {
-          //set new grid height along the dragging period
-          var delta = grid_size + grid_margin * 2;
-          if(typeof event.offsetX === "undefined" || typeof event.offsetY === "undefined") {
-             var targetOffset = $(event.target).offset();
-             event.offsetX = event.pageX - targetOffset.left;
-             event.offsetY = event.pageY - targetOffset.top;
-          }          
-          if (event.offsetY > layout.$el.height()) {
-            var extra = Math.floor((event.offsetY - grid_height) / delta + 1);
-            var new_height = grid_height + extra * delta;
-            layout.$el.css('height', new_height);
-          }
-          if( $(this).width() != previous_width || $(this).height() != previous_height) resizeBlock( $(this) );
-          previous_width= $(this).width();
-          previous_height= $(this).height();
-        },
-        stop: function(event, ui) {
-            var resized = $(this);
-            setTimeout(function() {
-                resizeBlock(resized);
-				resizeChart(resized);
-            }, 300);
-        }
-    });
-    $('#chart'+chartCounter+' > div.ui-resizable-handle').hover(function() {
-        layout.disable();
-    }, function() {
-        if( page_mode == "layout") layout.enable();
-    });
-  
+    var widget= layout.add_widget("<div class='new chart' id='chart"+ chartCounter + "' onclick=\"configureChart('chart"+chartCounter +"')\" />", 4, 2);
     beginDisplayRollingChart( metrics, "chart"+ chartCounter )    
 }  
 
-function resizeBlock(elmObj) {
-    var elmObj = $(elmObj);
-    var w = elmObj.width() - grid_size;
-    var h = elmObj.height() - grid_size;
 
-    for (var grid_w = 1; w > 0; w -= (grid_size + (grid_margin * 2))) {
-        grid_w++;
-    }
-
-    for (var grid_h = 1; h > 0; h -= (grid_size + (grid_margin * 2))) {
-        grid_h++;
-    }
-    layout.resize_widget(elmObj, grid_w, grid_h);
-    layout.set_dom_grid_height();
- //   resizeChart( elmObj );
-}
 function encodeHtml(str) {
     return String(str)
             .replace(/&/g, '&amp;')
@@ -391,9 +351,9 @@ var previousValue= 1800;
 if( lookback ) {
     setInterval(function(){
         if( previousValue != $("#lookback").val() ) {
-            for(var c in charts ) {
+            for(var c in chartles ) {
                 previousValue= $("#lookback").val();
-                charts[c].maxAgeInSeconds= previousValue;
+                chartles[c].maxAgeInSeconds= previousValue;
                 displayRollingChart(c);
             }
         }
@@ -402,7 +362,7 @@ if( lookback ) {
 
 function addNewTextBox() {
     textBoxCounter++;
-    var widget= layout.add_widget("<div class='new layout_block textbox' id='textbox"+ textBoxCounter + "'><h4>Some Awesome Text</h4></div>", 4, 1);
+    var widget= layout.add_widget("<div class='new textbox' id='textbox"+ textBoxCounter + "'><h4>Some Awesome Text</h4></div>", 4, 1);
     widget.hallo({
       plugins: {
         'halloformat': {
@@ -414,49 +374,4 @@ function addNewTextBox() {
         halloreundo: {}
       }
     });
-    widget.resizable({
-        grid: [grid_size + (grid_margin * 2), grid_size + (grid_margin * 2)],
-        animate: false,
-        minWidth: grid_size,
-        minHeight: grid_size,
-        autoHide: true,
-        disabled: page_mode != "layout",
-        start: function(event, ui) {
-          grid_height = layout.$el.height();
-          previous_width= $(this).width();
-          previous_height= $(this).height();
-          layout.enable();
-        },
-        resize: function(event, ui) {
-          //set new grid height along the dragging period
-          var delta = grid_size + grid_margin * 2;
-          if(typeof event.offsetX === "undefined" || typeof event.offsetY === "undefined") {
-             var targetOffset = $(event.target).offset();
-             event.offsetX = event.pageX - targetOffset.left;
-             event.offsetY = event.pageY - targetOffset.top;
-          }          
-          if (event.offsetY > layout.$el.height()) {
-            var extra = Math.floor((event.offsetY - grid_height) / delta + 1);
-            var new_height = grid_height + extra * delta;
-            layout.$el.css('height', new_height);
-          }
-          if( $(this).width() != previous_width || $(this).height() != previous_height) resizeBlock( $(this) );
-          previous_width= $(this).width();
-          previous_height= $(this).height();
-        },
-        stop: function(event, ui) {
-            var resized = $(this);
-            setTimeout(function() {
-                resizeBlock(resized);
-//                resizeChart(resized);
-            }, 300);
-        }
-    });
-
-    $('#textbox'+textBoxCounter+' > div.ui-resizable-handle').hover(function() {
-        layout.disable();
-    }, function() {
-        if( page_mode == "layout") layout.enable();
-    });
 }
-
