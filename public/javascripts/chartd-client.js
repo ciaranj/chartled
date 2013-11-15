@@ -19,6 +19,9 @@ $(function() {
                 c.resize( $(el).width(), $(el).height() );
             }, 250);
         }
+    },
+    serialize_params : function($w, wgd) { 
+        return { id: $w[0].id, col: wgd.col, row: wgd.row, size_x: wgd.size_x, size_y: wgd.size_y };
     }
   }).data('gridster');
 });
@@ -43,6 +46,7 @@ beginDisplayRollingChart= function(metric, chartId) {
   }
   var el= $("#"+chartId);
   chartles[chartId]= {
+    id: chartId,
     metrics: metric,
     maxAgeInSeconds: previousValue,
     chart: new Chart( chartId, el.width(), el.height(), {
@@ -56,6 +60,11 @@ beginDisplayRollingChart= function(metric, chartId) {
     }),
     resize: function( width, height ) {
         this.chart.resize( width, height );
+    },
+    serialize: function() {
+        return { "id": chartId, 
+                 "type": "chart",
+                 "metrics": chartles[chartId].metrics};
     }
   };
   displayRollingChart( chartId );
@@ -64,12 +73,12 @@ beginDisplayRollingChart= function(metric, chartId) {
 
 
 displayRollingChart= function( chartId ) {
-    var chart= charts[chartId];
+    var chart= chartles[chartId];
     var metric= chart.metrics;
 /*    var w= chart.w;
     var h= chart.h; */
-    var maxAgeInSeconds= chart.maxAgeInSeconds - 20;
-    var now= Math.round( new Date().getTime() / 1000 ) - 20;
+    var maxAgeInSeconds= chart.maxAgeInSeconds - 60;
+    var now= Math.round( new Date().getTime() / 1000 ) - 60;
     var dataUrl=  "/series?from=" + ( now - maxAgeInSeconds ) + "&to=" + now;
     for( var k in metric ) {
         dataUrl += "&target=" + metric[k].value;
@@ -112,10 +121,13 @@ var activeEditedChart;
 var originalChart;
 
 function cloneChart( chart ) {
+    // Ugghh, need to make teh chartles 'real' objects so we don't have to copy around functions etc. 
     var clonedChart= {
         maxAgeInSeconds: chart.maxAgeInSeconds,
         metrics: [],
-        chart: chart.chart        
+        chart: chart.chart,
+        resize: chart.resize,
+        serialize: chart.serialize
     };
     for(var i=0;i< chart.metrics.length; i++ ) {
         clonedChart.metrics[i]= {
@@ -362,7 +374,8 @@ if( lookback ) {
 
 function addNewTextBox() {
     textBoxCounter++;
-    var widget= layout.add_widget("<div class='new textbox' id='textbox"+ textBoxCounter + "'><h4>Some Awesome Text</h4></div>", 4, 1);
+    var id= "textbox" + textBoxCounter;
+    var widget= layout.add_widget("<div class='new textbox' id='" + id + "'><div class='realValue'><h4>Some Awesome Text</h4></div></div>", 4, 1);
     widget.hallo({
       plugins: {
         'halloformat': {
@@ -374,4 +387,38 @@ function addNewTextBox() {
         halloreundo: {}
       }
     });
+    
+    chartles[ id ] = {
+            "id": id,
+            resize: function( width, height ) { 
+                // nothing to do.
+            },
+            serialize: function() {
+                return { "id": id, "type": "dynamic_text", "text": $("#"+id +" .realValue").html() };
+            }
+    };
+}
+
+function getChartledDefinition() {
+    var chartledDefinition= {
+        "version": "0.0.1",
+        "chartles": [],
+        "clocks": [],
+        "layout": {}
+    };
+    chartledDefinition.layout.positions= layout.serialize();
+    for(var k in chartles) {
+        chartledDefinition.chartles.push( chartles[k].serialize() );
+    }
+    return chartledDefinition;
+}
+
+function exportChartles() {
+    var html= "<h2>Chartled Export</h2>";
+    html += "<textarea class='span7' style='height:240px'>" + JSON.stringify(getChartledDefinition(),null, "  ") + "</textarea>";
+
+    bootbox.dialog( html, [{
+                    "label" : "OK",
+                    "class" : "btn-primary"
+                }], {"backdrop": false, "animate":false});
 }

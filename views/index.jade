@@ -26,10 +26,26 @@ html
     div.navbar.navbar-inverse.navbar-fixed-top
       div.navbar-inner
         div.container
-          a.brand(href="#") ChartD
+          a.brand(href="#") Chartled
+          ul.btn-group(data-toggle="buttons-radio")
+            a#pageModeReadOnly.btn.btn-primary
+              i.icon-lock
+              |  Read-Only
+            a#pageModeLayout.btn.btn-success
+              i.icon-move
+              |  Layout
+            a#pageModeContent.btn.btn-warning
+              i.icon-pencil
+              |  Content  
           ul.nav
-            li.active.dropdown
-              a.dropdown-toggle(href="#",data-toggle="dropdown") Graphs
+            li.dropdown
+              a.dropdown-toggle(href="#",data-toggle="dropdown") Utils
+                b.caret
+              ul.dropdown-menu
+                li
+                  a(href='#', onclick="exportChartles()") Export
+            li.dropdown
+              a.dropdown-toggle(href="#",data-toggle="dropdown") Chartles
                 b.caret
               ul.dropdown-menu
                 li
@@ -43,16 +59,6 @@ html
                   a(href='#', onclick='addChart(1)') Network Traffic
                 li
                   a(href='#', onclick='addChart(2)') CPU
-          ul.btn-group(data-toggle="buttons-radio")
-            a#pageModeReadOnly.btn.btn-primary
-              i.icon-lock
-              |  Read-Only
-            a#pageModeLayout.btn.btn-success
-              i.icon-move
-              |  Layout
-            a#pageModeContent.btn.btn-warning
-              i.icon-pencil
-              |  Content                  
     div#contents.container
       p How long back ? &nbsp;
         input#lookback(value=1800)
