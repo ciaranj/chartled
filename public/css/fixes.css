@@ -61,3 +61,7 @@ body.pageMode-readonly {
 body.pageMode-content {
   background-color: rgba(236, 92, 0, 0.24);
 }
+
+.pageMode-layout .spacer {
+  background-color: white;
+}

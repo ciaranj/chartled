@@ -17,10 +17,14 @@ html
     script(type='text/javascript', src='/js/bootbox.min.js')
     script(type='text/javascript', src='/javascripts/chartled/builder/chartdFunctions.js')
     script(type='text/javascript', src='/metrics')
+    script(type='text/javascript', src='/javascripts/chartled/ChartledDefinition.js')
     script(type='text/javascript', src='/javascripts/chartled/viewer/chartled.js')
     script(type='text/javascript', src='/javascripts/chartled/deps/jquery.gridster.with-extras.min.js')
     script(type='text/javascript', src='/javascripts/chartled/deps/rangy-core.js')
     script(type='text/javascript', src='/javascripts/chartled/deps/hallo.js')
+    script(type='text/javascript', src='/javascripts/chartled/chartles/TextChartle.js')
+    script(type='text/javascript', src='/javascripts/chartled/chartles/ChartChartle.js')
+    script(type='text/javascript', src='/javascripts/chartled/chartles/SpacerChartle.js')
 
   body#index
     div.navbar.navbar-inverse.navbar-fixed-top
@@ -43,6 +47,8 @@ html
                 b.caret
               ul.dropdown-menu
                 li
+                  a(href='#', onclick="importChartles()") Import
+                li
                   a(href='#', onclick="exportChartles()") Export
             li.dropdown
               a.dropdown-toggle(href="#",data-toggle="dropdown") Chartles
@@ -52,6 +58,8 @@ html
                   a(href='#', onclick="addNewChart([]);configureChart('chart'+chartCounter);") Create new Chart
                 li
                   a(href='#', onclick="addNewTextBox()") Create new Textbox
+                li
+                  a(href='#', onclick="addNewSpacer()") Create new Spacer
                 li.divider
                 li
                   a(href='#', onclick='addChart(0)') Cache Hit Rate
@@ -64,13 +72,8 @@ html
         input#lookback(value=1800)
         &nbsp;&nbsp; 1800= 30 mins, 43200= 12 Hours, 604800= 1 week.
       div.container.gridster
-        ul
 
   script(type='text/javascript')
-    var layout;
-    var grid_size = 50;
-    var grid_margin = 5;
-    var grid_height;
     var page_mode= "readOnly"; // readOnly, layout, content
 
     $(function() {
