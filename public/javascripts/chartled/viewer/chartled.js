@@ -1,48 +1,44 @@
-var chartles= [];
-var layout;
-
 $(function() {
   chartledDefinition= new Chartled.ChartledDefinition({
-    chartleMinSize: 50,
-    chartleMargin: 5
+	layout: {
+		type: "fixed-grid",
+		gridMinSize: 50,
+		gridMargin: 5
+	}
   },
   $(".gridster"));
 });
 
-var chartCounter= 0;
-var textBoxCounter= 0;
-var spacerCounter= 0;
 
 var lookback= $("#lookback");
 var previousValue= 1800;
 if( lookback ) {
     setInterval(function(){
         if( previousValue != $("#lookback").val() ) {
-            for(var c in chartles ) {
-                previousValue= $("#lookback").val();
-                chartles[c].maxAgeInSeconds= previousValue;
-                displayRollingChart(c);
-            }
+			previousValue= $("#lookback").val();
+			chartledDefinition.setMaxAgeInSeconds(previousValue);
         }
     }, 250);
 }
 
 function addNewChart( metrics ) {
-    chartCounter ++;
-    var id= 'chart' + chartCounter;
-    new Chartled.ChartChartle( id, layout, metrics );
+	chartledDefinition.addNewChartle( {
+		"type": "Chartled.ChartChartle", 
+		"metrics": metrics
+	}, 4, 2 );
 }
 
 function addNewTextBox() {
-    textBoxCounter++;
-    var id= "textbox" + textBoxCounter;
-    chartles[ id ] = new Chartled.TextChartle(id, layout, "<h4>Some Awesome Text</h4>");
+	chartledDefinition.addNewChartle( {
+		"type": "Chartled.TextChartle", 
+		text:"<h4>Something Awesome</h4>"
+	}, 3, 1 );
 }
 
 function addNewSpacer() {
-    spacerCounter++;
-    var id= "spacer" + spacerCounter;
-    chartles[ id ] = new Chartled.SpacerChartle(id, layout);
+	chartledDefinition.addNewChartle( {
+		"type": "Chartled.SpacerChartle"
+	}, 2, 2 );
 }
 
 function exportChartles() {

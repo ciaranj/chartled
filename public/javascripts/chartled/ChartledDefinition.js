@@ -5,11 +5,37 @@ Chartled.ChartledDefinition = function( definition, containerEl ) {
   this.deserialize( definition );
 }
 
+Chartled.ChartledDefinition.prototype.addNewChartle = function( chartle, size_x, size_y, col, row ) {
+    if(!chartle.id) {
+		chartle.id = "chartle-" + (++this.nextChartleId);
+	}
+	var widget= layout.add_widget("<div id='" + chartle.id + "'/>", size_x, size_y, col, row);
+	try{
+		var c= new (eval(chartle.type))( chartle, widget[0] );
+		this.chartles[chartle.id]= c;
+	}
+	catch(e) {
+		console.log( "Unable to import chartle: " + JSON.stringify(chartle) );
+	}
+
+}
+
 Chartled.ChartledDefinition.prototype.deserialize = function( definition ) {
   var that= this;
-  that.chartleMargin = definition.chartleMargin;
-  that.chartleMinSize = definition.chartleMinSize;
-  if( layout ) {
+  
+  that.chartleMargin = definition.layout.gridMargin;
+  that.chartleMinSize = definition.layout.gridMinSize;
+  that.nextChartleId= (definition.nextChartleId ? definition.nextChartleId : 0);
+
+  if( this.chartles ) {
+	for(var k in this.chartles) {
+		this.chartles[k].dispose();
+	}
+  }
+
+  this.chartles= [];
+  
+  if( typeof(layout) != 'undefined' ) {
     layout.remove_all_widgets();
     layout.destroy();
     layout= null;
@@ -30,7 +56,7 @@ Chartled.ChartledDefinition.prototype.deserialize = function( definition ) {
         },
         stop: function(e, ui, $widget) {
             var el= $widget[0];
-            var c= chartles[el.id];
+            var c= that.chartles[el.id];
             // Oddness here, have to do the actual content resize outside of this method (and after a delay)?
             setTimeout(function() {
                 c.resize( $(el).width(), $(el).height() );
@@ -41,20 +67,44 @@ Chartled.ChartledDefinition.prototype.deserialize = function( definition ) {
         return { id: $w[0].id, col: wgd.col, row: wgd.row, size_x: wgd.size_x, size_y: wgd.size_y };
     }
   }).data('gridster');
+  
+  
+  var chartleBlocks= {};
+  for(var k in definition.layout.positions ) {
+	var pos= definition.layout.positions[k];
+	chartleBlocks[pos.id]= pos;
+  }
+  
+  for(var k in definition.chartles) {
+	var chartle= definition.chartles[k];
+	var chartlePos= chartleBlocks[chartle.id];
+	
+	this.addNewChartle( chartle, chartlePos.size_x, chartlePos.size_y, chartlePos.col, chartlePos.row );
+  }
 }
 
 Chartled.ChartledDefinition.prototype.serialize = function() {
   var definition = {
       "version":  "0.0.1",
-      "chartleMargin": this.chartleMargin,
-      "chartleMinSize": this.chartleMinSize,
+	  "exported": +new Date(),
+	  "nextChartleId": this.nextChartleId,
       "chartles": [],
       "clocks":   [],
       "layout":   {}
   };
+  definition.layout.type= "fixed-grid";
+  definition.layout.gridMargin= this.chartleMargin;
+  definition.layout.gridMinSize= this.chartleMinSize;
   definition.layout.positions= layout.serialize();
-  for(var k in chartles) {
-      definition.chartles.push( chartles[k].serialize() );
+  for(var k in this.chartles) {
+      definition.chartles.push( this.chartles[k].serialize() );
   }
   return definition;
+}
+
+// TODO: this 'mechanism' should be replaced by proper 'clocks' this is just temporary.
+Chartled.ChartledDefinition.prototype.setMaxAgeInSeconds = function(previousValue) {
+	for(var c in this.chartles ) {
+		this.chartles[c].setMaxAgeInSeconds( previousValue );
+	}
 }

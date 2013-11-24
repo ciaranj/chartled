@@ -1,10 +1,10 @@
 if( typeof(Chartled) == 'undefined' ) Chartled = {};
 
-Chartled.SpacerChartle = function(id, layout) {
-  chartles[id] = this;
-  this.id = id;
-  this.layout = layout;
-  var widget= layout.add_widget("<div class='new spacer' id='" + id + "'>&nbsp;</div>", 2, 2);
+Chartled.SpacerChartle = function(definition, el) {
+  this.id = definition.id;
+  this.el= el;
+  var jEl= $(el);
+  if( !jEl.hasClass('spacer') ) jEl.addClass('spacer');
 };
 
 Chartled.SpacerChartle.prototype = {
@@ -12,6 +12,11 @@ Chartled.SpacerChartle.prototype = {
     // Nothing to do.
   },
   serialize: function() {
-    return { "id": this.id, "type": "spacer" };
+    return { "id": this.id, 
+             "type": "Chartled.SpacerChartle"};
+  },
+  setMaxAgeInSeconds: function( previousValue ) {},
+  dispose: function() {
+	// Nothing to do.
   }
 }

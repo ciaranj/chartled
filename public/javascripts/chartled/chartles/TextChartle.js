@@ -1,11 +1,16 @@
 if( typeof(Chartled) == 'undefined' ) Chartled = {};
 
-Chartled.TextChartle = function(id, layout, text) {
-  chartles[id] = this;
-  this.id = id;
-  this.layout = layout;
-  var widget= layout.add_widget("<div class='new textbox' id='" + id + "'><div class='realValue'>" + text + "</div></div>", 4, 1);
-  widget.hallo({
+Chartled.TextChartle = function(definition, el) {
+  this.id = definition.id;
+  this.el= el;
+  var jEl= $(el);
+  if( !jEl.hasClass('text') ) jEl.addClass('text');
+  
+  this.realValue= document.createElement('div')
+  $(this.realValue).html( definition.text );
+  this.realValue.setAttribute('class', 'realValue');
+  el.appendChild( this.realValue );
+  $(this.realValue).hallo({
     plugins: {
       'halloformat': {
           formattings: {"bold": true, "italic": true, "strikethrough": true, "underline": true}
@@ -23,6 +28,16 @@ Chartled.TextChartle.prototype = {
     // Nothing to do.
   },
   serialize: function() {
-    return { "id": this.id, "type": "dynamic_text", "text": $("#" + this.id + " .realValue").html() };
+    return { "id": this.id,
+             "type": "Chartled.TextChartle",
+			 "text": $(this.realValue).html() };
+  },
+  setMaxAgeInSeconds: function( previousValue ) {},
+  dispose: function() {
+	// Nothing to do.
+	this.el= null;
+	this.layout= null;
+	this.id= null;
+	this.realValue = null;
   }
 }
