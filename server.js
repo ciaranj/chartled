@@ -77,7 +77,7 @@ app.get('/series', function(req, res){
 			var r= results.sort( function compare(a,b) {
 				return (a.target<b.target?-1:(a.target>b.target?1:0));
 			});
-			responseRenderer.renderResults( res, r, function(err) {
+			responseRenderer.renderResults( req, res, r, function(err) {
 				console.log(req.url + " completed in: " + (new Date().getTime() - now) + "ms");
 			});
         }
