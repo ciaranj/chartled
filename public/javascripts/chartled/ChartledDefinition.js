@@ -1,21 +1,24 @@
 if( typeof(Chartled) == 'undefined' ) Chartled = {};
 
-Chartled.ChartledDefinition = function( definition, containerEl ) {
+Chartled.ChartledDefinition = function( definition, containerEl, baseUrl ) {
+  if( containerEl && containerEl.length ) containerEl= containerEl[0];
   this.containerEl = containerEl;
+  this.baseUrl = baseUrl;
   this.deserialize( definition );
 }
 
 Chartled.ChartledDefinition.prototype.addNewChartle = function( chartle, size_x, size_y, col, row ) {
-    if(!chartle.id) {
-		chartle.id = "chartle-" + (++this.nextChartleId);
-	}
-	var widget= layout.add_widget("<div id='" + chartle.id + "'/>", size_x, size_y, col, row);
-	try{
-		var c= new (eval(chartle.type))( chartle, widget[0] );
+  if(!chartle.id) {
+    chartle.id = "chartle-" + (++this.nextChartleId);
+  }
+  var widget= layout.add_widget("<div id='" + chartle.id + "'/>", size_x, size_y, col, row);
+  try{
+    var c= new (eval(chartle.type))( chartle, widget[0], this.baseUrl );
 		this.chartles[chartle.id]= c;
 	}
 	catch(e) {
-		console.log( "Unable to import chartle: " + JSON.stringify(chartle) );
+//		console.log( "Unable to import chartle: " + JSON.stringify(chartle) );
+    throw e
 	}
 
 }
@@ -28,9 +31,9 @@ Chartled.ChartledDefinition.prototype.deserialize = function( definition ) {
   that.nextChartleId= (definition.nextChartleId ? definition.nextChartleId : 0);
 
   if( this.chartles ) {
-	for(var k in this.chartles) {
-		this.chartles[k].dispose();
-	}
+    for(var k in this.chartles) {
+      this.chartles[k].dispose();
+    }
   }
 
   this.chartles= [];
@@ -42,7 +45,7 @@ Chartled.ChartledDefinition.prototype.deserialize = function( definition ) {
     that.el= null;
   }
   this.el= document.createElement("ul");
-  this.containerEl[0].appendChild( this.el );
+  this.containerEl.appendChild( this.el );
   layout = $(that.el).gridster({
     widget_margins: [that.chartleMargin, that.chartleMargin],
     widget_base_dimensions: [that.chartleMinSize, that.chartleMinSize],
@@ -71,23 +74,23 @@ Chartled.ChartledDefinition.prototype.deserialize = function( definition ) {
   
   var chartleBlocks= {};
   for(var k in definition.layout.positions ) {
-	var pos= definition.layout.positions[k];
-	chartleBlocks[pos.id]= pos;
+    var pos= definition.layout.positions[k];
+    chartleBlocks[pos.id]= pos;
   }
   
   for(var k in definition.chartles) {
-	var chartle= definition.chartles[k];
-	var chartlePos= chartleBlocks[chartle.id];
-	
-	this.addNewChartle( chartle, chartlePos.size_x, chartlePos.size_y, chartlePos.col, chartlePos.row );
+    var chartle= definition.chartles[k];
+    var chartlePos= chartleBlocks[chartle.id];
+
+    this.addNewChartle( chartle, chartlePos.size_x, chartlePos.size_y, chartlePos.col, chartlePos.row );
   }
 }
 
 Chartled.ChartledDefinition.prototype.serialize = function() {
   var definition = {
       "version":  "0.0.1",
-	  "exported": +new Date(),
-	  "nextChartleId": this.nextChartleId,
+      "exported": +new Date(),
+      "nextChartleId": this.nextChartleId,
       "chartles": [],
       "clocks":   [],
       "layout":   {}

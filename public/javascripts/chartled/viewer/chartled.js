@@ -6,7 +6,7 @@ $(function() {
 		gridMargin: 5
 	}
   },
-  $(".gridster"));
+  $(".gridster"), "");
 });
 
 

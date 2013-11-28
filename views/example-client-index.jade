@@ -1,0 +1,41 @@
+!!!5
+html
+  head
+    script(type='text/javascript', src='/js/chartled-client.js')
+  body#index
+    div#chart
+    script(type='text/javascript')
+      new Chartled.ChartledDefinition( {
+        "version": "0.0.1",
+        "exported": 1385570044515,
+        "nextChartleId": 1,
+        "chartles": [
+          {
+            "id": "chartle-1",
+            "type": "Chartled.ChartChartle",
+            "metrics": [
+              {
+                "renderer": "line",
+                "value": "stats.statsd.ceres.flushTime",
+                "axis": 0,
+                "layer": 2
+              }
+            ]
+          }
+        ],
+        "clocks": [],
+        "layout": {
+          "type": "fixed-grid",
+          "gridMargin": 5,
+          "gridMinSize": 50,
+          "positions": [
+            {
+              "id": "chartle-1",
+              "col": 1,
+              "row": 1,
+              "size_x": 4,
+              "size_y": 2
+            }
+          ]
+        }
+      }, document.getElementById('chart'), 'http://localhost:3000' )
