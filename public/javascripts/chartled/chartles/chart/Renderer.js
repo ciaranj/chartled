@@ -11,7 +11,6 @@ Chartled.ChartChartle.prototype = {
   initialise: function( definition ) {
     var that = this;
     var jEl = $(that.el);
-    if( !jEl.hasClass('chart') ) jEl.addClass('chart');
     this.configureDelegate= $.proxy( this.configureChart, this );
     jEl.on( 'click', this.configureDelegate);
     for(var key in that.metrics) {

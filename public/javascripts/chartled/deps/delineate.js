@@ -1,9 +1,26 @@
 Chart= function(parentEl, outerWidth, outerHeight, config ) {
+  this.id= parentEl;
+  this.tooltipId= parentEl + '-tooltip';
   this._setConfig( config );
   this.outerWidth= outerWidth;
   this.outerHeight= outerHeight;
 
-  this.graphContainer = d3.select("#" + parentEl).append("svg")
+  
+  var chartEl= document.createElement('div');
+  chartEl.setAttribute('id', parentEl + '-chart')
+  chartEl.setAttribute('class', 'chart')
+  document.getElementById(parentEl).appendChild(chartEl);
+
+  var toolTipEl= document.createElement('div');
+  toolTipEl.setAttribute('id', this.tooltipId)
+  toolTipEl.setAttribute('class', 'hidden tooltipx')
+  var serii= document.createElement('ul');
+  serii.setAttribute('class', 'serii')
+  toolTipEl.appendChild(serii);
+  // Try and defeat z-index issues by lifting the tooltips 'above' the chart element stacking context
+  document.getElementById(parentEl).parentNode.appendChild(toolTipEl); 
+
+  this.graphContainer = d3.select('#' + parentEl +'-chart').append("svg")
       .attr("width", this.outerWidth)
       .attr("height", this.outerHeight);
 
@@ -15,9 +32,9 @@ Chart= function(parentEl, outerWidth, outerHeight, config ) {
   // Add in layer containers.
   for(var k in this.config.layers){
     this.chartArea.append("g")
-                .classed("layer" + k, true);
+                  .classed("layer" + k, true);
   }
-
+  
   this._buildScales();
   this._buildChart();
   this._buildAxes(); 
@@ -71,6 +88,7 @@ Chart.prototype._setConfig= function( config ) {
 
 Chart.prototype._updateChartAreaSize= function( margins ) {
   margins= margins || {top: 2, right: 40, bottom: 20, left: 40};
+  this._margins= margins;
   this.width = this.outerWidth - margins.left - margins.right,
   this.height = this.outerHeight - margins.top - margins.bottom;
   
@@ -301,6 +319,71 @@ Chart.prototype.refreshData= function( data ) {
           }
         }
       }
+      d3.select('#' + that.id +' svg').on("mouseover", function(d, i) {
+          if( data && data.length > 0 && data[0].datapoints.length && data[0].datapoints.length > 0 ) {
+            var chartOffset= $("#"+that.id).offset()
+            var xPos= d3.mouse(this)[0] - that._margins.left;
+            var yPos= d3.mouse(this)[1];
+
+            var paths= [];
+
+            var timestamp = (+that.scales.x.invert( xPos ))/1000;
+            var offsetIndex= Math.floor((timestamp - data[0].tInfo[0]) / data[0].tInfo[2] );
+            if( offsetIndex >= 0 && offsetIndex < data[0].datapoints.length  ) {
+
+              for(var d in data ) {
+                var value= data[d].datapoints[offsetIndex][0];
+                if( value != null ) {
+                  paths.push({
+                    name : data[d].target,
+                    value : data[d].datapoints[offsetIndex][0],
+                    colour : d3.rgb(colours(d)).toString()
+                  });
+                }
+              }
+              if( page_mode == "readOnly" ) {
+                d3.select('#' + that.tooltipId)
+                  .style({ "left" : (chartOffset.left + xPos) +"px", "top": (chartOffset.top + yPos) +"px"})
+                  .select('ul.serii')
+                  .selectAll('li')
+                  .data(paths, function(d) { 
+                    return d.name; })
+                  .enter()
+                  .append('li');
+
+                  d3.select('#' + that.tooltipId)
+                  .select('ul.serii')
+                  .selectAll('li')
+                  .data(paths, function(d) {
+                    return d.name; })
+                  .exit()
+                  .remove();
+
+                  d3.select('#' + that.tooltipId)
+                  .select('ul.serii')
+                  .selectAll('li')
+                  .data(paths , function(d) { 
+                    return d.name; })
+                  .html(function(d) { return '<div><span style="color:'+ d.colour +'">' + d.name + '</span>' + '<span style="color:'+ d.colour +'">&nbsp;:&nbsp;'+ d.value +'</span></div>'; } );
+
+                if( that._hidingTooltip ) {
+                  clearTimeout(that._hidingTooltip);
+                }
+
+                d3.select('#' + that.tooltipId).classed("hidden", false);
+                }
+            }
+          }
+      })
+      .on("mouseout", function(d, i) {
+        that._hidingTooltip= setTimeout( function() {
+          if( that._hidingTooltip ) {
+            that._hidingTooltip= null;
+            d3.select('#' + that.tooltipId).classed("hidden", true);
+          }
+        }, 200 );
+      });      
+      
       this._redrawAxes( leftAxis, rightAxis );
     }
     else { 
