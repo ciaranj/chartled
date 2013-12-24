@@ -11,9 +11,10 @@ Chartled.ChartledDefinition.prototype.addNewChartle = function( chartle, size_x,
   if(!chartle.id) {
     chartle.id = "chartle-" + (++this.nextChartleId);
   }
-  var widget= layout.add_widget("<div id='" + chartle.id + "'/>", size_x, size_y, col, row);
+  var $widget= layout.add_widget("<div id='" + chartle.id + "' class='chartled'/>", size_x, size_y, col, row);
+  $widget.css("display", "table");
   try{
-    var c= new (eval(chartle.type))( chartle, widget[0], this.baseUrl );
+    var c= new (eval(chartle.type))( chartle, $widget[0], this.baseUrl );
 		this.chartles[chartle.id]= c;
 	}
 	catch(e) {

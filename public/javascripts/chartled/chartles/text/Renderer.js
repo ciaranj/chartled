@@ -9,7 +9,7 @@ Chartled.TextChartle = function(definition, el) {
   this.realValue= document.createElement('div')
   $(this.realValue).html( definition.text );
   this.realValue.setAttribute('class', 'realValue');
-  el.appendChild( this.realValue );
+  this.el.appendChild( this.realValue );
 
   this.initialise();
 };
@@ -18,9 +18,9 @@ Chartled.TextChartle.prototype = {
   setTimeRange: function() {},
   initialise: function() {},
   dispose: function() {
+    this.el.removeChild( this.realValue );
     this.el= null;
     this.id= null;
-    el.removeChild( this.realValue );
     this.realValue = null;
   },
   resize: function(width, height) {

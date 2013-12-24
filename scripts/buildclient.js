@@ -9,6 +9,7 @@ var filesToInclude= [
   , 'public/javascripts/chartled/deps/delineate.js'
   , 'public/javascripts/chartled/chartles/BaseChartle.js'
   , 'public/javascripts/chartled/chartles/chart/Renderer.js'
+  , 'public/javascripts/chartled/chartles/clock/Renderer.js'
   , 'public/javascripts/chartled/chartles/text/Renderer.js'
   , 'public/javascripts/chartled/chartles/spacer/Renderer.js'
 ]

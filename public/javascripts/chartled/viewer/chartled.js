@@ -27,6 +27,12 @@ function addNewChart( metrics ) {
 	}, 4, 2 );
 }
 
+function addNewClock(  ) {
+	chartledDefinition.addNewChartle( {
+		"type": "Chartled.ClockChartle"
+	}, 2, 2 );
+}
+
 function addNewTextBox() {
 	chartledDefinition.addNewChartle( {
 		"type": "Chartled.TextChartle", 
