@@ -15,7 +15,7 @@ Chartled.SpacerChartle.prototype = {
     return { "id": this.id, 
              "type": "Chartled.SpacerChartle"};
   },
-  setMaxAgeInSeconds: function( previousValue ) {},
+  setTimeRange: function() {},
   dispose: function() {
 	// Nothing to do.
   }

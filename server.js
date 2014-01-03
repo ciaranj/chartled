@@ -1,12 +1,18 @@
 var CSVResponseRenderer = require("./lib/response_renderers/csv"),
-	express = require('express')
+  DatesAndTimes = require("./lib/utils/DatesAndTimes"),
+  express = require('express')
     fs      = require('fs'),
-	JSONResponseRenderer= require("./lib/response_renderers/json"),
+  JSONResponseRenderer= require("./lib/response_renderers/json"),
     MetricsStore= require('./lib/MetricsStore'),
     path    = require('path'),
-	RawResponseRenderer= require("./lib/response_renderers/raw"),
+  RawResponseRenderer= require("./lib/response_renderers/raw"),
     TargetParseContext= require("./lib/TargetParseContext"),
     TargetParser= require("./lib/TargetParser");
+  
+function parseMoment(momentReqParam, unspecifiedValue) {
+  var moment = momentReqParam ? momentReqParam: unspecifiedValue;
+  return DatesAndTimes.parseATTime( moment );
+}
   
 var metricsStore= new MetricsStore( __dirname + path.sep + ".." + path.sep +"statsd"+ path.sep+ "ceres_tree");
 
@@ -40,13 +46,14 @@ app.get('/metrics', function(req, res){
 });
 
 app.get('/series', function(req, res){
-    //TOTEST: mis-matched time frames.
-    //TODO: danger, no checking of params!!!
-    var from= parseInt(req.query.from);
-    var to= parseInt(req.query.to);
-    var metrics= req.query.target;
+    var from= parseMoment(req.query.from, "yesterday");
+    var to= parseMoment(req.query.until, "now");
+    if( to <= from  || from < 0 || to < 0 ) throw new Error( "Calculated/Passed time frame invalid, '" + from + "' -> '"+ to +"'");
     var now= new Date().getTime();
-	var format= req.query.format;
+
+    //TODO: danger, no checking of params!!!
+    var metrics= req.query.target;
+    var format= req.query.format;
 
 	if( !format ) format= "json";
 	

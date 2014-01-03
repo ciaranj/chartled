@@ -5,14 +5,16 @@ Chartled.ChartChartle = function(definition, el, baseUrl) {
   this.baseUrl= baseUrl;
 
   this.initialise(definition);
+  this.from= null;
+  this.to= null;
 
-  this.displayRollingChart();
   this.qRefreshInterval= this.queueChartRefresh();
 };
 
 Chartled.ChartChartle.prototype = {
-  setMaxAgeInSeconds: function( previousValue ) {
-    this.maxAgeInSeconds= previousValue;
+  setTimeRange: function( from,to ) {
+    this.from= from;
+    this.to= to;
     this.displayRollingChart();
   },
   initialise: function( definition ) {
@@ -46,6 +48,8 @@ Chartled.ChartChartle.prototype = {
     this.chart = null;
     this.maxAgeInSeconds = null;
     this.configureDelegate = null;
+    this.from = null;
+    this.to = null;
   },
   resize: function(width, height) {
     this.chart.resize( width, height );
@@ -58,9 +62,7 @@ Chartled.ChartChartle.prototype = {
   displayRollingChart: function() {
     var metric= this.metrics;
     var that= this;
-    var maxAgeInSeconds= that.maxAgeInSeconds - 60;
-    var now= Math.round( new Date().getTime() / 1000 ) - 60;
-    var dataUrl=  this.baseUrl + "/series?from=" + ( now - maxAgeInSeconds ) + "&to=" + now + "&jsonp=?";
+    var dataUrl=  this.baseUrl + "/series?from=" + this.from+ "&until=" + this.to + "&jsonp=?";
     for( var k in metric ) {
       dataUrl += "&target=" + metric[k].value;
     }
@@ -78,7 +80,7 @@ Chartled.ChartChartle.prototype = {
   queueChartRefresh: function() {
     var that= this;
     return setInterval( function() {
-        if( !that.loading ) {
+        if( !that.loading && that.from != null && that.to != null) {
           that.displayRollingChart( );
         }
     }, 10000 );

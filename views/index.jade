@@ -71,9 +71,10 @@ html
                 li
                   a(href='#', onclick='addChart(2)') CPU
     div#contents.container
-      p How long back ? &nbsp;
-        input#lookback(value=1800)
-        &nbsp;&nbsp; 1800= 30 mins, 43200= 12 Hours, 604800= 1 week.
+      span From  &nbsp;
+      input#from(value='now - 30 minutes')
+      span   &nbsp;To &nbsp;
+      input#to(value='now')
       div.container.gridster
 
   script(type='text/javascript')

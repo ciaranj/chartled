@@ -15,7 +15,7 @@ Chartled.TextChartle = function(definition, el) {
 };
 
 Chartled.TextChartle.prototype = {
-  setMaxAgeInSeconds: function( previousValue ) {},
+  setTimeRange: function() {},
   initialise: function() {},
   dispose: function() {
     this.el= null;

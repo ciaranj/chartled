@@ -10,16 +10,15 @@ $(function() {
 });
 
 
-var lookback= $("#lookback");
-var previousValue= 1800;
-if( lookback ) {
-    setInterval(function(){
-        if( previousValue != $("#lookback").val() ) {
-			previousValue= $("#lookback").val();
-			chartledDefinition.setMaxAgeInSeconds(previousValue);
-        }
-    }, 250);
-}
+var previousFromValue= "";
+var previousToValue= "";
+setInterval(function(){
+    if( previousFromValue != $("#from").val() || previousToValue != $("#to").val()) {
+      previousFromValue= $("#from").val();
+      previousToValue= $("#to").val();
+      chartledDefinition.setTimeRange(previousFromValue, previousToValue);
+    }
+}, 1000);
 
 function addNewChart( metrics ) {
 	chartledDefinition.addNewChartle( {

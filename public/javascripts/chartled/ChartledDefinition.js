@@ -106,8 +106,8 @@ Chartled.ChartledDefinition.prototype.serialize = function() {
 }
 
 // TODO: this 'mechanism' should be replaced by proper 'clocks' this is just temporary.
-Chartled.ChartledDefinition.prototype.setMaxAgeInSeconds = function(previousValue) {
+Chartled.ChartledDefinition.prototype.setTimeRange = function(from,to) {
 	for(var c in this.chartles ) {
-		this.chartles[c].setMaxAgeInSeconds( previousValue );
+		this.chartles[c].setTimeRange( from,to );
 	}
 }
