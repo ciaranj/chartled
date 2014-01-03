@@ -28,8 +28,9 @@ string
 
 atom =
     string /
+    boolean /
     metric /
-    number
+    number /
 
 sign = [+-]
 
@@ -39,7 +40,7 @@ number =
     signs:sign? digits: digit+ 
     { return "ctx.$("+ signs + digits.join("") +")" }
 
-
+boolean = "true" / "false"
 digit= [0-9]
 
 spaceatom = ws* atom:atom
@@ -49,7 +50,7 @@ spaceFunctionName = ws* functionName:functionName
     { return functionName; }
 
 functionName
-    = "sumSeries" / "sum" / "averageSeries" / "avg" / "scale" / "aliasByNode" / "asPercent" / "alias" / "bestFit" / "sinFunction" / "sin" / "constantLine" / "offset"
+    = "summarize" / "sumSeries" / "sum" / "averageSeries" / "avg" / "scale" / "aliasByNode" / "asPercent" / "alias" / "bestFit" / "sinFunction" / "sin" / "constantLine" / "offset"
 
 spaceexpression  = ws* expression:expression
     { return expression; }

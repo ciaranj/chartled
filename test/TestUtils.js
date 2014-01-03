@@ -13,10 +13,12 @@ function buildTargetParseContext( targetString, metrics, metricValues, tInfo, fr
         realMetrics[metrics[k].name].node = (function(name){
           return {
             read: function( from, to, cb ) {
-              cb( null, {"tInfo": tInfo, values:(metricValues === undefined || metricValues[name] === undefined ) ? []:metricValues[name]});
+              cb( null, {startTime:tInfo[0], endTime:tInfo[1], timeStep:tInfo[2], values:(metricValues === undefined || metricValues[name] === undefined ) ? []:metricValues[name]});
             }};
         })(metrics[k].name);
     }
+    
+    
     if( tInfo === undefined ) {
       var t= Math.floor( new Date().getTime() / 1000 );
       var interval= 10;

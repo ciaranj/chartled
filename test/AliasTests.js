@@ -41,6 +41,19 @@ describe('TargetParseContext', function(){
                     })
                     .end();
     })
+    it('should alias a list of metrics to the same name (inverted)', function(done) {
+        var metric=  "scale(alias(foo.{bar,tar}, \"All The Foos\"), 2)";
+        var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
+        TargetParser.parse( metric )(ctx)
+                    .then(function (result) {
+                            assert.deepEqual( [2,4,6,8], result.seriesList[0].data.values );
+                            assert.deepEqual( [20,40,60,100], result.seriesList[1].data.values );
+                            assert.equal( "scale(All The Foos,2)", result.seriesList[0].name );
+                            assert.equal( "scale(All The Foos,2)", result.seriesList[1].name );
+                            done();
+                    })
+                    .end();
+    })    
     it('should safely handle missing series', function(done) {
         var metric=  "alias(scale(foo.{xar}, 2), \"All The Foos\")";
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
