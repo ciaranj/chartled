@@ -1,5 +1,5 @@
 var   assert= require("assert")
-    , DatesAndTimes= require("../lib/utils/DatesAndTimes")
+    , DatesAndTimes= require("../../lib/utils/DatesAndTimes")
     , moment= require("moment");
 
 // uggh time based tests, what could possibly go wrong :/

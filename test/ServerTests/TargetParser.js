@@ -1,4 +1,4 @@
-var TargetParser= require("../lib/TargetParser")
+var TargetParser= require("../../lib/TargetParser")
 var assert = require("assert")
 
 

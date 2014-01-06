@@ -1,5 +1,5 @@
-var TargetParseContext= require("../lib/TargetParseContext"),
-    MetricStore= require("../lib/MetricsStore");
+var TargetParseContext= require("../../lib/TargetParseContext"),
+    MetricStore= require("../../lib/MetricsStore");
 
 function buildTargetParseContext( targetString, metrics, metricValues, tInfo, from, to) {
     var realMetrics= {};

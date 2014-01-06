@@ -1,7 +1,7 @@
 var assert = require("assert"),
-    TargetParseContext= require("../lib/TargetParseContext"),
-    MetricInfo= require("../lib/MetricInfo"),
-    TargetParser= require("../lib/TargetParser"),
+    TargetParseContext= require("../../lib/TargetParseContext"),
+    MetricInfo= require("../../lib/MetricInfo"),
+    TargetParser= require("../../lib/TargetParser"),
     Utils= require("./TestUtils");
 
 var doneCountDown= function ( count, done ) {

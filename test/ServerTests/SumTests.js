@@ -1,65 +1,58 @@
 var assert= require("assert"),
-    TargetParseContext= require("../lib/TargetParseContext"),
-    MetricInfo= require("../lib/MetricInfo"),
-    TargetParser= require("../lib/TargetParser"),
+    TargetParseContext= require("../../lib/TargetParseContext"),
+    MetricInfo= require("../../lib/MetricInfo"),
+    TargetParser= require("../../lib/TargetParser"),
     Utils= require("./TestUtils");
 
 describe('TargetParseContext', function(){
-  describe('offset', function(){
-    it('should offset the metric values in the given series list (multiple)', function(done) {
-        var metric=  "offset(foo.{bar,tar}, 2)";
+  describe('sum', function(){
+    it('should sum nulls as we expect', function(done) {
+        // We treat all nulls as resulting in a null, any other sum results in the addition occuring as if there was no null.
+        var metric=  "sum(foo.{bar,tar})";
+        var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,null,null,4], "foo.tar":[null,null,30,50]} );
+        TargetParser.parse( metric )(ctx)
+                    .then(function (result) {
+                            assert.equal( 1, result.seriesList.length );
+                            assert.deepEqual( [1,null,30,54], result.seriesList[0].data.values );
+                            done();
+                    })
+                    .end();
+    })    
+    it('should sum the metric values in the given series list (multiple)', function(done) {
+        var metric=  "sum(foo.{bar,tar})";
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.deepEqual( [3,4,5,6], result.seriesList[0].data.values );
-                            assert.deepEqual( [12,22,32,52], result.seriesList[1].data.values );
+                            assert.equal( 1, result.seriesList.length );
+                            assert.deepEqual( [11,22,33,54], result.seriesList[0].data.values );
                             done();
                     })
                     .end();
     })
-    it('should offset the metric values in the given series list (single)', function(done) {
-        var metric=  "offset(foo.bar, 2)";
+    it('should sum the metric values in the given series list (multiple) (using the sumSeries synonym)', function(done) {
+        var metric=  "sumSeries(foo.{bar,tar})";
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.deepEqual( [3,4,5,6], result.seriesList[0].data.values );
+                            assert.equal( 1, result.seriesList.length );
+                            assert.deepEqual( [11,22,33,54], result.seriesList[0].data.values );
                             done();
                     })
                     .end();
     })
-    it('should offset the metric values in the given series list (single), ignoring nulls ', function(done) {
-        var metric=  "offset(foo.bar, 2)";
-        var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,null,3,null], "foo.tar":[10,20,30,50]} );
-        TargetParser.parse( metric )(ctx)
-                    .then(function (result) {
-                            assert.deepEqual( [3,null,5,null], result.seriesList[0].data.values );
-                            done();
-                    })
-                    .end();
-    })	
-    
-	it('should offset the metric values in the given series list (single), negative', function(done) {
-        var metric=  "offset(foo.bar, -2)";
+    it('should sum the metric values in the given series list (single)', function(done) {
+        var metric=  "sum(foo.bar)";
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.deepEqual( [-1,0,1,2], result.seriesList[0].data.values );
-                            done();
-                    })
-                    .end();
-    })
-	it('should offset the metric values in the given series list (single), zero', function(done) {
-        var metric=  "offset(foo.bar, 0)";
-        var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
-        TargetParser.parse( metric )(ctx)
-                    .then(function (result) {
+                            assert.equal( 1, result.seriesList.length );
                             assert.deepEqual( [1,2,3,4], result.seriesList[0].data.values );
                             done();
                     })
                     .end();
-    })		
-    it('should offset the metric values in the given series list (none)', function(done) {
-        var metric=  "offset(foo.{xar}, 2)";
+    })
+    it('should sum the metric values in the given series list (none)', function(done) {
+        var metric=  "sum(foo.{xar})";
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
@@ -69,37 +62,37 @@ describe('TargetParseContext', function(){
                     .end();
     })
     it('should update the metric name correctly for alternatives', function(done) {
-        var metric=  "offset(foo.{bar,tar}, 2)";
+        var metric=  "sum(foo.{bar,tar})";
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( "offset(foo.bar,2)", result.seriesList[0].name );
-                            assert.equal( "offset(foo.tar,2)", result.seriesList[1].name );
+                            assert.equal( 1, result.seriesList.length );
+                            assert.equal( "sum(foo.{bar,tar})", result.seriesList[0].name );
                             done();
                     })
                     .end();
     })
     it('should update the metric name correctly for wildcards', function(done) {
-        var metric=  "offset(foo.*, 2)";
+        var metric=  "sum(foo.*)";
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( "offset(foo.bar,2)", result.seriesList[0].name );
-                            assert.equal( "offset(foo.tar,2)", result.seriesList[1].name );
+                            assert.equal( 1, result.seriesList.length );
+                            assert.equal( "sum(foo.*)", result.seriesList[0].name );
                             done();
                     })
                     .end();
     })
     it('should update the metric name correctly for ranges', function(done) {
-        var metric=  "offset(foo.[2], 2)";
+        var metric=  "sum(foo.[2])";
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.1"), new MetricInfo("foo.2")], {"foo.1":[1,2,3,4], "foo.2":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( "offset(foo.1,2)", result.seriesList[0].name );
-                            assert.equal( "offset(foo.2,2)", result.seriesList[1].name );
+                            assert.equal( 1, result.seriesList.length );
+                            assert.equal( "sum(foo.[2])", result.seriesList[0].name );
                             done();
                     })
                     .end();
-    })
+    })    
   });
 })

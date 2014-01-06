@@ -13,7 +13,7 @@ describe('ResponseWriters', function(){
         sandbox.restore();
     });
     describe('CSV', function() {
-        var ResponseWriter= require('../lib/response_renderers/csv')
+        var ResponseWriter= require('../../lib/response_renderers/csv')
         it('should respond with an text/csv mimetype', function(done) {
             response.expects("set").once().withArgs({'Content-Type': 'text/csv' });
             ResponseWriter.renderResults( request, response.object, [], function(err) {
@@ -44,7 +44,7 @@ describe('ResponseWriters', function(){
         });
     });
     describe('JSON', function() {
-        var ResponseWriter= require('../lib/response_renderers/json')
+        var ResponseWriter= require('../../lib/response_renderers/json')
         it('should respond with an application/json mimetype', function(done) {
             response.expects("set").once().withArgs({'Content-Type': 'application/json' });
             ResponseWriter.renderResults( request, response.object, [], function(err) {
@@ -80,7 +80,7 @@ describe('ResponseWriters', function(){
         });
     });
     describe('RAW', function() {
-        var ResponseWriter= require('../lib/response_renderers/raw')
+        var ResponseWriter= require('../../lib/response_renderers/raw')
         it('should respond with an text/plain mimetype', function(done) {
             response.expects("set").once().withArgs({'Content-Type': 'text/plain' });
             ResponseWriter.renderResults( request, response.object, [], function(err) {

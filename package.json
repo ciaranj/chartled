@@ -25,7 +25,7 @@
   }, 
   "scripts" : {
     "buildclient" : "node scripts/buildclient.js",
-    "test" : "mocha --require should --reporter list  --timeout 200",
+    "test" : "mocha test/*/*.js --require should --reporter dot  --timeout 200",
     "prepublish" : "node scripts/prepublish.js",
     "generateparser": "node scripts/generateparser.js",
     "postinstall" : "node scripts/prepublish.js",

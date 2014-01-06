@@ -1,7 +1,7 @@
 var assert= require("assert"),
-    TargetParseContext= require("../lib/TargetParseContext"),
-    MetricInfo= require("../lib/MetricInfo"),
-    TargetParser= require("../lib/TargetParser"),
+    TargetParseContext= require("../../lib/TargetParseContext"),
+    MetricInfo= require("../../lib/MetricInfo"),
+    TargetParser= require("../../lib/TargetParser"),
     Utils= require("./TestUtils");
 
     describe('TargetParser', function() {
