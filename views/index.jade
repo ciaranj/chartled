@@ -74,13 +74,6 @@ html
                   a(href='#', onclick="addNewTextBox()") Create new Textbox
                 li
                   a(href='#', onclick="addNewSpacer()") Create new Spacer
-                li.divider
-                li
-                  a(href='#', onclick='addChart(0)') Cache Hit Rate
-                li
-                  a(href='#', onclick='addChart(1)') Network Traffic
-                li
-                  a(href='#', onclick='addChart(2)') CPU
     div#contents.container
       span From  &nbsp;
       input#from(value='now - 30 minutes')
@@ -134,13 +127,3 @@ html
         $( ".textbox" ).hallo({editable: true});
         updatePageCss();
     }
-
-    var offThePegCharts= [
-      [{value:'alias(asPercent(stats_counts.cache.hit,sum(stats_counts.cache.{hit,miss})), "Cache Hit %age")',renderer:'area'}],
-      [{value:'alias(scale(sum(stats.*.network_interface.*.bytes_total_sec),1000000),"Network Traffic B/s")', renderer:'line'}],
-      [{value:'alias(scale(sum(stats_counts.*.processor.*.pct_user_time),100000),"CPU %age Used (User)")',renderer:'area'}]
-    ];
-
-      function addChart(chartIndex) {
-        addNewChart( offThePegCharts[chartIndex] );
-      }
