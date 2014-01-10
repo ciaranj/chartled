@@ -1,12 +1,26 @@
+function startAgain( definition ) {
+  if( typeof(chartledDefinition) != 'undefined' ) { 
+    chartledDefinition.dispose();
+    if( document.getElementById("gridster") ) {
+      document.getElementById("contents").removeChild( document.getElementById("gridster") );
+    }
+  }
+
+  var gridster= document.createElement("div");
+  gridster.setAttribute("id", "gridster");
+  gridster.setAttribute("class", "container gridster");
+  document.getElementById("contents").appendChild( gridster );
+  chartledDefinition= new Chartled.ChartledDefinition(definition, gridster, "");
+}
 $(function() {
-  chartledDefinition= new Chartled.ChartledDefinition({
+  startAgain({
       clocks: [{id:1, refreshRate:60, from:"-30minutes", to: "now", description:"default"}]
     , layout: {
         type: "fixed-grid",
         gridMinSize: 50,
         gridMargin: 5
-    }
-  }, $(".gridster"), "");
+      }
+  });
 });
 
 
@@ -73,7 +87,7 @@ function importChartles() {
                     "class" : "btn-primary",
                     "callback": function() {
                       var newDefinition= $('#chartledDefinitionToImport').val();
-                      chartledDefinition.deserialize( JSON.parse( newDefinition ) );
+                      startAgain( JSON.parse( newDefinition ) );
                     }
                 },  
                 {

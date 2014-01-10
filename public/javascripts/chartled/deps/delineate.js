@@ -28,14 +28,13 @@ Chart.prototype.resize= function( outerWidth, outerHeight ) {
   this.outerWidth= outerWidth;
   this.outerHeight= outerHeight;
   this.graphContainer
-      .attr("height", this.outerHeight) 
-      .attr("width", this.outerWidth);
+      .attr("width", this.outerWidth)
+      .attr("height", this.outerHeight);
  /* Setting the width with attr. doesn't seem to correctly shrink the displayed area in chrome! 
   * ( http://stackoverflow.com/questions/11622227/force-reflow-of-the-dom-container-for-a-resized-svg-element-in-chrome )
   */
-  var containerEl= $(this.graphContainer[0][0]);
-  containerEl.css("width", this.outerWidth)
-  containerEl.css("height", this.outerHeight); 
+  var containerEl= $(this.graphContainer[0]);
+  containerEl.css({"width" : this.outerWidth + "px", "height" : this.outerHeight + "px"});
   this._updateChartAreaSize();
   if( this.previousData ) {
     this.refreshData( this.previousData );

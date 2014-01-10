@@ -4,6 +4,8 @@ Chartled.ChartledDefinition = function( definition, containerEl, baseUrl ) {
   if( containerEl && containerEl.length ) containerEl= containerEl[0];
   this.containerEl = containerEl;
   this.baseUrl = baseUrl;
+  this.chartles= [];
+
   this.deserialize( definition );
 }
 
@@ -39,26 +41,6 @@ Chartled.ChartledDefinition.prototype.deserialize = function( definition ) {
 
   that.nextChartleId= (definition.nextChartleId ? definition.nextChartleId : 1);
 
-  if( this.chartles ) {
-    for(var k in this.chartles) {
-      if( this.chartles[k].dispose ) this.chartles[k].dispose();
-    }
-  }
-
-  this.chartles= [];
-
-  if( this.timeKeeper ) {
-    this.timeKeeper.dispose();
-    this.timeKeeper= null;
-  }
-
-  if( typeof(layout) != 'undefined' ) {
-    this.containerEl.removeChild( this.el );
-    that.el= null;
-    layout.remove_all_widgets();
-    layout.destroy();
-    layout= null;
-  }
   this.el= document.createElement("ul");
   this.containerEl.appendChild( this.el );
   layout = $(that.el).gridster({
@@ -71,14 +53,13 @@ Chartled.ChartledDefinition.prototype.deserialize = function( definition ) {
         start: function(e, ui, $widget) {
         },
         resize: function(e, ui, $widget) {
+          var el= $widget[0];
+          var c= that.chartles[el.id];
+          c.resize( $widget.width(), $widget.height() );
         },
         stop: function(e, ui, $widget) {
-            var el= $widget[0];
-            var c= that.chartles[el.id];
-            // Oddness here, have to do the actual content resize outside of this method (and after a delay)?
-            setTimeout(function() {
-                c.resize( $(el).width(), $(el).height() );
-            }, 250);
+            var c= that.chartles[$widget[0].id];
+            c.resize( $widget.width(), $widget.height() );
         }
     },
     serialize_params : function($w, wgd) { 
@@ -120,4 +101,28 @@ Chartled.ChartledDefinition.prototype.serialize = function() {
   }
   definition.clocks= this.timeKeeper.serialize();
   return definition;
+}
+
+Chartled.ChartledDefinition.prototype.dispose = function() {
+  if( this.chartles ) {
+    for(var k in this.chartles) {
+      if( this.chartles[k].dispose ) this.chartles[k].dispose();
+    }
+  }
+
+  this.chartles= [];
+
+  if( this.timeKeeper ) {
+    this.timeKeeper.dispose();
+    this.timeKeeper= null;
+  }
+
+  if( typeof(layout) != 'undefined' ) {
+    this.el= null;
+    layout.remove_all_widgets();
+
+    // Gridster removes the element we created for it... which is err, different :/
+    layout.destroy();
+    layout= null;
+  }
 }
