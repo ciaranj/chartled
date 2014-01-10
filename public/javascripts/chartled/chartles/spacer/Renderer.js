@@ -15,7 +15,6 @@ Chartled.SpacerChartle.prototype = {
     return { "id": this.id, 
              "type": "Chartled.SpacerChartle"};
   },
-  setTimeRange: function() {},
   dispose: function() {
 	// Nothing to do.
   }

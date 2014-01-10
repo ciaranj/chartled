@@ -11,7 +11,14 @@ var CSVResponseRenderer = require("./lib/response_renderers/csv"),
   
 function parseMoment(momentReqParam, unspecifiedValue) {
   var moment = momentReqParam ? momentReqParam: unspecifiedValue;
-  return DatesAndTimes.parseATTime( moment );
+  try {
+    var result= DatesAndTimes.parseATTime( moment );
+    return result
+  }
+  catch(e) {
+    console.log("Problem parsing: '" + moment +"', ", e.message);
+    throw e;
+  }
 }
   
 var metricsStore= new MetricsStore( __dirname + path.sep + ".." + path.sep +"statsd"+ path.sep+ "ceres_tree");

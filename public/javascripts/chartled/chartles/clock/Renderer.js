@@ -25,20 +25,10 @@ Chartled.ClockChartle = function(definition, el) {
 };
 
 Chartled.ClockChartle.prototype = {
-  setTimeRange: function() {},
   initialise: function() {
-    var that= this;
-    that._refreshInterval= setInterval( function() {
-      that._update();
-    }, 1000 );    
-    that._update();
-    that.resize();
+      this.needsResize= true;
   },
   dispose: function() {
-    if( this._refreshInterval ) {
-      clearInterval( this._refreshInterval );
-      this._refreshInterval = null;
-    }  
     this.el.removeChild( this.dateTimeContainer );
     this.el.removeChild( this.icon );
     this.el= null;
@@ -63,8 +53,11 @@ Chartled.ClockChartle.prototype = {
     // the text will overflow.
     var factor = 1/2;  
     function resizey(el, ratio) {
-      var width= (maxWidth * ratio) / ($(el).text().length * factor);
-      $(el).css('font-size', width + 'px' );
+      var textLength= $(el).text().length;
+      if( textLength > 0 ) {
+        var width= (maxWidth * ratio) / (textLength * factor);
+        $(el).css('font-size', width + 'px' );
+      }
     }
     // Rescale parts (based on tag)
     this.jEl.find('h1').each(function() {
@@ -81,10 +74,14 @@ Chartled.ClockChartle.prototype = {
     return { "id"   : this.id,
              "type" : "Chartled.ClockChartle" };
   },
-  _update: function() {
+  update: function() {
     var now = new Date();
     $(this.timeSpan).html( now.toLocaleTimeString() );
     $(this.dateSpan).html( now.toDateString() );
+    if( this.needsResize ) {
+      this.needsResize= false;
+      this.resize();
+    }
   }
 };
 

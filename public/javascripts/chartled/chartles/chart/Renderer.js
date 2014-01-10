@@ -5,18 +5,9 @@ Chartled.ChartChartle = function(definition, el, baseUrl) {
   this.baseUrl= baseUrl;
 
   this.initialise(definition);
-  this.from= null;
-  this.to= null;
-
-  this.qRefreshInterval= this.queueChartRefresh();
 };
 
 Chartled.ChartChartle.prototype = {
-  setTimeRange: function( from,to ) {
-    this.from= from;
-    this.to= to;
-    this.displayRollingChart();
-  },
   initialise: function( definition ) {
     var that = this;
     var jEl = $(that.el);
@@ -27,8 +18,6 @@ Chartled.ChartChartle.prototype = {
       that.metrics[key].axis= 0;
       that.metrics[key].layer =2;
     }
-    // TODO: This needs to be clock-based.
-    that.maxAgeInSeconds = 1800;
     that.chart = new Chart( that.id, jEl.width(), jEl.height(), {
       "metrics": that.metrics,
       layers: [{renderer : "area"},{renderer : "bar"}, {renderer : "line", dropShadow: true}],
@@ -40,16 +29,9 @@ Chartled.ChartChartle.prototype = {
     });
   },
   dispose: function() {
-    if( this.qRefreshInterval ) {
-      clearInterval( this.qRefreshInterval );
-      this.qRefreshInterval = null;
-    }
     this.el = null;
     this.chart = null;
-    this.maxAgeInSeconds = null;
     this.configureDelegate = null;
-    this.from = null;
-    this.to = null;
   },
   resize: function(width, height) {
     this.chart.resize( width, height );
@@ -59,30 +41,21 @@ Chartled.ChartChartle.prototype = {
              "type": "Chartled.ChartChartle",
              "metrics": this.metrics};
   },
-  displayRollingChart: function() {
-    var metric= this.metrics;
-    var that= this;
-    var dataUrl=  this.baseUrl + "/series?from=" + this.from+ "&until=" + this.to + "&jsonp=?";
-    for( var k in metric ) {
-      dataUrl += "&target=" + metric[k].value;
+  fetch: function(clock, cb) {
+    var dataUrl=  this.baseUrl + "/series?from=" + clock.from+ "&until=" + clock.until + "&jsonp=?";
+    for( var k in this.metrics ) {
+      dataUrl += "&target=" + this.metrics[k].value;
     }
-    that.loading= true;
     $.getJSON(dataUrl, function(data){
-      that.chart.refreshData( data );
-    })
-    .always(function() {
-      that.loading= false;
+      cb(null, data);
     })
     .fail(function() {
-      // Error path.
+      cb(new Error());
     });
   },
-  queueChartRefresh: function() {
-    var that= this;
-    return setInterval( function() {
-        if( !that.loading && that.from != null && that.to != null) {
-          that.displayRollingChart( );
-        }
-    }, 10000 );
+  update: function(err, data) {
+    if(!err) {
+      this.chart.refreshData( data );
+    }
   }
 }

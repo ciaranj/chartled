@@ -20,6 +20,8 @@ html
     script(type='text/javascript', src='/javascripts/chartled/builder/chartdFunctions.js')
     script(type='text/javascript', src='/metrics')
     script(type='text/javascript', src='/javascripts/chartled/ChartledDefinition.js')
+    script(type='text/javascript', src='/javascripts/chartled/Clock.js')
+    script(type='text/javascript', src='/javascripts/chartled/TimeKeeper.js')
     script(type='text/javascript', src='/javascripts/chartled/viewer/chartled.js')
     script(type='text/javascript', src='/javascripts/chartled/deps/jquery.gridster.with-extras.min.js')
     script(type='text/javascript', src='/javascripts/chartled/deps/rangy-core.js')
@@ -61,7 +63,7 @@ html
                 b.caret
               ul.dropdown-menu
                 li
-                  a(href='#', onclick="addNewChart([]);configureChart('chart'+chartCounter);") Create new Chart
+                  a(href='#', onclick="var c=addNewChart([]); c.configureChart()") Create new Chart
                 li
                   a(href='#', onclick="addNewClock();") Create new Clock
                 li

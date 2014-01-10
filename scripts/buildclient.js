@@ -4,6 +4,8 @@ var filesToInclude= [
    'public/javascripts/deps/jquery-1.9.1.js'
   , 'public/javascripts/deps/jquery-ui.js'
   , 'public/javascripts/chartled/ChartledDefinition.js'
+  , 'public/javascripts/chartled/TimeKeeper.js'
+  , 'public/javascripts/chartled/Clock.js'
   , 'public/javascripts/chartled/deps/jquery.gridster.with-extras.min.js'
   , 'public/javascripts/chartled/deps/d3.v2.min.js'
   , 'public/javascripts/chartled/deps/delineate.js'

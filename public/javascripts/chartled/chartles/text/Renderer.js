@@ -15,7 +15,6 @@ Chartled.TextChartle = function(definition, el) {
 };
 
 Chartled.TextChartle.prototype = {
-  setTimeRange: function() {},
   initialise: function() {},
   dispose: function() {
     this.el.removeChild( this.realValue );

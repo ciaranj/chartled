@@ -8,6 +8,9 @@ Chartled.RegisterChartleEditor( Chartled.ChartChartle, {
   , dispose: function() {
       this.editableMetrics = null;
     }  
+  , addRefreshListener: function( refresher ) {
+    this.refresh= refresher;
+  }
   , buildMetrics : function() {
       var that = this;
       var metricsTable= document.getElementById("metrics");
@@ -64,7 +67,7 @@ Chartled.RegisterChartleEditor( Chartled.ChartChartle, {
                           that.metrics= that.editableMetrics;
                           that.chart.config.metrics= that.metrics;
                           that.editableMetrics= null;
-                          that.displayRollingChart();
+                          that.refresh();
                       }
                   },  
                   {

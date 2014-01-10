@@ -13,7 +13,6 @@
   },
   "devDependencies": {
     "mocha" :"=1.6.0",
-    "should" :"=1.2.0",
     "sinon" : "=1.7.3",
     "uglify-js" : "=2.4.4"
   },
@@ -25,7 +24,7 @@
   }, 
   "scripts" : {
     "buildclient" : "node scripts/buildclient.js",
-    "test" : "mocha test/*/*.js --require should --reporter dot  --timeout 200",
+    "test" : "mocha test/*/*.js --reporter dot  --timeout 200",
     "prepublish" : "node scripts/prepublish.js",
     "generateparser": "node scripts/generateparser.js",
     "postinstall" : "node scripts/prepublish.js",

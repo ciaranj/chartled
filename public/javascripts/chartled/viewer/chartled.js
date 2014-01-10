@@ -1,12 +1,12 @@
 $(function() {
   chartledDefinition= new Chartled.ChartledDefinition({
-	layout: {
-		type: "fixed-grid",
-		gridMinSize: 50,
-		gridMargin: 5
-	}
-  },
-  $(".gridster"), "");
+      clocks: [{id:1, refreshRate:60, from:"-30minutes", to: "now", description:"default"}]
+    , layout: {
+        type: "fixed-grid",
+        gridMinSize: 50,
+        gridMargin: 5
+    }
+  }, $(".gridster"), "");
 });
 
 
@@ -16,34 +16,42 @@ setInterval(function(){
     if( previousFromValue != $("#from").val() || previousToValue != $("#to").val()) {
       previousFromValue= $("#from").val();
       previousToValue= $("#to").val();
-      chartledDefinition.setTimeRange(previousFromValue, previousToValue);
+      var defaultClock= chartledDefinition.timeKeeper.getClock("default");
+      chartledDefinition.timeKeeper.updateClock( defaultClock.id, {from: previousFromValue, until: previousToValue} );
     }
 }, 1000);
 
 function addNewChart( metrics ) {
-	chartledDefinition.addNewChartle( {
+	return chartledDefinition.addNewChartle( {
 		"type": "Chartled.ChartChartle", 
 		"metrics": metrics
-	}, 4, 2 );
+	}, 1, 4, 2 );
 }
 
 function addNewClock(  ) {
+  var clockId;
+  try {
+    clockId= chartledDefinition.timeKeeper.getClock("LastSecond").id;
+  }
+  catch(e) {
+    clockId= chartledDefinition.timeKeeper.addClock( {refreshRate:1, from:'now-1s', to:'now', description: "LastSecond"} );
+  }
 	chartledDefinition.addNewChartle( {
 		"type": "Chartled.ClockChartle"
-	}, 2, 2 );
+	}, clockId, 2, 2 );
 }
 
 function addNewTextBox() {
 	chartledDefinition.addNewChartle( {
 		"type": "Chartled.TextChartle", 
 		text:"<h4>Something Awesome</h4>"
-	}, 3, 1 );
+	}, null, 3, 1 );
 }
 
 function addNewSpacer() {
 	chartledDefinition.addNewChartle( {
 		"type": "Chartled.SpacerChartle"
-	}, 2, 2 );
+	}, null, 2, 2 );
 }
 
 function exportChartles() {
