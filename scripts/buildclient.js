@@ -6,7 +6,7 @@ var filesToInclude= [
   , 'public/javascripts/chartled/ChartledDefinition.js'
   , 'public/javascripts/chartled/TimeKeeper.js'
   , 'public/javascripts/chartled/Clock.js'
-  , 'public/javascripts/chartled/deps/jquery.gridster.with-extras.min.js'
+  , 'public/javascripts/chartled/deps/jquery.gridster.js'
   , 'public/javascripts/chartled/deps/d3.v2.min.js'
   , 'public/javascripts/chartled/deps/delineate.js'
   , 'public/javascripts/chartled/chartles/BaseChartle.js'
