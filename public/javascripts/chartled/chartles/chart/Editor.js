@@ -151,7 +151,6 @@ Chartled.RegisterChartleEditor( Chartled.ChartChartle, {
     }
   , getFunctionsDropDown : function() {
         if( this._functionsDropDownString == null ) {
-          console.log( "Building functions")
             this._functionsDropDownString= "";
             var functions= chartd.functions
             for( var f in functions ) {
