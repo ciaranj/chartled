@@ -52,14 +52,14 @@ Chartled.ChartledDefinition.prototype.deserialize = function( definition ) {
         enabled: true,
         start: function(e, ui, $widget) {
         },
-        resize: function(e, ui, $widget) {
+        resize: function(e, ui, $widget, width, height) {
           var el= $widget[0];
           var c= that.chartles[el.id];
-          c.resize( $widget.width(), $widget.height() );
+          c.resize( width, height );
         },
-        stop: function(e, ui, $widget) {
+        stop: function(e, ui, $widget, width, height) {
             var c= that.chartles[$widget[0].id];
-            c.resize( $widget.width(), $widget.height() );
+            c.resize( width, height );
         }
     },
     serialize_params : function($w, wgd) { 
