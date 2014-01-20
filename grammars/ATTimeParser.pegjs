@@ -39,7 +39,7 @@ reference
       return day;
     }
     / tod:time_of_day_reference? dow:day_of_week_reference {
-      //Format: 2pm? Monday  (Returns the most-recent (exc. today) day that was requested)
+      //Format: 2pm? Monday  (Returns the most-recent (inc. today) day that was requested)
       var now= require('moment')().startOf('second');
       var day= require('moment')().startOf('second');
       if( tod ) {
@@ -47,8 +47,8 @@ reference
         if(tod.minutes) day.minutes(tod.minutes);
       }
       day.day(dow);
-      if(day.isAfter(now) || day.isSame(now)) {
-        //Format: The day chosen was either today, or in the future :/
+      if(day.day() > now.day() ) {
+        //Format: The day chosen would be in the future, so assume the past ... [for now, until we provide a next+previous extension to Graphite's formats] :/
         day.subtract({day: 7});
       }
       return day;

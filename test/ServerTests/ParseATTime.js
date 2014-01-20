@@ -143,7 +143,7 @@ describe('DatesAndTimes.ParseATTime', function(){
       var m= moment().month(0).date(5).hours(1).minutes(5).startOf('minute');
       assert.equal( DatesAndTimes.parseATTime("04:05am january 5 - 3hour"), m.unix() );
     })
-    it("should parse 'monday' (previous monday)", function() {
+    it("should parse 'monday' (previous monday [or today if currently monday])", function() {
       // Previous monday (ughh which I could abstract a clock to check 'today is monday, tomorrow is monday, yesterday is monday' properly :(
       var parsed= moment.unix(DatesAndTimes.parseATTime("monday"));
       assert.equal( parsed.format("dddd"), "Monday" );
@@ -153,7 +153,7 @@ describe('DatesAndTimes.ParseATTime', function(){
       assert.equal( parsed.format("dddd"), "Monday" );
       assert( parsed.isBefore(moment()) );
     })
-    it("should parse 'saturday' (previous saturday)", function() {
+    it("should parse 'saturday' (previous saturday [or today if currently saturday])", function() {
       // Previous saturday.
       var parsed= moment.unix(DatesAndTimes.parseATTime("saturday"));
       assert.equal( parsed.format("dddd"), "Saturday" );
