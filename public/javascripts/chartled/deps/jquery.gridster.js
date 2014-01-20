@@ -3376,7 +3376,7 @@
                 (x - 1) * (opts.widget_margins[0] * 2)) + 'px; }\n');
         }
 
-        return this.add_style_tag(styles);
+        return this.add_style_tag(styles, serialized_opts);
     };
 
 
@@ -3385,9 +3385,10 @@
     *
     * @method add_style_tag
     * @param {String} css The styles to apply.
+    * @param {String} serialized_opts The serialized options used to build the stylesheet
     * @return {Object} Returns the instance of the Gridster class.
     */
-    fn.add_style_tag = function(css) {
+    fn.add_style_tag = function(css, serialized_opts) {
       var d = document;
       var tag = d.createElement('style');
 
@@ -3400,6 +3401,7 @@
         tag.appendChild(document.createTextNode(css));
       }
 
+      $(tag).data('opts', serialized_opts);
       this.$style_tags = this.$style_tags.add(tag);
 
       return this;
@@ -3407,15 +3409,33 @@
 
 
     /**
-    * Remove the style tag with the associated id from the head of the document
+    * Remove all style tags created by this instance from the head of the document
     *
-    * @method  remove_style_tag
+    * @method  remove_style_tags
     * @return {Object} Returns the instance of the Gridster class.
     */
     fn.remove_style_tags = function() {
-        this.$style_tags.remove();
+      $.each(this.$style_tags, $.proxy(function(index, styles) {this.remove_style_tag(styles);}, this));
+      this.$style_tags = [];
+      return this;
     };
 
+    /** 
+    * Remove a style tag from the head of the document and the static cache
+    *
+    * @method  remove_style_tag
+    * @param {HTMLElement} styles the style tag to remove
+    * @return {Object} Returns the instance of the Gridster class.
+    */
+    fn.remove_style_tag = function(styles) {
+      var generated_stylesheet;
+      if ((generated_stylesheet = $.inArray($(styles).data('opts'), Gridster.generated_stylesheets)) >= 0) {
+        delete Gridster.generated_stylesheets[generated_stylesheet];
+      }
+      $(styles).remove();
+ 
+      return this;
+    };
 
     /**
     * Generates a faux grid to collide with it when a widget is dragged and
@@ -3620,9 +3640,10 @@
      * Destroy this gridster by removing any sign of its presence, making it easy to avoid memory leaks
      *
      * @method destroy
+     * @param {Boolean} [removeDOM] if true or undefined, destroy removes the dom elements to which gridster is applied.
      * @return {undefined}
      */
-    fn.destroy = function(){
+    fn.destroy = function(removeDOM){
         // remove bound callback on window resize
         $(window).unbind('.gridster');
 
@@ -3630,13 +3651,22 @@
             this.drag_api.destroy();
         }
 
+        //Remove the style tags
         this.remove_style_tags();
 
         // lastly, remove gridster element
         // this will additionally cause any data associated to this element to be removed, including this
         // very gridster instance
-        this.$el.remove();
 
+        if(typeof removeDOM === 'undefined' || removeDOM === true) { this.$el.remove(); }
+        else {
+          this.$el.removeData('gridster');
+          //Clean up classes and data sprayed onto DOM by gridster
+          this.$wrapper.removeClass("ready");
+          this.$widgets.each(function(index, element) {
+            $(element).removeData('coords').removeClass('player-revert').removeClass('gs_w').css('position', '');
+          });
+        }
         return this;
     };
 
