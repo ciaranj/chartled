@@ -17,16 +17,16 @@ Chartled.MetricEditor.prototype= {
     this.chartleEditorDialog= chartleEditorDialog;
     var html= "";
     html += "<table class='table table-striped table-bordered metrics table-hover table-condensed'>";
-    html +="<thead>";
-    html +="<tr>";
-    html +="<td colspan='2'><h4 style='float:left;margin:5px 0;'>Metrics</h4>"
+    html +="<tbody class='metricsTable'>";
+    html += "</tbody>"
     if( this.config.allowAdd ) {
-      html +="<button  style='float:right;margin:5px 0;' class='btn btn-success btn-mini add-metric' type='button'>Add Metric</button>"
+      html +="<tfoot>";
+      html +="<tr>";
+      html +="<td colspan='2'><button  style='float:right;margin:5px 0;' class='btn btn-success btn-mini add-metric' type='button'>Add Metric</button></td>";
+      html +="</tr>";
+      html +="</tfoot>";
     }
-    html += "</td>";
-    html +="</tr>";
-    html +="</thead><tbody class='metricsTable'>";
-    html += "</tbody></table>"
+    html +="</table>";
     parentEl[0].innerHTML = html; 
     this._buildMetrics();
     if( this.config.allowAdd ) {

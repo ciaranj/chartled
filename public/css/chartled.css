@@ -14,6 +14,20 @@ body {
   background-color: #47bbb3;
 }
 
+.chartled-color-3  {
+  /* Purple-ish */
+  background-color: #9C4274;
+}
+
+.chartled-color-4 {
+  /* Orange-ish */
+  background-color: #EC663C;
+}
+
+.chartled-color-5 {
+  /* Orange-ish */
+  background-color: #FF9618;
+}
 .chartled.clock {
   overflow: hidden;
   text-align: center;
