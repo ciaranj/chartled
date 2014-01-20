@@ -41,16 +41,11 @@ Chartled.ChartChartle.prototype = {
              "metrics": this.metrics};
   },
   fetch: function(clock, cb) {
-    var dataUrl=  this.baseUrl + "/series?from=" + clock.from+ "&until=" + clock.until + "&jsonp=?";
-    for( var k in this.metrics ) {
-      dataUrl += "&target=" + this.metrics[k].value;
+    var mets= [];
+    for(var k in this.metrics) {
+      mets.push( this.metrics[k].value );
     }
-    $.getJSON(dataUrl, function(data){
-      cb(null, data);
-    })
-    .fail(function() {
-      cb(new Error());
-    });
+    Chartled.FetchMetric( this.baseUrl, mets, clock, cb );
   },
   update: function(err, data) {
     if(!err) {

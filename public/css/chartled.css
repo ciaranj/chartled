@@ -1,8 +1,17 @@
+@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+
+body {
+  background-color: black;
+}
 
 /* These colors are from the dashing demo (it's excellent, go check that app out: http://shopify.github.io/dashing/) */
 .chartled-color-1 {
   /*red-ish*/
   background-color: #dc5945;
+}
+.chartled-color-2  {
+  /* Teal-ish */
+  background-color: #47bbb3;
 }
 
 .chartled.clock {
@@ -29,14 +38,36 @@
   vertical-align:middle;
   overflow:hidden;
 }
-.chartled  * {
+
+.chartled .updated-at, .chartled .more-info {
+  position: absolute;
+  left: 0px;
+  right: 0px;
+}
+.chartled .updated-at {
+  color: rgba(0, 0, 0, 0.3);
+}
+.chartled .more-info {
+  color: rgba(255, 255, 255, 0.7);
+}
+.chartled .title, .chartled .value, .chartled .updated-at, .chartled .more-info   {
+  font-family: 'Open Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+.chartled .title {
+  line-height: 100%;
   color: white;
+  font-weight: 400;
 }
 
+.chartled .value {
+  color: white;
+  font-weight: 700;
+}
 
 .chartled h1, .chartled h2, .chartled h3 {
   line-height: 100%;
   font-family: 'Open Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+  margin: 0;
 }
 .chartled h2 {
   font-weight: 400;
@@ -52,4 +83,6 @@
   left: 0;
   top: 0;
   opacity: 0.1;
+  z-index: -100;
+  color: white;
 }
