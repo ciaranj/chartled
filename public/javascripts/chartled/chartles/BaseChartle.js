@@ -15,28 +15,19 @@ Chartled.inheritPrototype = function(childObject, parentObject, childPrototype) 
   }
 };
 
-Chartled._is_array = function (value) {
-    return value &&
-        typeof value === 'object' &&
-        typeof value.length === 'number' &&
-        typeof value.splice === 'function' &&
-        !(value.propertyIsEnumerable('length'));
-};
 
 Chartled.FetchMetric = function(baseUrl, metrics, clock,  cb) {
   if(!metrics) cb( new Error("No metrics defined.") );
-  if(!Chartled._is_array(metrics))  { 
-    metrics= [metrics]; 
-  }
+
   var dataUrl=  baseUrl + "/series?from=" + clock.from+ "&until=" + clock.until + "&jsonp=?";
-  
+
   var targetString= "";
   for( var k in metrics ) {
-    if( !metrics[k] || /^\s*$/.test(metrics[k]) ) {
-      
+    if( !metrics[k] || /^\s*$/.test(metrics[k].value) ) {
+
     }
     else {
-      targetString += "&target=" + metrics[k];
+      targetString += "&target=" + metrics[k].value;
     }
   }
   if( targetString == "" ) {

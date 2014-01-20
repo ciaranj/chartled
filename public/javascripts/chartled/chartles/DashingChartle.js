@@ -9,7 +9,7 @@ Chartled.inheritPrototype(Chartled.DashingChartle, Chartled.BaseChartle, {
   initialize: function(definition) {
     Chartled.BaseChartle.prototype.initialize.call(this, definition);
 
-    this.metric = definition.metric;
+    this.metrics = [{ value: definition.metric}];
     this.title = definition.title;
     this.moreInfo = definition.moreInfo;
 
@@ -18,7 +18,8 @@ Chartled.inheritPrototype(Chartled.DashingChartle, Chartled.BaseChartle, {
     var initialWidth= this.jEl.width();
     var initialHeight= this.jEl.height();
     if( !this.jEl.hasClass('clock') ) this.jEl.addClass('clock');
-    this.jEl.addClass(definition.backgroundColorClass)
+    this._backgroundColorClass= definition.backgroundColorClass;
+    this.jEl.addClass(this._backgroundColorClass);
 
     this.dateTimeContainer= document.createElement('div');
     this.dateTimeContainer.setAttribute("class", "dateandtime");
@@ -36,10 +37,10 @@ Chartled.inheritPrototype(Chartled.DashingChartle, Chartled.BaseChartle, {
     this.updatedAtEl.setAttribute("class", "updated-at");
   
     this.el.appendChild( this.dateTimeContainer );
-
-    if( definition.backgroundIcon ) {
+    this._backgroundIcon= typeof(definition.backgroundIcon) == 'undefined' ? false : definition.backgroundIcon;
+    if( this._backgroundIcon !== false) {
       this.icon= document.createElement("i");
-      this.icon.setAttribute("class", "background-icon icon-" + definition.backgroundIcon);
+      this.icon.setAttribute("class", "background-icon icon-" + this._backgroundIcon);
       this.el.appendChild(this.icon);
     }
 
@@ -97,13 +98,15 @@ Chartled.inheritPrototype(Chartled.DashingChartle, Chartled.BaseChartle, {
   },
   serialize: function() {
     var o= Chartled.BaseChartle.prototype.serialize.call(this);
-    o.metric= this.metric;
+    o.metric= this.metrics[0].value;
     o.moreInfo= this.moreInfo;
     o.title= this.title;
+    o.backgroundColorClass= this._backgroundColorClass;
+    o.backgroundIcon= this._backgroundIcon;
     return o;
   },
   fetch: function( clock, cb ) {
-    Chartled.FetchMetric(this.baseUrl, [this.metric], clock,  cb);
+    Chartled.FetchMetric(this.baseUrl, this.metrics, clock,  cb);
   },
   update: function(err, data) {
     var that= this;

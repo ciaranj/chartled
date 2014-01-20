@@ -4,8 +4,8 @@ Chartled.ClockChartle = function( definition, el, baseUrl ) {
 
 Chartled.inheritPrototype(Chartled.ClockChartle, Chartled.DashingChartle, {
   initialize: function( definition )  {
-    definition.backgroundColorClass= 'chartled-color-1';
-    definition.backgroundIcon= 'time';
+    if( typeof(definition.backgroundColorClass) == 'undefined' ) definition.backgroundColorClass= 'chartled-color-1';
+    if( typeof(definition.backgroundIcon) == 'undefined' ) definition.backgroundIcon= 'time';
     Chartled.DashingChartle.prototype.initialize.call(this, definition);
   },
   fetch: null,
@@ -18,5 +18,5 @@ Chartled.inheritPrototype(Chartled.ClockChartle, Chartled.DashingChartle, {
       .select("span")
       .text(now.toDateString());
     this._resizeValue();
-  }  
+  }
 });
