@@ -96,10 +96,11 @@ Chartled.inheritPrototype(Chartled.DashingChartle, Chartled.BaseChartle, {
       $(this.icon).css('font-size', height + 'px' );
   },
   serialize: function() {
-    return { "id"      : this.id,
-             "metric"  : this.metric,
-             "moreInfo": this.moreInfo,
-             "title"   : this.title};
+    var o= Chartled.BaseChartle.prototype.serialize.call(this);
+    o.metric= this.metric;
+    o.moreInfo= this.moreInfo;
+    o.title= this.title;
+    return o;
   },
   fetch: function( clock, cb ) {
     Chartled.FetchMetric(this.baseUrl, [this.metric], clock,  cb);

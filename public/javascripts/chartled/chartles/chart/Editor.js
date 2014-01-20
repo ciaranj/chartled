@@ -1,7 +1,7 @@
-Chartled.RegisterChartleEditor( Chartled.ChartChartle, {
+Chartled.registerChartleEditor( Chartled.ChartChartle, {
     _functionsDropDownString : null
   , _metricsDropDownString : null
-  , initialise: function( definition ) {
+  , initialize: function( definition ) {
       this.editableMetrics = null;
       this.configuringChart = false;
     }

@@ -111,7 +111,7 @@ html
       page_mode= "readOnly";
       layout.disable();
       layout.disable_resize();
-      $( ".textbox" ).hallo({editable: false});
+      $( ".text .realValue" ).hallo({editable: false});
       updatePageCss();
     }
 
@@ -119,7 +119,7 @@ html
       page_mode= "layout";
       layout.enable();
       layout.enable_resize();
-      $( ".textbox" ).hallo({editable: false});
+      $( ".text .realValue" ).hallo({editable: false});
       updatePageCss();
     }
 
@@ -127,6 +127,6 @@ html
         page_mode= "content";
         layout.disable();
         layout.disable_resize();
-        $( ".textbox" ).hallo({editable: true});
+        $( ".text .realValue" ).hallo({editable: true});
         updatePageCss();
     }

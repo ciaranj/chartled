@@ -1,21 +1,10 @@
-if( typeof(Chartled) == 'undefined' ) Chartled = {};
-
-Chartled.SpacerChartle = function(definition, el) {
-  this.id = definition.id;
-  this.el= el;
-  var jEl= $(el);
-  if( !jEl.hasClass('spacer') ) jEl.addClass('spacer');
+Chartled.SpacerChartle = function( definition, el, baseUrl ) {
+  Chartled.BaseChartle.call( this, definition, el, baseUrl );
 };
 
-Chartled.SpacerChartle.prototype = {
-  resize: function(width, height) {
-    // Nothing to do.
-  },
-  serialize: function() {
-    return { "id": this.id, 
-             "type": "Chartled.SpacerChartle"};
-  },
-  dispose: function() {
-	// Nothing to do.
+Chartled.inheritPrototype(Chartled.SpacerChartle, Chartled.BaseChartle, {
+  initialize: function(definition) {
+    Chartled.BaseChartle.prototype.initialize.call(this, definition);
+    if( !this.jEl.hasClass('spacer') ) this.jEl.addClass('spacer');
   }
-}
+});

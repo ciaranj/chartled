@@ -23,14 +23,6 @@ Chartled._is_array = function (value) {
         !(value.propertyIsEnumerable('length'));
 };
 
-Chartled._createHandOffFunction = function( originalMethod, newMethod ) {
-  return function() {
-    // lets errors bubble out.
-    originalMethod.apply( this, arguments );
-    newMethod.apply( this, arguments );
-  }
-};
-
 Chartled.FetchMetric = function(baseUrl, metrics, clock,  cb) {
   if(!metrics) cb( new Error("No metrics defined.") );
   if(!Chartled._is_array(metrics))  { 
@@ -60,16 +52,15 @@ Chartled.FetchMetric = function(baseUrl, metrics, clock,  cb) {
   }
 };
 
-Chartled.RegisterChartleEditor = function(chartleRenderer, editorPrototype) {
+Chartled.registerChartleEditor = function(chartleRenderer, editorPrototype) {
   if( typeof(chartleRenderer) == 'undefined') throw new Error("Specified renderer is undefined.");
 
-  // Simplistic inheritance (only allows overriding of initialise and dispose)
   for(var k in editorPrototype) {
-    if( (k == "initialise" || k == "dispose") &&  typeof(chartleRenderer.prototype[k]) == 'function' ) {
-      // Rightly/Wrongly? We call the renderer initialise before the editor initialise, and the editor dispose before the renderer dispose.
-      if( k == "initialise" ) chartleRenderer.prototype[k]= Chartled._createHandOffFunction( chartleRenderer.prototype[k], editorPrototype[k] );
-      else chartleRenderer.prototype[k]= Chartled._createHandOffFunction(  editorPrototype[k], chartleRenderer.prototype[k] );
+    if( k == "initialize" || k == "dispose" ) {
+      chartleRenderer.prototype["_editor_" + k]= editorPrototype[k]
     } else {
+      // There could (will be) naming conflicts here if someone re-declares a renderer's method in their editor
+      // need a better solution that this!
       chartleRenderer.prototype[k]= editorPrototype[k];
     }
   }
@@ -81,15 +72,27 @@ Chartled.BaseChartle= function(definition, el, baseUrl) {
   this.baseUrl= baseUrl;
 
   this.initialize( definition );
+  if( this._editor_initialize ) this._editor_initialize( definition );
 };
 
 Chartled.BaseChartle.prototype= {
   initialize: function(definition) {
-    if( definition && definition.id ) this.id= definition.id;
+    if( !definition || !definition.id ) throw new Error("Attempt to construct a chartle without an Id.");
+    this.id= definition.id;
+    this.type= definition.type;
   },
   dispose: function() {
+    if( this._editor_dispose ) this._editor_dispose();
     this.el= null;
     this.id= null;
     this.jEl= null;
+    this.type= null;
+  },
+  resize: function() {},
+  serialize: function() {
+    return { 
+      "id": this.id, 
+      "type": this.type 
+    };
   }
 }

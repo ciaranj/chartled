@@ -1,24 +1,20 @@
 Chartled.ChartChartle = function(definition, el, baseUrl) {
-  this.id = definition.id;
-  this.metrics= definition.metrics;
-  this.el= el;
-  this.baseUrl= baseUrl;
-
-  this.initialise(definition);
+  Chartled.BaseChartle.call( this, definition, el, baseUrl );
 };
 
-Chartled.ChartChartle.prototype = {
-  initialise: function( definition ) {
-    var that = this;
-    var jEl = $(that.el);
+Chartled.inheritPrototype(Chartled.ChartChartle, Chartled.BaseChartle, {
+  initialize: function( definition ) {
+    Chartled.BaseChartle.prototype.initialize.call(this, definition);
+
+    this.metrics= definition.metrics;
     this.configureDelegate= $.proxy( this.configureChart, this );
-    jEl.on( 'click', this.configureDelegate);
-    for(var key in that.metrics) {
-      that.metrics[key].axis= 0;
-      that.metrics[key].layer =2;
+    this.jEl.on( 'click', this.configureDelegate);
+    for(var key in this.metrics) {
+      this.metrics[key].axis= 0;
+      this.metrics[key].layer =2;
     }
-    that.chart = new Chart( that.id, jEl.width(), jEl.height(), {
-      "metrics": that.metrics,
+    this.chart = new Chart( this.id, this.jEl.width(), this.jEl.height(), {
+      "metrics": this.metrics,
       layers: [{renderer : "area"},{renderer : "bar"}, {renderer : "line", dropShadow: true}],
       axes: {
         x:{display: true}, 
@@ -28,17 +24,18 @@ Chartled.ChartChartle.prototype = {
     });
   },
   dispose: function() {
-    this.el = null;
     this.chart = null;
     this.configureDelegate = null;
+    this.metrics = null;
+    Chartled.BaseChartle.prototype.dispose.call(this);
   },
   resize: function(width, height) {
     this.chart.resize( width, height );
   },
   serialize: function() {
-    return { "id": this.id,
-             "type": "Chartled.ChartChartle",
-             "metrics": this.metrics};
+    var o= Chartled.BaseChartle.prototype.serialize.call(this);
+    o.metrics= this.metrics;
+    return o;
   },
   fetch: function(clock, cb) {
     var mets= [];
@@ -52,4 +49,4 @@ Chartled.ChartChartle.prototype = {
       this.chart.refreshData( data );
     }
   }
-}
+});

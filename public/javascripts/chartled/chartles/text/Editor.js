@@ -1,6 +1,7 @@
-Chartled.RegisterChartleEditor( Chartled.TextChartle, {
-  initialise: function(definition) {
+Chartled.registerChartleEditor( Chartled.TextChartle, {
+  initialize: function(definition) {
     $(this.realValue).hallo({
+      editable: (page_mode == "content" ),
       plugins: {
         'halloformat': {
           formattings: {"bold": true, "italic": true, "strikethrough": true, "underline": true}
