@@ -33,6 +33,7 @@ Chartled.registerChartleEditor( Chartled.NumberChartle, {
     html +=   "<fieldset><legend>Details</legend>";
     html +=   "<div class='control-group'><label class='control-label'>Title</label><div class='controls'><input class='title input-xlarge' type='text'/></div></div>";
     html +=   "<div class='control-group'><label class='control-label'>More Info</label><div class='controls'><input class='moreInfo input-xlarge' type='text'/></div></div>";
+    html +=   "<div class='control-group'><div class='controls'><label class='checkbox'>Show Timestamp<input type='checkbox' class='timestamp'/></label></div></div>";
     html +=   "</fieldset>"
     html +=   "<fieldset><legend>Metrics</legend>";
     html +=   "<div class='metricEditorContainer'/>";
@@ -56,6 +57,7 @@ Chartled.registerChartleEditor( Chartled.NumberChartle, {
                         that.set_backgroundColorClass(that.chartEditorDialog.find(".backgroundClass").val());
                         that.set_moreInfo(that.chartEditorDialog.find(".moreInfo").val())
                         that.set_title(that.chartEditorDialog.find(".title").val())
+                        that.set_displayUpdatedAt(that.chartEditorDialog.find(".timestamp").prop('checked'));
                         that.resize();
                         that.refresh();
                     }
@@ -74,6 +76,7 @@ Chartled.registerChartleEditor( Chartled.NumberChartle, {
     that.chartEditorDialog.find(".backgroundClass").val(this._backgroundColorClass);
     that.chartEditorDialog.find(".moreInfo").val(this._moreInfo);
     that.chartEditorDialog.find(".title").val(this._title);
+    that.chartEditorDialog.find(".timestamp").prop('checked', this._displayUpdatedAt);
   }
 });
 

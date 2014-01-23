@@ -23,24 +23,23 @@ Chartled.inheritPrototype(Chartled.DashingChartle, Chartled.BaseChartle, {
     this.valueEl= document.createElement('div');
     this.valueEl.setAttribute("class", "value");
 
-    this.updatedAtEl= document.createElement('div');
-    this.updatedAtEl.setAttribute("class", "updated-at");
 
     this.el.appendChild( this.dateTimeContainer );
 
     this.set_title( definition.title );
     this.dateTimeContainer.appendChild(this.valueEl);
 
-    this.el.appendChild(this.updatedAtEl);
 
     this.set_backgroundColorClass(definition.backgroundColorClass);
     this.set_backgroundIcon( definition.backgroundIcon );
     this.set_moreInfo( definition.moreInfo );
+    this.set_displayUpdatedAt( definition.displayUpdatedAt );
 
     this.resize( initialWidth, initialHeight );
   },
   dispose: function() {
     this.el.removeChild( this.dateTimeContainer );
+    if( this._updatedAtEl ) this.el.removeChild(this._updatedAtEl);
     if( typeof(this.icon) != 'undefined' ) {
       this.el.removeChild( this.icon );
       this.icon= null;
@@ -52,7 +51,7 @@ Chartled.inheritPrototype(Chartled.DashingChartle, Chartled.BaseChartle, {
     this.updateAt= null;
     this._moreInfo= null;
     this._moreInfoEl= null;
-    this.updatedAtEl= null;
+    this._updatedAtEl= null;
     this._titleEl = null;
     this.icon = null;
     this._backgroundIcon = null;
@@ -94,6 +93,7 @@ Chartled.inheritPrototype(Chartled.DashingChartle, Chartled.BaseChartle, {
     o.title= this._title;
     o.backgroundColorClass= this._backgroundColorClass;
     o.backgroundIcon= this._backgroundIcon;
+    o.displayUpdatedAt = this._displayUpdatedAt;
     return o;
   },
   fetch: function( clock, cb ) {
@@ -108,11 +108,6 @@ Chartled.inheritPrototype(Chartled.DashingChartle, Chartled.BaseChartle, {
       that._resizeValue();
     }
     else {
-      var now= new Date();
-      var result= (now.getHours()<10? "0"+now.getHours():now.getHours()) + ":" + (now.getMinutes()<10? "0"+now.getMinutes():now.getMinutes());
-      d3.select(this.updatedAtEl)
-        .text("Last updated at " + result ); 
-
       var currentText = d3.select(this.valueEl).text()
       var currentTextLength= 0;
       if(!currentText) currentTextLength=0;
@@ -144,6 +139,12 @@ Chartled.inheritPrototype(Chartled.DashingChartle, Chartled.BaseChartle, {
           that._resizeValue();
         });
     }
+    if( this._displayUpdatedAt ) {
+      var now= new Date();
+      var result= (now.getHours()<10? "0"+now.getHours():now.getHours()) + ":" + (now.getMinutes()<10? "0"+now.getMinutes():now.getMinutes());
+      d3.select(this._updatedAtEl)
+        .text("Last updated at " + result ); 
+    }
   },
   set_backgroundColorClass: function( backgroundColorClass ) {
     if( backgroundColorClass != this._backgroundColorClass ) {
@@ -167,6 +168,22 @@ Chartled.inheritPrototype(Chartled.DashingChartle, Chartled.BaseChartle, {
         this.icon.setAttribute("class", "background-icon icon-" + this._backgroundIcon);
         this.el.appendChild(this.icon);
       }
+    }
+  },
+  set_displayUpdatedAt: function( displayUpdatedAt ) {
+    displayUpdatedAt= (displayUpdatedAt === false) ? false : true;
+    if( this._displayUpdatedAt != displayUpdatedAt ) {
+      this._displayUpdatedAt= displayUpdatedAt;
+      if(!this._updatedAtEl && displayUpdatedAt) {
+        this._updatedAtEl= document.createElement('div');
+        this._updatedAtEl.setAttribute("class", "updated-at");
+        this.el.appendChild(this._updatedAtEl);
+      }
+      else if( this._updatedAtEl && !displayUpdatedAt) {
+        this.el.removeChild( this._updatedAtEl);
+        this._updatedAtEl= null;
+      }
+      
     }
   },
   set_moreInfo: function( moreInfo ) {
@@ -197,11 +214,12 @@ Chartled.inheritPrototype(Chartled.DashingChartle, Chartled.BaseChartle, {
       .boxfit( { "width": Math.floor(this._width * 0.9), "height": this._bottomBlocksHeight * 6} )
       .css({"width": "100%", "height" : "2px"});
 
-    $(this.updatedAtEl)
-      .css("bottom",  this._bottomOffset + "px")
-      .boxfit( { "width": Math.floor(this._width * 0.6), "height": this._bottomBlocksHeight} )
-      .css({"width": "100%"})
-
+    if( this._displayUpdatedAt ) { 
+      $(this._updatedAtEl)
+        .css("bottom",  this._bottomOffset + "px")
+        .boxfit( { "width": Math.floor(this._width * 0.6), "height": this._bottomBlocksHeight} )
+        .css({"width": "100%"})
+    }
     $(this._titleEl)
       .boxfit( { "width": Math.floor(this._width * 0.8), "height": this._bottomBlocksHeight * 2} )
       .css({"width": "100%", "height" : "2px"});

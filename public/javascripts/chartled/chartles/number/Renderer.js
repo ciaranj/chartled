@@ -6,6 +6,8 @@ Chartled.inheritPrototype(Chartled.NumberChartle, Chartled.DashingChartle, {
   initialize: function( definition ) {
     if( typeof(definition.backgroundColorClass) == 'undefined' ) definition.backgroundColorClass= 'chartled-color-2';
     if( typeof(definition.backgroundIcon) == 'undefined' ) definition.backgroundIcon= 'heart';
+    if( typeof(definition.displayUpdatedAt) == 'undefined' ) definition.displayUpdatedAt= true;
+
     Chartled.DashingChartle.prototype.initialize.call(this, definition);
   }
 });

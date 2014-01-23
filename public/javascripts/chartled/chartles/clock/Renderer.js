@@ -6,6 +6,7 @@ Chartled.inheritPrototype(Chartled.ClockChartle, Chartled.DashingChartle, {
   initialize: function( definition )  {
     if( typeof(definition.backgroundColorClass) == 'undefined' ) definition.backgroundColorClass= 'chartled-color-1';
     if( typeof(definition.backgroundIcon) == 'undefined' ) definition.backgroundIcon= 'time';
+    if( typeof(definition.displayUpdatedAt) == 'undefined' ) definition.displayUpdatedAt= false;
     definition.title= "";
     Chartled.DashingChartle.prototype.initialize.call(this, definition);
   },
