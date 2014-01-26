@@ -22,7 +22,7 @@ Chartled.MetricEditor.prototype= {
     if( this.config.allowAdd ) {
       html +="<tfoot>";
       html +="<tr>";
-      html +="<td colspan='2'><button  style='float:right;margin:5px 0;' class='btn btn-success btn-mini add-metric' type='button'>Add Metric</button></td>";
+      html +="<td colspan='2'><button  style='float:right;margin:5px 0;' class='btn btn-success btn-xs add-metric' type='button'>Add Metric</button></td>";
       html +="</tr>";
       html +="</tfoot>";
     }
@@ -46,7 +46,7 @@ Chartled.MetricEditor.prototype= {
     for( var k=0; k< that.editableMetrics.length; k++ ) {
         html += "<tr>";
         if( this.config.allowRemove ) {
-          html += "<td style='width:20px' class='metric-deletion'> <button class='btn btn-danger btn-mini' type='button' data-metric-id='" + k+ "'><i class='icon-remove'></i></button></td>";
+          html += "<td style='width:20px' class='metric-deletion'> <button class='btn btn-danger btn-xs' type='button' data-metric-id='" + k+ "'><i class='fa fa-times'></i></button></td>";
         }
         html += "<td class='metric' data-metric-id='" + k+ "' data-original-title='Metric Details' data-content=\"" + that._encodeHtml(that.editableMetrics[k].value) + "\">" + (that.editableMetrics[k].value.length> 60 ? that._encodeHtml(that.editableMetrics[k].value.substring(0, 60)) +"..." : that._encodeHtml(that.editableMetrics[k].value)) + "</td>";
         html += "</tr>";
@@ -115,18 +115,12 @@ Chartled.MetricEditor.prototype= {
     var that= this;
     that.hideChartleEditor();
 
-    var html= "";
-    if( metricId == -1 ) {
-        html += "<h2>Create new metric</h2>";
-    }
-    else {
-        html += "<h2>Configure Metric #" + (metricId + 1) + "</h2>";
-    }
+
     var metric= {value:"", layer:2, axis:0};
     if( metricId != -1) {
         metric= that.editableMetrics[ metricId ];
     }
-    html += "<div class='btn-toolbar'>";
+    var html = "<div class='btn-toolbar'>";
     html += "<div class='btn-group'>";
     html += "<button class='btn dropdown-toggle btn-info' data-toggle='dropdown' href='#'>Functions <span class='caret'></span></button><ul class='dropdown-menu'>"
     html += that.getFunctionsDropDown();
@@ -138,6 +132,7 @@ Chartled.MetricEditor.prototype= {
     html += "</ul>";
     html += "</div>";
     html += "</div>";
+    html += "<br/>"
     html += "<textarea id='editingMetric' rows='8' style='width:99%;'>" + this._encodeHtml(metric.value) + "</textarea>";
 /*    html += "<div class='btn-group' data-toggle='buttons-radio'>";
     for(var bK=0; bK< Chartled.ChartChartle.prototype.metricChartTypes.length; bK++ ){
@@ -152,11 +147,15 @@ Chartled.MetricEditor.prototype= {
     }
     html += "</div>"*/
 
-    bootbox.dialog(html, [
-                {
-                    "label" : "OK",
-                    "class" : "btn-primary",
-                    "callback": function() {
+    bootbox.dialog({
+      message: html,
+      backdrop: false,
+      className: "metricEditor",
+      title: "Configure Metric",
+      buttons: {
+        "Ok": {
+          className: "btn-primary",
+          callback: function() {
                         var newMetricValue= $('#editingMetric').val().replace(/^\s\s*/, '').replace(/\s\s*$/, '');
                         if( newMetricValue != "" ) {
                             //TODO: assert valid  here..
@@ -165,16 +164,17 @@ Chartled.MetricEditor.prototype= {
                         }
                         that._buildMetrics();
                         that.showChartleEditor();
-                    }
-                },  
-                {
-                    "label" : "Cancel", 
-                    "class" :"btn-default",
-                    "callback": function() {
-                        that.showChartleEditor();
-                    }
-                }
-    ], {"backdrop": false, "classes" :"metricEditor"});
+          }
+        },
+        "Cancel": {
+          className: "btn-default",
+          callback: function() {
+            that.showChartleEditor();
+          }
+        }
+      }
+    });
+
     $(document).off('focusin.modal');
   },  
   hideChartleEditor : function() {

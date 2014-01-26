@@ -28,48 +28,52 @@ Chartled.registerChartleEditor( Chartled.NumberChartle, {
           value: that.metrics[i].value
         };
     }
-    var html= "<h2>Configure Number Chartle</h2>";
-    html +=   "<form class='form-horizontal'>";
+    var html= "<form class='form-horizontal'>";
     html +=   "<fieldset><legend>Details</legend>";
-    html +=   "<div class='control-group'><label class='control-label'>Title</label><div class='controls'><input class='title input-xlarge' type='text'/></div></div>";
-    html +=   "<div class='control-group'><label class='control-label'>More Info</label><div class='controls'><input class='moreInfo input-xlarge' type='text'/></div></div>";
-    html +=   "<div class='control-group'><div class='controls'><label class='checkbox'>Show Timestamp<input type='checkbox' class='timestamp'/></label></div></div>";
+    html +=   "<div class='form-group'><label class='col-sm-3 control-label'>Title</label><div class='controls col-sm-9'><input class='title form-control' type='text'/></div></div>";
+    html +=   "<div class='form-group'><label class='col-sm-3 control-label'>More Info</label><div class='controls col-sm-9'><input class='moreInfo form-control' type='text'/></div></div>";
+    html +=   "<div class='form-group'><div class='controls col-sm-offset-3 col-sm-9'><div class='checkbox'><label><input type='checkbox' class='timestamp'/>Show Timestamp</label></div></div></div>";
     html +=   "</fieldset>"
     html +=   "<fieldset><legend>Metrics</legend>";
     html +=   "<div class='metricEditorContainer'/>";
     html +=   "</fieldset>"
     html +=   "<fieldset><legend>Background</legend>";
-    html +=   "<div class='control-group'><label class='control-label'>Icon (Awesome Font)</label><div class='controls'><input class='backgroundImage input-xlarge' type='text'/></div></div>";
-    html +=   "<div class='control-group'><label class='control-label'>Colour (Class)</label><div class='controls'><input class='backgroundClass input-xlarge' type='text'/></div></div>";
+    html +=   "<div class='form-group'><label class='col-sm-3 control-label'>Icon (Awesome Font)</label><div class='controls col-sm-9'><input class='backgroundImage form-control' type='text'/></div></div>";
+    html +=   "<div class='form-group'><label class='col-sm-3 control-label'>Colour (Class)</label><div class='controls col-sm-9'><input class='backgroundClass form-control' type='text'/></div></div>";
     html +=   "</fieldset>"
     html +=  "</form>";
 
-    that.chartEditorDialog= bootbox.dialog( html, [
-                {
-                    "label" : "OK",
-                    "class" : "btn-primary",
-                    "callback": function() {
-                        that.configuringChartle= false;
-                        // Bleurghhh this is nasty, avoiding shared mutable states??
-                        that.metrics= that.editableMetrics;
-                        that.editableMetrics= null;
-                        that.set_backgroundIcon( that.chartEditorDialog.find(".backgroundImage").val() );
-                        that.set_backgroundColorClass(that.chartEditorDialog.find(".backgroundClass").val());
-                        that.set_moreInfo(that.chartEditorDialog.find(".moreInfo").val())
-                        that.set_title(that.chartEditorDialog.find(".title").val())
-                        that.set_displayUpdatedAt(that.chartEditorDialog.find(".timestamp").prop('checked'));
-                        that.resize();
-                        that.refresh();
-                    }
-                },  
-                {
-                    "label" : "Cancel", 
-                    "class" :"btn-default",
-                    "callback": function() {
-                        that.configuringChartle= false;
-                    }
-                }
-    ], {"backdrop": false, "animate":false, "classes":"graphEditor"});
+    that.chartEditorDialog= bootbox.dialog({"backdrop": true,
+                                            "animate":false,
+                                            message:html,
+                                            "className":"graphEditor",
+                                            title: "Configure Number Chartle",
+                                            closeButton: false,
+                                            buttons: {
+                                              "Ok": {
+                                                className : "btn-primary",
+                                                callback: function() {
+                                                  that.configuringChartle= false;
+                                                  // Bleurghhh this is nasty, avoiding shared mutable states??
+                                                  that.metrics= that.editableMetrics;
+                                                  that.editableMetrics= null;
+                                                  that.set_backgroundIcon( that.chartEditorDialog.find(".backgroundImage").val() );
+                                                  that.set_backgroundColorClass(that.chartEditorDialog.find(".backgroundClass").val());
+                                                  that.set_moreInfo(that.chartEditorDialog.find(".moreInfo").val())
+                                                  that.set_title(that.chartEditorDialog.find(".title").val())
+                                                  that.set_displayUpdatedAt(that.chartEditorDialog.find(".timestamp").prop('checked'));
+                                                  that.resize();
+                                                  that.refresh();
+                                                }
+                                              },  
+                                              "Cancel": {
+                                                className :"btn-default",
+                                                callback: function() {
+                                                  that.configuringChartle= false;
+                                                }
+                                              }
+                                            }});
+
     if( this._metricEditor ) this._metricEditor.dispose();
     this._metricEditor= new Chartled.MetricEditor( that.chartEditorDialog, that.chartEditorDialog.find(".metricEditorContainer"), that.editableMetrics, {allowAdd: false, allowRemove: false} );
     that.chartEditorDialog.find(".backgroundImage").val(this._backgroundIcon);

@@ -165,7 +165,7 @@ Chartled.inheritPrototype(Chartled.DashingChartle, Chartled.BaseChartle, {
 
       if( typeof(this._backgroundIcon) == 'string' && this._backgroundIcon != "") {
         this.icon= document.createElement("i");
-        this.icon.setAttribute("class", "background-icon icon-" + this._backgroundIcon);
+        this.icon.setAttribute("class", "background-icon fa fa-" + this._backgroundIcon);
         this.el.appendChild(this.icon);
       }
     }

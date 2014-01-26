@@ -29,39 +29,44 @@ Chartled.registerChartleEditor( Chartled.ChartChartle, {
           axis: that.metrics[i].axis
         };
     }
-    var html= "<h2>Configure Chart #" + that.id +"</h2>";
-    html +=   "<form class='form-horizontal'>";
+    var html =   "<form class='form-horizontal'>";
     html +=   "<fieldset><legend>Metrics</legend>";
     html +=   "<div class='metricEditorContainer'/>";
     html +=   "</fieldset>";
     html +=   "</form>";
-    that.chartEditorDialog= bootbox.dialog( html, [
-                {
-                    "label" : "OK",
-                    "class" : "btn-primary",
-                    "callback": function() {
-                        that.configuringChartle= false;
-                        // Bleurghhh this is nasty, avoiding shared mutable states??
-                        for( var k in that.editableMetrics ) {
-                          if( !that.editableMetrics[k].layer ) {
-                            that.editableMetrics[k].layer = 2;
-                            that.editableMetrics[k].axis = 0;
-                          }
-                        }
-                        that.metrics= that.editableMetrics;
-                        that.chart.config.metrics= that.metrics;
-                        that.editableMetrics= null;
-                        that.refresh();
-                    }
-                },  
-                {
-                    "label" : "Cancel", 
-                    "class" :"btn-default",
-                    "callback": function() {
-                        that.configuringChartle= false;
-                    }
-                }
-    ], {"backdrop": false, "animate":false, "classes":"graphEditor"});
+    that.chartEditorDialog= bootbox.dialog({
+      title: "Configure Chart",
+      message: html,
+      backdrop: true,
+      animate: false,
+      className: "graphEditor",
+      close: false,
+      buttons: {
+        "Ok": {
+          className: "btn-primary",
+          callback: function() {
+            that.configuringChartle= false;
+            // Bleurghhh this is nasty, avoiding shared mutable states??
+            for( var k in that.editableMetrics ) {
+              if( !that.editableMetrics[k].layer ) {
+                that.editableMetrics[k].layer = 2;
+                that.editableMetrics[k].axis = 0;
+              }
+            }
+            that.metrics= that.editableMetrics;
+            that.chart.config.metrics= that.metrics;
+            that.editableMetrics= null;
+            that.refresh();
+          }
+        },
+        "Cancel": {
+          className: "btn-default",
+          callback: function() {
+            that.configuringChartle= false;
+          }
+        }
+      }
+    });
     if( this._metricEditor ) this._metricEditor.dispose();
     this._metricEditor= new Chartled.MetricEditor( that.chartEditorDialog, that.chartEditorDialog.find(".metricEditorContainer"), that.editableMetrics, {allowAdd: true, allowRemove: true} );
   }

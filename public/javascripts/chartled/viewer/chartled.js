@@ -95,29 +95,41 @@ function addNewSpacer() {
 }
 
 function exportChartles() {
-    var html= "<h2>Chartled Export</h2>";
-    html += "<textarea class='span7' style='height:240px'>" + JSON.stringify(chartledDefinition.serialize(),null, "  ") + "</textarea>";
-
-    bootbox.dialog( html, [{
-                    "label" : "OK",
-                    "class" : "btn-primary"
-                }], {"backdrop": false, "animate":false});
+    var html= "<textarea style='width:100%;height:240px'>" + JSON.stringify(chartledDefinition.serialize(),null, "  ") + "</textarea>";
+    bootbox.dialog( { message:html,
+                      title: "Chartled Export",
+                      buttons:{
+                        "Ok" : {
+                          className: "btn-primary"
+                        }
+                      },
+                      "backdrop": true,
+                      "animate" : false
+                    });
 }
 
 function importChartles() {
-    var html= "<h2>Chartled Import</h2>";
-    html += "<textarea class='span7' style='height:240px' id='chartledDefinitionToImport'></textarea>";
-
-    bootbox.dialog( html, [{
-                    "label" : "OK",
-                    "class" : "btn-primary",
-                    "callback": function() {
-                      var newDefinition= $('#chartledDefinitionToImport').val();
-                      startAgain( JSON.parse( newDefinition ) );
-                    }
-                },  
-                {
-                    "label" : "Cancel", 
-                    "class" :"btn-default"
-                }], {"backdrop": false, "animate":false});
+    var html = "<textarea style='width:100%;height:240px' id='chartledDefinitionToImport'></textarea>";
+    bootbox.dialog( { message:html,
+                      title: "Chartled Import",
+                      buttons:{
+                        "Ok" : {
+                          className: "btn-primary",
+                          callback: function() {
+                            // 'cache' the definition value as the DOM will get torn down before our
+                            // set timeout fires (we use a settimeout deliberately so the import dialog
+                            // doesn't hang around whilst we're re-building...
+                            var newDefinition= $('#chartledDefinitionToImport').val();
+                            setTimeout(function() {
+                              startAgain( JSON.parse( newDefinition ) );
+                            }, 0);
+                          }
+                        },
+                        "Cancel" : {
+                          className: "btn-default"
+                        }
+                      },
+                      "backdrop": true,
+                      "animate" : false
+                    });
 }

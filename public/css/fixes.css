@@ -3,7 +3,8 @@
 }
 .metric {
     cursor: hand; 
-    cursor: pointer; 
+    cursor: pointer;
+    vertical-align: middle !important;
 }
 
 .metricEditor.modal { overflow: visible !important; }
