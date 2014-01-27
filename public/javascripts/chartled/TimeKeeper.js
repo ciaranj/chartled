@@ -254,7 +254,13 @@ Chartled.TimeKeeper.prototype = {
           var fetchQueueItem= fetchQueue[k];
           if( !fetchQueueItem.updated ) {
             fetchQueueItem.updated= true;
-            fetchQueueItem.chartle.update( fetchQueueItem.err, fetchQueueItem.data );
+			try {
+				fetchQueueItem.chartle.update( fetchQueueItem.err, fetchQueueItem.data );
+			}
+			catch(e) {
+				// There was an error updating a chartle, this shouldn't stop the other chartles from
+				// displaying. So we swallow it :/
+			}
           }
         }
       }

@@ -314,6 +314,25 @@ describe('TimeKeeper', function(){
       assert.equal( myChartle2.cnt, 4);
       assert.equal( myChartle3.cnt, 3);
     });
+    it("should call fetchData for the registered chartles at the right time, ignoring errors caused by the update function", function() {
+      var myChartle1= { cnt: 0, fetch: function(clk) { assert.equal(clk.refreshRate, 2); assert.equal(clock.now%2, 0); this.cnt++; }, update: function() {}};
+      var myChartle2= { cnt: 0, fetch: function(clk) { assert.equal(clk.refreshRate, 5); assert.equal(clock.now%5, 0); this.cnt++; }, update: function() { throw new Error("SHOULD NOT BREAK THINGS"); } };
+      var myChartle3= { cnt: 0, fetch: function(clk) { assert.equal(clk.refreshRate, 5); assert.equal(clock.now%5, 0); this.cnt++; }, update: function() {} };
+      var clock = sinon.useFakeTimers();
+      var clockId= keeper.addClock({refreshRate:2});
+      var clockId2= keeper.addClock({refreshRate:5});
+      keeper.registerChartle( clockId, myChartle1 );
+      keeper.registerChartle( clockId2, myChartle2 );
+      keeper.registerChartle( clockId2, myChartle3 );
+      assert.equal( myChartle1.cnt, 1);
+      assert.equal( myChartle2.cnt, 2);
+      assert.equal( myChartle3.cnt, 1);
+      clock.tick(10000);
+      clock.restore();
+      assert.equal( myChartle1.cnt, 6);
+      assert.equal( myChartle2.cnt, 4);
+      assert.equal( myChartle3.cnt, 3);
+    });	
     it("should immediately update the chartles associated with the updated clock and any other clocks in the current refresh rate", function() {
       var clock = sinon.useFakeTimers();
       // 2 Clocks, same initial refresh rate.
