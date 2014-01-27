@@ -34,10 +34,16 @@ Chartled.MetricEditor.prototype= {
         that.configureMetric(-1);
       });
     }
+    this._chartEditorDialog= new Chartled.ChartleEditDialog({
+      title: "Configure Metric",
+      background: false
+    });    
   },
   dispose: function() {
     this.parentEl[0].innerHTML= "";
     this.parentEl= null;
+    this._chartEditorDialog.dispose();
+    this._chartEditorDialog = null;
   },
   _buildMetrics : function() {
     var that = this;
@@ -134,48 +140,22 @@ Chartled.MetricEditor.prototype= {
     html += "</div>";
     html += "<br/>"
     html += "<textarea id='editingMetric' rows='8' style='width:99%;'>" + this._encodeHtml(metric.value) + "</textarea>";
-/*    html += "<div class='btn-group' data-toggle='buttons-radio'>";
-    for(var bK=0; bK< Chartled.ChartChartle.prototype.metricChartTypes.length; bK++ ){
-      var claz= "btn";
-      if( Chartled.ChartChartle.prototype.metricChartTypes[bK].type == metric.renderer ) {
-        claz+= " active";
-      }
-      html+= "<button type='button' class='"+claz+"' data-toggle='button'>";
-      html+= Chartled.ChartChartle.prototype.metricChartTypes[bK].name;
-      html+= "<input type='radio' name='is_private' value='" + bK + "' />"
-      html+= "</button>";
-    }
-    html += "</div>"*/
 
-    bootbox.dialog({
-      message: html,
-      backdrop: false,
-      className: "metricEditor",
-      title: "Configure Metric",
-      buttons: {
-        "Ok": {
-          className: "btn-primary",
-          callback: function() {
-                        var newMetricValue= $('#editingMetric').val().replace(/^\s\s*/, '').replace(/\s\s*$/, '');
-                        if( newMetricValue != "" ) {
-                            //TODO: assert valid  here..
-                            if( metricId == -1 ) metricId= that.editableMetrics.length;
-                            that.editableMetrics[metricId]= { value: newMetricValue };
-                        }
-                        that._buildMetrics();
-                        that.showChartleEditor();
-          }
-        },
-        "Cancel": {
-          className: "btn-default",
-          callback: function() {
-            that.showChartleEditor();
-          }
+    this._chartEditorDialog.show( html, 
+      function ($dialog) {
+        var newMetricValue= $('#editingMetric').val().replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+        if( newMetricValue != "" ) {
+            //TODO: assert valid  here..
+            if( metricId == -1 ) metricId= that.editableMetrics.length;
+            that.editableMetrics[metricId]= { value: newMetricValue };
         }
+        that._buildMetrics();
+        that.showChartleEditor();
+      },
+      function ($dialog) {
+        that.showChartleEditor();
       }
-    });
-
-    $(document).off('focusin.modal');
+    );
   },  
   hideChartleEditor : function() {
     if ( this.chartleEditorDialog ) this.chartleEditorDialog.hide();

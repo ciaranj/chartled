@@ -3,6 +3,9 @@ Chartled.registerChartleEditor( Chartled.ChartChartle, {
       this.configuringChartle = false;
       this.configureDelegate= $.proxy( this.configureChartle, this );
       this.jEl.on( 'click', this.configureDelegate);
+      this._chartEditorDialog= new Chartled.ChartleEditDialog({
+        title: "Configure Chart"
+      });
     }
   , dispose: function() {
       this.jEl.off( 'click', this.configureDelegate);
@@ -11,6 +14,8 @@ Chartled.registerChartleEditor( Chartled.ChartChartle, {
         this._metricEditor.dispose();
         this._metricEditor = null;
       }
+      this._chartEditorDialog.dispose();
+      this._chartEditorDialog = null;
     }
   , addRefreshListener: function( refresher ) {
       this.refresh= refresher;
@@ -34,17 +39,9 @@ Chartled.registerChartleEditor( Chartled.ChartChartle, {
     html +=   "<div class='metricEditorContainer'/>";
     html +=   "</fieldset>";
     html +=   "</form>";
-    that.chartEditorDialog= bootbox.dialog({
-      title: "Configure Chart",
-      message: html,
-      backdrop: true,
-      animate: false,
-      className: "graphEditor",
-      close: false,
-      buttons: {
-        "Ok": {
-          className: "btn-primary",
-          callback: function() {
+    var $dialog= this._chartEditorDialog.show(
+      html,
+      function($dialog) {
             that.configuringChartle= false;
             // Bleurghhh this is nasty, avoiding shared mutable states??
             for( var k in that.editableMetrics ) {
@@ -57,18 +54,14 @@ Chartled.registerChartleEditor( Chartled.ChartChartle, {
             that.chart.config.metrics= that.metrics;
             that.editableMetrics= null;
             that.refresh();
-          }
-        },
-        "Cancel": {
-          className: "btn-default",
-          callback: function() {
-            that.configuringChartle= false;
-          }
-        }
+      },
+      function() {
+        that.configuringChartle= false;
       }
-    });
+    );
+
     if( this._metricEditor ) this._metricEditor.dispose();
-    this._metricEditor= new Chartled.MetricEditor( that.chartEditorDialog, that.chartEditorDialog.find(".metricEditorContainer"), that.editableMetrics, {allowAdd: true, allowRemove: true} );
+    this._metricEditor= new Chartled.MetricEditor( $dialog, $dialog.find(".metricEditorContainer"), that.editableMetrics, {allowAdd: true, allowRemove: true} );
   }
   , metricChartTypes : [
       {name:"Area", type: "area"},
