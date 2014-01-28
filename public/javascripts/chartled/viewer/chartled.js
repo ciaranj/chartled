@@ -93,6 +93,11 @@ function addNewSpacer() {
 		"type": "Chartled.SpacerChartle"
 	}, null, 2, 2 );
 }
+function addNewNumber() {
+	chartledDefinition.addNewChartle( {
+		"type": "Chartled.NumberChartle"
+	}, 1, 2, 2 );
+}
 
 function exportChartles() {
     var html= "<textarea style='width:100%;height:240px'>" + JSON.stringify(chartledDefinition.serialize(),null, "  ") + "</textarea>";

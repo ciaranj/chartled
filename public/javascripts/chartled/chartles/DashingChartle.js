@@ -8,8 +8,16 @@ Chartled.DashingChartle = function( definition, el, baseUrl ) {
 Chartled.inheritPrototype(Chartled.DashingChartle, Chartled.BaseChartle, {
   initialize: function(definition) {
     Chartled.BaseChartle.prototype.initialize.call(this, definition);
-
-    this.metrics = [{ value: definition.metric}];
+    // Support both (not simultaneously) a single 'metric value' definition
+    // or the more complex 'list of metrics' definition style.
+    if( typeof(definition.metrics) != 'undefined' ) {
+      this.metrics = definition.metrics;
+    }
+    else if( typeof(definition.metric) != 'undefined' ) { 
+      this.metrics= [{
+          value: definition.metric
+        }];
+    }
 
     // Need to grab the given element size prior to adding child elements as they may force it
     // to grow.
@@ -88,7 +96,14 @@ Chartled.inheritPrototype(Chartled.DashingChartle, Chartled.BaseChartle, {
   },
   serialize: function() {
     var o= Chartled.BaseChartle.prototype.serialize.call(this);
-    o.metric= this.metrics[0].value;
+    if( this.metrics ) {
+      if( this.metrics.length ==1 ) {
+        o.metric= this.metrics[0].value;
+      }
+      else {
+        o.metrics= this.metrics;
+      }
+    }
     o.moreInfo= this._moreInfo;
     o.title= this._title;
     o.backgroundColorClass= this._backgroundColorClass;
