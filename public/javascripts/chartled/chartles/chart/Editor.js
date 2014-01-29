@@ -35,6 +35,9 @@ Chartled.registerChartleEditor( Chartled.ChartChartle, {
         };
     }
     var html =   "<form class='form-horizontal'>";
+    html +=   "<fieldset><legend>Details</legend>";
+    html +=   "<div class='form-group'><label class='col-sm-3 control-label'>Title</label><div class='controls col-sm-9'><input class='title form-control' type='text'/></div></div>";
+    html +=   "</fieldset>";
     html +=   "<fieldset><legend>Metrics</legend>";
     html +=   "<div class='metricEditorContainer'/>";
     html +=   "</fieldset>";
@@ -53,6 +56,7 @@ Chartled.registerChartleEditor( Chartled.ChartChartle, {
             that.metrics= that.editableMetrics;
             that.chart.config.metrics= that.metrics;
             that.editableMetrics= null;
+            that.set_title($dialog.find(".title").val())
             that.refresh();
       },
       function() {
@@ -62,6 +66,7 @@ Chartled.registerChartleEditor( Chartled.ChartChartle, {
 
     if( this._metricEditor ) this._metricEditor.dispose();
     this._metricEditor= new Chartled.MetricEditor( $dialog, $dialog.find(".metricEditorContainer"), that.editableMetrics, {allowAdd: true, allowRemove: true} );
+    $dialog.find(".title").val(that._title);
   }
   , metricChartTypes : [
       {name:"Area", type: "area"},

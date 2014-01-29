@@ -68,3 +68,11 @@ svg {
   padding: 0px;
   margin: 0px;
 }
+
+.chart-title {
+  text-anchor: middle;
+  font-size: 28px;
+  font-weight: 600;
+  font-family: 'Open Sans', "Helvetica Neue", Helvetica, Arial, sans-serif;
+  opacity: 0.5;
+}

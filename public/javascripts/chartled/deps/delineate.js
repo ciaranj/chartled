@@ -5,7 +5,7 @@ Chart= function(parentEl, outerWidth, outerHeight, config ) {
   this.outerWidth= outerWidth;
   this.outerHeight= outerHeight;
 
-  
+
   var chartEl= document.createElement('div');
   chartEl.setAttribute('id', parentEl + '-chart')
   chartEl.setAttribute('class', 'chart')
@@ -34,10 +34,14 @@ Chart= function(parentEl, outerWidth, outerHeight, config ) {
     this.chartArea.append("g")
                   .classed("layer" + k, true);
   }
-  
+
   this._buildScales();
   this._buildChart();
-  this._buildAxes(); 
+  this._buildAxes();
+  this._buildTitle();
+  if( typeof(config.title) != 'undefined' && config.title != "" ) {
+    this.set_title(config.title);
+  }
   this._updateChartAreaSize();
 }
 
@@ -98,6 +102,10 @@ Chart.prototype._updateChartAreaSize= function( margins ) {
   this.scales.y[0].range([this.height, 0]);
   this.canvasArea.select("g.x-axis").attr("transform", "translate(0," + this.height + ")");
   this.canvasArea.select(".y-axis-right").attr("transform", "translate(" + this.width + ",0)");
+  
+  // The title is attached to the outer container, not the inner canvas, so the height + width calculations
+  // need to be relative to the outer container.
+  this.title.attr("transform", "translate("+(this.outerWidth/2)+","+(this.outerHeight/2)+")");
 }
 
 Chart.prototype._buildAxes= function() {
@@ -127,7 +135,12 @@ Chart.prototype._buildAxes= function() {
           .classed("y-axis", true)
           .classed("y-axis-right", true);
 }
-
+Chart.prototype._buildTitle= function() {
+  this.title= this.graphContainer
+                  .append("text")
+                  .classed("chart-title", true)
+                  .attr("style", "text-anchor:middle");
+}
 Chart.prototype._buildChart= function() {
 
   var that= this;
@@ -442,4 +455,8 @@ Chart.prototype._redrawAxes= function( leftAxis, rightAxis ) {
     this.xAxis.scale(this.scales.x);
     this.canvasArea.select(".x-axis").call(this.xAxis);
   }
+}
+
+Chart.prototype.set_title= function( title ) {
+  this.title.text(title);
 }
