@@ -37,11 +37,16 @@ Chart= function(parentEl, outerWidth, outerHeight, config ) {
 
   this._buildScales();
   this._buildChart();
-  this._buildAxes();
+  
+  this._buildAxes( );
   this._buildTitle();
   if( typeof(config.title) != 'undefined' && config.title != "" ) {
     this.set_title(config.title);
   }
+  if( typeof(config.horizontalAxisVisible) != 'undefined' && config.horizontalAxisVisible != "" ) {
+    this.set_horizontalAxisVisible(config.horizontalAxisVisible);
+  }
+
   this._updateChartAreaSize();
 }
 
@@ -90,8 +95,12 @@ Chart.prototype._setConfig= function( config ) {
   this.config= tmpConfig;
 }
 
-Chart.prototype._updateChartAreaSize= function( margins ) {
-  margins= margins || {top: 2, right: 40, bottom: 20, left: 40};
+Chart.prototype._updateChartAreaSize= function() {
+  var margins = {
+        top: 4, 
+        right: 4, 
+        bottom: (this._horizontalAxisVisible ? 20 :4 ), 
+        left: 40};
   this._margins= margins;
   this.width = this.outerWidth - margins.left - margins.right,
   this.height = this.outerHeight - margins.top - margins.bottom;
@@ -100,8 +109,10 @@ Chart.prototype._updateChartAreaSize= function( margins ) {
   this.canvasArea.attr("transform", "translate(" + margins.left + "," + margins.top + ")");
   this.scales.x.range([0, this.width]);
   this.scales.y[0].range([this.height, 0]);
-  this.canvasArea.select("g.x-axis").attr("transform", "translate(0," + this.height + ")");
-  this.canvasArea.select(".y-axis-right").attr("transform", "translate(" + this.width + ",0)");
+  this.canvasArea.select("g.x-axis").attr("transform", "translate(0," + this.height + ")")
+                 .attr("style", (this._horizontalAxisVisible)?"":"display:none")
+  this.canvasArea.select(".y-axis-right")
+    .attr("transform", "translate(" + this.width + ",0)");
   
   // The title is attached to the outer container, not the inner canvas, so the height + width calculations
   // need to be relative to the outer container.
@@ -254,13 +265,13 @@ Chart.prototype.refreshData= function( data ) {
       var leftAxis= this._getLeftAxis();
       var rightAxis= this._getRightAxis();
       
-      this._updateChartAreaSize({
+/*      this._updateChartAreaSize({
         top: 5,
         right: (rightAxis ? 40 : 2),
         bottom: (this.config.axes.x.display ? 20: 2),
         left:  (leftAxis ? 40 : 2)
       });
-
+*/
       var that= this;
       var line = d3.svg.line()
                        .x(function(d) {
@@ -458,5 +469,11 @@ Chart.prototype._redrawAxes= function( leftAxis, rightAxis ) {
 }
 
 Chart.prototype.set_title= function( title ) {
-  this.title.text(title);
+  this._title= title;
+  this.title.text(this._title);
+}
+
+Chart.prototype.set_horizontalAxisVisible= function( visible ) {
+  this._horizontalAxisVisible= visible;
+  this._updateChartAreaSize();
 }

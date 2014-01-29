@@ -9,6 +9,8 @@ Chartled.inheritPrototype(Chartled.ChartChartle, Chartled.BaseChartle, {
     this.metrics= definition.metrics;
     if( definition.title ) this.set_title(definition.title);
     else this.set_title("");
+    if( definition.horizontalAxisVisible ) this.set_horizontalAxisVisible(definition.horizontalAxisVisible);
+    else this.set_horizontalAxisVisible(true);
 
     for(var key in this.metrics) {
       this.metrics[key].axis= 0;
@@ -17,6 +19,7 @@ Chartled.inheritPrototype(Chartled.ChartChartle, Chartled.BaseChartle, {
     this.chart = new Chart( this.id, this.jEl.width(), this.jEl.height(), {
       "metrics": this.metrics,
       title: this._title,
+      horizontalAxisVisible : this._horizontalAxisVisible,
       layers: [{renderer : "area"},{renderer : "bar"}, {renderer : "line", dropShadow: true}],
       axes: {
         x:{display: true}, 
@@ -50,5 +53,9 @@ Chartled.inheritPrototype(Chartled.ChartChartle, Chartled.BaseChartle, {
   set_title: function(title) {
     this._title= title;
     if( this.chart )this.chart.set_title( title );
+  },
+  set_horizontalAxisVisible: function(visible) {
+    this._horizontalAxisVisible= visible;
+    if( this.chart )this.chart.set_horizontalAxisVisible( visible );
   }
 });
