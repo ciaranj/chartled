@@ -94,7 +94,7 @@ function addNewSpacer() {
 	}, null, 2, 2 );
 }
 function addNewNumber() {
-	chartledDefinition.addNewChartle( {
+	return chartledDefinition.addNewChartle( {
 		"type": "Chartled.NumberChartle"
 	}, 1, 2, 2 );
 }

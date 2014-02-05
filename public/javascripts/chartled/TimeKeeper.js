@@ -10,6 +10,7 @@ Chartled.TimeKeeper.prototype = {
     this.clocks= [];
     this.nextClockId= 1;
     this._clockBuckets= {};
+    this._knownChartleIds= {};
     if( definition ) {
       definition.sort( function(a,b) {
         if(!a.id || !b.id ) throw new Error("Clock provided with no Id!");
@@ -100,21 +101,16 @@ Chartled.TimeKeeper.prototype = {
   */
   registerChartle: function( clockId, chartle ) {
     // Chartle already registered
-    var foundIt= false;
-    var that= this;
-    for( var k in this.clocks ) {
-      for( var j in this.clocks[k].chartles ) {
-        if( this.clocks[k].chartles[j] ==  chartle ) {
-          throw new Error("Chartle already registered against clock identifier: " + this.clocks[k].clock.id + " a chartle can only be registered against a single clock at a time.");
-        }
-      }
+    if( this._knownChartleIds[chartle.id] ) {
+          throw new Error("Chartle already registered, a chartle can only be registered against a single clock at a time.");
     }
 
     for( var k in this.clocks ) {
       if( this.clocks[k].clock.id == clockId ) {
         this.clocks[k].chartles.push( chartle );
+        this._knownChartleIds[chartle.id] = true;
         if( chartle.addRefreshListener ) {
-          chartle.addRefreshListener( this._buildRefresher( that.clocks[k].clock, chartle ) );
+          chartle.addRefreshListener( this._buildRefresher( this.clocks[k].clock, chartle ) );
         }
         this._tick( this._clockBuckets[this.clocks[k].clock.refreshRate].clockAndChartles );
         return;
@@ -122,7 +118,23 @@ Chartled.TimeKeeper.prototype = {
     }
     throw new Error("Unrecognised clock identifier: " + clockId);
   },
-
+  /*
+  Un-registers a given chartleId.  If one is not found an error will not be thrown, and it will cheerfully ignore it.
+  */
+  unRegisterChartle: function( chartleId ) {
+    var foundIt= false;
+    for( var k in this.clocks ) {
+      for( var j in this.clocks[k].chartles ) {
+        if( this.clocks[k].chartles[j].id ==  chartleId ) {
+          delete this.clocks[k].chartles[j]
+          delete this._knownChartleIds[chartleId];
+          foundIt= true;
+          break;
+        }
+      }
+      if( foundIt ) break;
+    }
+  },
   _buildRefresher: function(clock , chartle) {
     var that= this;
     return function() {
@@ -165,9 +177,8 @@ Chartled.TimeKeeper.prototype = {
   serialize: function() {
     var clocks= [];
     for( var k in this.clocks ) {
-      var originalClock= this.clocks[k].clock;
       var chartles= this.clocks[k].chartles;
-      var newClock= originalClock.serialize();
+      var newClock= this.clocks[k].clock.serialize();
       newClock.chartleIds= [];
       for( var j in chartles ) {
         newClock.chartleIds.push( chartles[j].id );
@@ -229,7 +240,7 @@ Chartled.TimeKeeper.prototype = {
   },
 
   _processFetchQueue: function( fetchQueue ) {
-
+    var that= this;
   // Create a reaper
     setTimeout( function() {
       for(var k in fetchQueue) {
@@ -252,15 +263,16 @@ Chartled.TimeKeeper.prototype = {
       if( allItemsProcessed ) {
         for(var k in fetchQueue) {
           var fetchQueueItem= fetchQueue[k];
-          if( !fetchQueueItem.updated ) {
+          if( !fetchQueueItem.updated && that._knownChartleIds[fetchQueueItem.chartle.id] === true) {
             fetchQueueItem.updated= true;
-			try {
-				fetchQueueItem.chartle.update( fetchQueueItem.err, fetchQueueItem.data );
-			}
-			catch(e) {
-				// There was an error updating a chartle, this shouldn't stop the other chartles from
-				// displaying. So we swallow it :/
-			}
+            try {
+            
+              fetchQueueItem.chartle.update( fetchQueueItem.err, fetchQueueItem.data );
+            }
+            catch(e) {
+              // There was an error updating a chartle, this shouldn't stop the other chartles from
+              // displaying. So we swallow it :/
+            }
           }
         }
       }
@@ -300,5 +312,6 @@ Chartled.TimeKeeper.prototype = {
       clearInterval( this._clockBuckets[k].timer );
     }
     this._clockBuckets= null;
+    this._knownChartleIds= null;
   }
 };

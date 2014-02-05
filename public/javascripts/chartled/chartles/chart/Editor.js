@@ -1,15 +1,11 @@
 Chartled.registerChartleEditor( Chartled.ChartChartle, {
   initialize: function( definition ) {
       this.configuringChartle = false;
-      this.configureDelegate= $.proxy( this.configureChartle, this );
-      this.jEl.on( 'click', this.configureDelegate);
       this._chartEditorDialog= new Chartled.ChartleEditDialog({
         title: "Configure Chart"
       });
     }
   , dispose: function() {
-      this.jEl.off( 'click', this.configureDelegate);
-      this.configureDelegate = null;
       if( this._metricEditor ) {
         this._metricEditor.dispose();
         this._metricEditor = null;
@@ -22,7 +18,7 @@ Chartled.registerChartleEditor( Chartled.ChartChartle, {
   }
   , configureChartle : function() {
     var that= this;
-    if( that.configuringChartle || page_mode != "content" ) return;
+    if( that.configuringChartle ) return;
     else that.configuringChartle= true;
 
     // Take a copy of the current metrics, prior to edit.

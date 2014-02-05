@@ -11,14 +11,14 @@ Chart= function(parentEl, outerWidth, outerHeight, config ) {
   chartEl.setAttribute('class', 'chart')
   document.getElementById(parentEl).appendChild(chartEl);
 
-  var toolTipEl= document.createElement('div');
-  toolTipEl.setAttribute('id', this.tooltipId)
-  toolTipEl.setAttribute('class', 'hidden tooltipx')
+  this.toolTipEl= document.createElement('div');
+  this.toolTipEl.setAttribute('id', this.tooltipId)
+  this.toolTipEl.setAttribute('class', 'hidden tooltipx')
   var serii= document.createElement('ul');
   serii.setAttribute('class', 'serii')
-  toolTipEl.appendChild(serii);
+  this.toolTipEl.appendChild(serii);
   // Try and defeat z-index issues by lifting the tooltips 'above' the chart element stacking context
-  document.getElementById(parentEl).parentNode.appendChild(toolTipEl); 
+  document.getElementById(this.id).parentNode.appendChild(this.toolTipEl); 
 
   this.graphContainer = d3.select('#' + parentEl +'-chart').append("svg")
       .attr("width", this.outerWidth)
@@ -476,4 +476,7 @@ Chart.prototype.set_title= function( title ) {
 Chart.prototype.set_horizontalAxisVisible= function( visible ) {
   this._horizontalAxisVisible= visible;
   this._updateChartAreaSize();
+}
+Chart.prototype.dispose= function() {
+  document.getElementById(this.id).parentNode.removeChild(this.toolTipEl); 
 }

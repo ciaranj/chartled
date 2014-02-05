@@ -5,6 +5,7 @@ Chartled.ChartledDefinition = function( definition, containerEl, baseUrl ) {
   this.containerEl = containerEl;
   this.baseUrl = baseUrl;
   this.chartles= [];
+  this.chartleEls= [];
 
   this.deserialize( definition );
 }
@@ -16,6 +17,24 @@ Chartled.ChartledDefinition.prototype.addNewChartle = function( chartle, clock, 
   }
   return chartle;
 }
+
+Chartled.ChartledDefinition.prototype.configureChartle = function( chartleId ) {
+  var c= this.chartles[chartleId];
+  if( c && c.configureChartle ) c.configureChartle();
+}
+
+Chartled.ChartledDefinition.prototype.removeChartle = function( chartleId ) {
+  var c= this.chartles[chartleId];
+  if( c ) {
+    delete this.chartles[chartleId];
+    var cEl= this.chartleEls[chartleId];
+    delete this.chartleEls[chartleId];
+    layout.remove_widget(cEl);
+    this.timeKeeper.unRegisterChartle( chartleId );
+    c.dispose();
+  }
+}
+
 Chartled.ChartledDefinition.prototype._addNewChartle = function( chartle, size_x, size_y, col, row ) {
   if(!chartle.id) {
     chartle.id = "chartle-" + this.nextChartleId;
@@ -26,6 +45,7 @@ Chartled.ChartledDefinition.prototype._addNewChartle = function( chartle, size_x
   try{
     var c= new (eval(chartle.type))( chartle, $widget[0], this.baseUrl );
     this.chartles[chartle.id]= c;
+    this.chartleEls[chartle.id]= $widget[0];
     return c;
   }
   catch(e) {
@@ -110,6 +130,7 @@ Chartled.ChartledDefinition.prototype.dispose = function() {
     }
   }
 
+  this.chartleEls= [];
   this.chartles= [];
 
   if( this.timeKeeper ) {

@@ -1,0 +1,15 @@
+#navbar,
+.context-menu,
+.no-print,
+.no-print * {
+  display:none !important;
+}
+
+
+body {
+  padding-top:0px;
+}
+
+.chartled .background-icon {
+  opacity: 0.04 !important;
+}

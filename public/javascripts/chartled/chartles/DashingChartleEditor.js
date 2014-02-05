@@ -3,23 +3,19 @@ Chartled.DashingChartleEditor.prototype= {
   initialize: function( definition, editorOptions ) {
     var that= this;
     this.configuringChartle = false;
-    this.configureDelegate= $.proxy( this.configureChartle, this );
     this._editor_options= editorOptions;
     if( typeof(this._editor_options.editable) == 'undefined') this._editor_options.editable = {};
 
-    this.jEl.on( 'click', this.configureDelegate);
     this._chartEditorDialog= new Chartled.ChartleEditDialog({
       title: that._editor_options.title
     });
   },
   dispose: function() {
     this.editableMetrics = null;
-    this.jEl.off( 'click', this.configureDelegate);
     if( this._metricEditor ) {
       this._metricEditor.dispose();
       this._metricEditor = null;
     }
-    this.configureDelegate = null;
     this._chartEditorDialog.dispose();
     this._chartEditorDialog = null;
   },
@@ -28,7 +24,7 @@ Chartled.DashingChartleEditor.prototype= {
   },
   configureChartle : function() {
     var that= this;
-    if( that.configuringChartle || page_mode != "content" ) return;
+    if( that.configuringChartle ) return;
     else that.configuringChartle= true;
 
     // Take a copy of the current metrics, prior to edit.

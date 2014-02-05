@@ -56,38 +56,31 @@ html, body {
   height:100%;
 }
 
-.pageMode-layout .spacer {
+body>div.container, 
+body>div.container div#contents {
+  height:100%
+}
+
+.pageMode-editable .spacer {
   background-color: #788;
 }
 
-/* c/o: http://css.dzone.com/news/creating-body-border-css */
-#top, #bottom, #left, #right {
-  position: fixed;
+.chartled {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
-body.pageMode-layout #top, 
-body.pageMode-layout #bottom, 
-body.pageMode-layout #left, 
-body.pageMode-layout #right {
-  background-color: rgb(123, 179, 61);
+.context-menu li:not(.disabled) a i {
+  color:#47bbb3;
 }
 
-body.pageMode-content #top, 
-body.pageMode-content #bottom, 
-body.pageMode-content #left, 
-body.pageMode-content #right {
-  background-color: rgb(236, 92, 0);
+#edit-context-menu li:not(.disabled) a.remove-chartled i {
+  color:#dc5945;
 }
-
-#left, #right {
-  top: 0; bottom: 0;
-  width: 15px;
+.context-menu i {
+  width:15px;
 }
-#left { left: 0; }
-#right { right: 0; }
-#top, #bottom {
-  left: 0; right: 0;
-  height: 15px;
-}
-#top { top: 0; }
-#bottom { bottom: 0; }

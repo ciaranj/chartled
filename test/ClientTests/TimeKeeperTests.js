@@ -180,15 +180,15 @@ describe('TimeKeeper', function(){
       var clockId3= keeper.addClock({refreshRate:10, from:"a", until:"b+3", description:"2"});
       
       // 
-      var myChartle1= { cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
-      var myChartle1b= { cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
+      var myChartle1= { id:1, cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
+      var myChartle1b= { id:2, cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
       keeper.registerChartle( clockId1, myChartle1 );
       keeper.registerChartle( clockId1, myChartle1b );
 
-      var myChartle2= { cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
+      var myChartle2= { id:3, cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
       keeper.registerChartle( clockId2, myChartle2 );
 
-      var myChartle3= { cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
+      var myChartle3= { id:4, cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
       keeper.registerChartle( clockId3, myChartle3 );
 
       assert.equal( myChartle1.cnt, 3 );
@@ -230,15 +230,15 @@ describe('TimeKeeper', function(){
       var clockId3= keeper.addClock({refreshRate:10, from:"a", until:"b+3", description:"2"});
       
       // 
-      var myChartle1= { cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
-      var myChartle1b= { cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
+      var myChartle1= { id:1, cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
+      var myChartle1b= { id:2, cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
       keeper.registerChartle( clockId1, myChartle1 );
       keeper.registerChartle( clockId1, myChartle1b );
 
-      var myChartle2= { cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
+      var myChartle2= { id:3, cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
       keeper.registerChartle( clockId2, myChartle2 );
 
-      var myChartle3= { cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
+      var myChartle3= { id:4, cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
       keeper.registerChartle( clockId3, myChartle3 );
 
       assert.equal( myChartle1.cnt, 3 );
@@ -273,6 +273,94 @@ describe('TimeKeeper', function(){
       clock.restore();
     });
   });
+  describe("unRegisterChartle", function() {
+    it("should remove the specified chartle", function() {
+      keeper.addClock({description:'a'});
+      keeper.registerChartle(1, {id:5});
+      assert.deepEqual( keeper.serialize(), [{"id":1, "refreshRate":30, "from":"-24hours", "until":"now", "chartleIds":[5], "description":"a"}] );
+      keeper.unRegisterChartle(5);
+      assert.deepEqual( keeper.serialize(), [{"id":1, "refreshRate":30, "from":"-24hours", "until":"now", "chartleIds":[], "description":"a"}] );
+    });
+    it("should stop fetches for the specified chartle if it is unregistered prior to a fetch+update cycle", function() {
+      var clock = sinon.useFakeTimers();
+      try {
+        keeper.addClock({id:1, description:'a', refreshRate:2});
+        var fetchCnt= 0;
+        var updateCnt= 0;
+        var myChartle= { id:5, cnt: 0, 
+          fetch: function(clk, cb) { 
+              fetchCnt++;
+              cb();
+          }, 
+          update: function() {
+              updateCnt++;
+          }};
+        keeper.registerChartle(1, myChartle);
+
+        // Registering 
+        assert.equal( fetchCnt, 1 );
+        assert.equal( updateCnt, 1 );
+      
+        clock.tick(4000);
+        assert.equal( fetchCnt, 3 );
+        assert.equal( updateCnt, 3 );
+        keeper.unRegisterChartle(myChartle.id);
+        clock.tick(4000);
+        // Unregistered chartle shouldn't fire.
+        assert.equal( fetchCnt, 3 );
+        assert.equal( updateCnt, 3 );
+      }
+      finally {
+        clock.restore();
+      }
+    });
+    it("should stop fetches for the specified chartle if it is unregistered after a fetch but before an update", function() {
+      var clock = sinon.useFakeTimers();
+      try {
+        keeper.addClock({id:1, description:'a', refreshRate:2});
+        var fetchCnt= 0;
+        var updateCnt= 0;
+        var myChartle= { id:5, cnt: 0, 
+          fetch: function(clk, cb) { 
+              fetchCnt++;
+              // split the fetch+update into 'async' blocks to allow an unregister midway between fetch + update.
+              setTimeout(cb, 1000);
+          }, 
+          update: function() {
+              updateCnt++;
+          }};
+        keeper.registerChartle(1, myChartle);
+
+        // Registering 
+        assert.equal( fetchCnt, 1 );
+        assert.equal( updateCnt, 0 );
+        clock.tick(1000);
+        assert.equal( fetchCnt, 1 );
+        assert.equal( updateCnt, 1 );
+
+        // First cycle.
+        clock.tick(1000);
+        assert.equal( fetchCnt, 2 );
+        assert.equal( updateCnt, 1 );
+        clock.tick(1000);
+        assert.equal( fetchCnt, 2 );
+        assert.equal( updateCnt, 2 );
+
+        // Let the fetch happen, but then unregister the chartle.
+        clock.tick(1000);
+        assert.equal( fetchCnt, 3 );
+        keeper.unRegisterChartle(myChartle.id);
+        clock.tick(1000);
+        // Unregistered chartle shouldn't ever fire the update
+        assert.equal( fetchCnt, 3 );
+        assert.equal( updateCnt, 2 );
+      }
+      finally {
+        clock.restore();
+      }
+    });
+  });
+ 
   describe("registerChartle", function() {
     it("should throw an error if an invalid clock id was specified (missing id)", function() {
       keeper.addClock({});
@@ -296,9 +384,9 @@ describe('TimeKeeper', function(){
       assert.throws( function() {keeper.registerChartle( 2, chartle ); }, /Chartle already registered/);
     });
     it("should call fetchData for the registered chartles at the right time", function() {
-      var myChartle1= { cnt: 0, fetch: function(clk) { assert.equal(clk.refreshRate, 2); assert.equal(clock.now%2, 0); this.cnt++; }, update: function() {}};
-      var myChartle2= { cnt: 0, fetch: function(clk) { assert.equal(clk.refreshRate, 5); assert.equal(clock.now%5, 0); this.cnt++; }, update: function() {} };
-      var myChartle3= { cnt: 0, fetch: function(clk) { assert.equal(clk.refreshRate, 5); assert.equal(clock.now%5, 0); this.cnt++; }, update: function() {} };
+      var myChartle1= { id:1, cnt: 0, fetch: function(clk) { assert.equal(clk.refreshRate, 2); assert.equal(clock.now%2, 0); this.cnt++; }, update: function() {}};
+      var myChartle2= { id:2, cnt: 0, fetch: function(clk) { assert.equal(clk.refreshRate, 5); assert.equal(clock.now%5, 0); this.cnt++; }, update: function() {} };
+      var myChartle3= { id:3, cnt: 0, fetch: function(clk) { assert.equal(clk.refreshRate, 5); assert.equal(clock.now%5, 0); this.cnt++; }, update: function() {} };
       var clock = sinon.useFakeTimers();
       var clockId= keeper.addClock({refreshRate:2});
       var clockId2= keeper.addClock({refreshRate:5});
@@ -315,9 +403,9 @@ describe('TimeKeeper', function(){
       assert.equal( myChartle3.cnt, 3);
     });
     it("should call fetchData for the registered chartles at the right time, ignoring errors caused by the update function", function() {
-      var myChartle1= { cnt: 0, fetch: function(clk) { assert.equal(clk.refreshRate, 2); assert.equal(clock.now%2, 0); this.cnt++; }, update: function() {}};
-      var myChartle2= { cnt: 0, fetch: function(clk) { assert.equal(clk.refreshRate, 5); assert.equal(clock.now%5, 0); this.cnt++; }, update: function() { throw new Error("SHOULD NOT BREAK THINGS"); } };
-      var myChartle3= { cnt: 0, fetch: function(clk) { assert.equal(clk.refreshRate, 5); assert.equal(clock.now%5, 0); this.cnt++; }, update: function() {} };
+      var myChartle1= { id:1, cnt: 0, fetch: function(clk) { assert.equal(clk.refreshRate, 2); assert.equal(clock.now%2, 0); this.cnt++; }, update: function() {}};
+      var myChartle2= { id:2, cnt: 0, fetch: function(clk) { assert.equal(clk.refreshRate, 5); assert.equal(clock.now%5, 0); this.cnt++; }, update: function() { throw new Error("SHOULD NOT BREAK THINGS"); } };
+      var myChartle3= { id:3, cnt: 0, fetch: function(clk) { assert.equal(clk.refreshRate, 5); assert.equal(clock.now%5, 0); this.cnt++; }, update: function() {} };
       var clock = sinon.useFakeTimers();
       var clockId= keeper.addClock({refreshRate:2});
       var clockId2= keeper.addClock({refreshRate:5});
@@ -342,10 +430,10 @@ describe('TimeKeeper', function(){
       var clockId3= keeper.addClock({refreshRate:10, from:"a", until:"b+3", description:"2"});
       
 
-      var myChartle2= { cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
-      var myChartle1= { cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
-      var myChartle1b= { cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
-      var myChartle3= { cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
+      var myChartle2= { id:3, cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
+      var myChartle1= { id:1, cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
+      var myChartle1b= { id:2, cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
+      var myChartle3= { id:4, cnt: 0, fetch: function(clk) { this.cnt++; }, update: function() {}};
 
       keeper.registerChartle( clockId3, myChartle3 );
       assert.equal(0, myChartle1.cnt ); 
@@ -384,7 +472,7 @@ describe('TimeKeeper', function(){
       var clockId1= keeper.addClock({refreshRate:5, from:"a", until:"b-1", description:"1"});
 
       var refreshFunction = null;
-      var myChartle1= { cnt: 0, addRefreshListener: function(refresher) { refreshFunction= refresher;}, fetch: function(clk, cb) { assert.notEqual(clk, null); this.cnt++; cb();}, update: function() {this.cnt++;}};
+      var myChartle1= { id:1, cnt: 0, addRefreshListener: function(refresher) { refreshFunction= refresher;}, fetch: function(clk, cb) { assert.notEqual(clk, null); this.cnt++; cb();}, update: function() {this.cnt++;}};
       keeper.registerChartle( clockId1, myChartle1 );
       assert.notEqual( refreshFunction , null);
       assert.equal( myChartle1.cnt, 2); // 1 fetch-update cycle occurs on initial registration.
@@ -479,8 +567,8 @@ describe('TimeKeeper', function(){
   describe("Ticks", function() {
     it("should call the chartle's update method with the value returned from fetchData", function() {
       var callBackCnt= 0;
-      var myChartle1= { fetch: function(clk, cb) {  assert.equal(clk.refreshRate, 1); cb(null, 1); }, update: function(err, data) {  callBackCnt++; assert.equal(data, 1); } };
-      var myChartle2= { fetch: function(clk, cb) {  assert.equal(clk.refreshRate, 1); cb(null, 2); }, update: function(err, data) {  callBackCnt++; assert.equal(data, 2); }  };
+      var myChartle1= { id:1, fetch: function(clk, cb) {  assert.equal(clk.refreshRate, 1); cb(null, 1); }, update: function(err, data) {  callBackCnt++; assert.equal(data, 1); } };
+      var myChartle2= { id:2, fetch: function(clk, cb) {  assert.equal(clk.refreshRate, 1); cb(null, 2); }, update: function(err, data) {  callBackCnt++; assert.equal(data, 2); }  };
       var clock = sinon.useFakeTimers();
       var clockId= keeper.addClock({refreshRate:1});
       keeper.registerChartle( clockId, myChartle1 );

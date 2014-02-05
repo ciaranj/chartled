@@ -29,6 +29,7 @@ Chartled.inheritPrototype(Chartled.ChartChartle, Chartled.BaseChartle, {
     });
   },
   dispose: function() {
+    this.chart.dispose();
     this.chart = null;
     this.metrics = null;
     Chartled.BaseChartle.prototype.dispose.call(this);
