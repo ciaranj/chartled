@@ -365,7 +365,7 @@ Chart.prototype.refreshData= function( data ) {
                   });
                 }
               }
-              if( page_mode == "readOnly" ) {
+              if( page_mode == "readonly" ) {
                 var $window= $(window);
                 d3.select('#' + that.tooltipId)
                   .style({ "left" : (chartOffset.left + xPos -$window.scrollLeft()) +"px", "top": (chartOffset.top + yPos - $window.scrollTop()) +"px"})
