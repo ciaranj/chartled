@@ -11,53 +11,19 @@ function startAgain( definition ) {
   gridster.setAttribute("class", "container gridster");
   document.getElementById("contents").appendChild( gridster );
   chartledDefinition= new Chartled.ChartledDefinition(definition, gridster, "");
+  setPageModeReadOnly();
 }
-$(function() {
-  startAgain({
-    chartles: [{
-        "id": "chartle-1"
-      , "type": "Chartled.NumberChartle"
-      , "title": "Flush Time (last hour)"
-      , "moreInfo": "Average in ms"
-      , "metric": "summarize(stats.statsd.ceres.flushTime, \"1hour\", true)"
-    },
-    {
-        "id": "chartle-2"
-      , "type": "Chartled.ClockChartle"
-    }]
-    , clocks: [{id:1, refreshRate:60, from:"-30minutes", to: "now", description:"default", chartleIds:["chartle-1"]}, {id:2, refreshRate:1, from:'now-1s', to:'now', description: "LastSecond", chartleIds:["chartle-2"]}]
-    , "nextChartleId": 3
-    , layout: {
-        type: "fixed-grid",
-        gridMinSize: 50,
-        gridMargin: 5,
-        "positions": [{
-          "id": "chartle-1",
-          "col": 1,
-          "row": 1,
-          "size_x": 2,
-          "size_y": 2
-        },
-        {
-          "id": "chartle-2",
-          "col": 3,
-          "row": 1,
-          "size_x": 2,
-          "size_y": 2
-        }]
-      }
-  });
-});
-
 
 var previousFromValue= "";
 var previousToValue= "";
 setInterval(function(){
     if( previousFromValue != $("#from").val() || previousToValue != $("#to").val()) {
-      previousFromValue= $("#from").val();
-      previousToValue= $("#to").val();
-      var defaultClock= chartledDefinition.timeKeeper.getClock("default");
-      chartledDefinition.timeKeeper.updateClock( defaultClock.id, {from: previousFromValue, until: previousToValue} );
+      if( typeof(chartledDefinition) != 'undefined' ) {
+        previousFromValue= $("#from").val();
+        previousToValue= $("#to").val();
+        var defaultClock= chartledDefinition.timeKeeper.getClock("default");
+        chartledDefinition.timeKeeper.updateClock( defaultClock.id, {from: previousFromValue, until: previousToValue} );
+      }
     }
 }, 1000);
 
@@ -100,7 +66,10 @@ function addNewNumber() {
 }
 
 function exportChartles() {
-    var html= "<textarea style='width:100%;height:240px'>" + JSON.stringify(chartledDefinition.serialize(),null, "  ") + "</textarea>";
+  var serialisedDefinition= chartledDefinition.serialize();
+  $.post("/share", serialisedDefinition, function(data) {
+    var html = "<textarea style='width:100%;height:240px'>" + JSON.stringify(serialisedDefinition,null, "  ")+ "</textarea>";
+        html+= "<a target='_blank' href='" + window.location.origin + "/" + encodeURIComponent(data)+ "'> Shareable Link</a>";
     bootbox.dialog( { message:html,
                       title: "Chartled Export",
                       buttons:{
@@ -111,6 +80,12 @@ function exportChartles() {
                       "backdrop": true,
                       "animate" : false
                     });
+  })
+  .fail(function() {
+      alert("Problem sharing current definition");
+  });
+
+
 }
 
 function importChartles() {

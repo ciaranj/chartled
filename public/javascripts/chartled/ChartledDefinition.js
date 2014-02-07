@@ -56,8 +56,8 @@ Chartled.ChartledDefinition.prototype._addNewChartle = function( chartle, size_x
 Chartled.ChartledDefinition.prototype.deserialize = function( definition ) {
   var that= this;
   
-  that.chartleMargin = definition.layout.gridMargin;
-  that.chartleMinSize = definition.layout.gridMinSize;
+  that.chartleMargin = +definition.layout.gridMargin;
+  that.chartleMinSize = +definition.layout.gridMinSize;
 
   that.nextChartleId= (definition.nextChartleId ? definition.nextChartleId : 1);
 

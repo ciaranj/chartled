@@ -1,5 +1,6 @@
 var CSVResponseRenderer = require("./lib/response_renderers/csv"),
   DatesAndTimes = require("./lib/utils/DatesAndTimes"),
+  DefinitionSharer= require("./lib/DefinitionSharer").DefinitionSharer,
   express = require('express')
     fs      = require('fs'),
   JSONResponseRenderer= require("./lib/response_renderers/json"),
@@ -22,16 +23,15 @@ function parseMoment(momentReqParam, unspecifiedValue) {
 }
   
 var metricsStore= new MetricsStore( __dirname + path.sep + ".." + path.sep +"statsd"+ path.sep+ "ceres_tree");
+var definitionSharer= new DefinitionSharer();
 
 var app = express();
 app.use(express.static(__dirname + '/public'));
+app.use(express.bodyParser());
 app.set('views', __dirname + '/views')
 app.set('view engine', 'jade')
 
 
-app.get('/', function(req, res){
-  res.render('index', { title : 'Home' })
-});
 
 app.get('/explorer', function(req, res){
   metricsStore.getAvailableMetrics( function( err, metrics ) {
@@ -128,6 +128,68 @@ app.get('/series', function(req, res){
             .end();
         })( unescape(metrics[k]) );
     }
+});
+app.get('/favicon.ico', function(req,res){
+  res.end();
+});
+app.post('/share', function(req,res) {
+  definitionSharer.encode(req.body, function(err, result) { 
+    if( err ) {
+      console.log( err )
+      result = "";
+    }
+    res.end( result );
+  });
+
+});
+app.get('/:definition?', function(req, res){
+  var d= req.param('definition');
+  var sampleDefinition= {chartles: [{
+      "id": "chartle-1"
+    , "type": "Chartled.NumberChartle"
+    , "title": "Flush Time (last hour)"
+    , "moreInfo": "Average in ms"
+    , "metric": "summarize(stats.statsd.ceres.flushTime, \"1hour\", true)"
+  },
+  {
+      "id": "chartle-2"
+    , "type": "Chartled.ClockChartle"
+  }]
+  , clocks: [{id:1, refreshRate:60, from:"-30minutes", to: "now", description:"default", chartleIds:["chartle-1"]}, 
+             {id:2, refreshRate:1, from:'now-1s', to:'now', description: "LastSecond", chartleIds:["chartle-2"]}]
+  , "nextChartleId": 3
+  , layout: {
+      type: "fixed-grid",
+      gridMinSize: 50,
+      gridMargin: 5,
+      "positions": [{
+        "id": "chartle-1",
+        "col": 1,
+        "row": 1,
+        "size_x": 2,
+        "size_y": 2
+      },
+      {
+        "id": "chartle-2",
+        "col": 3,
+        "row": 1,
+        "size_x": 2,
+        "size_y": 2
+      }]
+    }
+  };  
+  if( typeof(d) == 'undefined' ) {
+    res.render('index', { title : 'Home', definition: JSON.stringify(sampleDefinition)})
+  }
+  else {
+    definitionSharer.decode(d, function(err, definition) {
+      if( err ) {
+        console.log( err );
+        definition= sampleDefinition;
+      }
+       res.render('index', { title : 'Home', definition: JSON.stringify(definition) })
+    });
+  }
 });
 
 process.on('uncaughtException', function (err) {
