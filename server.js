@@ -22,7 +22,6 @@ function parseMoment(momentReqParam, unspecifiedValue) {
   }
 }
   
-var metricsStore= new MetricsStore( __dirname + path.sep + ".." + path.sep +"statsd"+ path.sep+ "ceres_tree");
 var definitionSharer= new DefinitionSharer();
 
 var app = express();
@@ -196,5 +195,13 @@ process.on('uncaughtException', function (err) {
   console.log( err.stack );
 });
 
-app.listen(3000);
-console.log('Listening on port 3000');
+console.log("Preloading metrics...")
+var metricsStore= new MetricsStore( __dirname + path.sep + ".." + path.sep +"statsd"+ path.sep+ "ceres_tree", function(err) {
+  if( err ) console.log( "Problem loading in the metrcs", err);
+  else {
+    metricsStore.getAvailableMetrics(function( err ) {
+      app.listen(3000);
+      console.log('Listening on port 3000');
+    });
+  }
+});
