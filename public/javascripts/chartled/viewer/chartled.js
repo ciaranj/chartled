@@ -11,6 +11,12 @@ function startAgain( definition ) {
   gridster.setAttribute("class", "container gridster");
   document.getElementById("contents").appendChild( gridster );
   chartledDefinition= new Chartled.ChartledDefinition(definition, gridster, "");
+  
+  //TODO: this is temporary whilst the dodgy to/from inputs are present!
+  var defaultClock= chartledDefinition.timeKeeper.getClock("default");
+  $("#from").val( defaultClock.from );
+  $("#to").val( defaultClock.until );
+  
   setPageModeReadOnly();
 }
 
