@@ -109,8 +109,8 @@ app.get('/series', function(req, res){
                                 target: seriesList[i].name,
                                 targetSource: metric,
                                 aggregationMethod: seriesList[i].info.aggregationMethod,
-								// Assumes all timeseries are the same shape (they should be!)
-								tInfo: seriesList[i].data.tInfo
+                                // Assumes all timeseries are the same shape (they should be!)
+                                tInfo: seriesList[i].data.tInfo
                         };
                         results[results.length]= series;
                         var runningTime= seriesList[i].data.tInfo[0];

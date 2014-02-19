@@ -46,6 +46,9 @@ Chart= function(parentEl, outerWidth, outerHeight, config ) {
   if( typeof(config.horizontalAxisVisible) != 'undefined' && config.horizontalAxisVisible != "" ) {
     this.set_horizontalAxisVisible(config.horizontalAxisVisible);
   }
+  if( typeof(config.autoSampleData) != 'undefined' && config.autoSampleData != "" ) {
+    this.set_autoSampleData(config.autoSampleData);
+  }
 
   this._updateChartAreaSize();
 }
@@ -197,44 +200,82 @@ Chart.prototype._getRightAxis= function( ) {
   return null;
 }
 
+Chart.prototype._aggregateSample= function( aggregationMethod, values ) {
+  function getSum() {
+    var acc=0;
+    for( var k in values ) {
+      acc += values[k];
+    }
+    return acc;
+  }
+  switch(aggregationMethod) {
+    case('min'):
+      return Math.min.apply(this, values);
+    case('max'):
+      return Math.max.apply(this, values);
+    case('sum'):
+      return getSum();
+    case('median'):
+      values.sort();
+      return values[ values.length / 2 ];
+    default:
+      // Average by default
+      return getSum() / values.length;
+  }
+};
 Chart.prototype._sampleData= function( data ) {
-  for( var key in data ) {                     
-      //TODO: A better approach might be to 'throw away' some older data to allow for several updates with the same
-      // sample boundaries, rather than re-sample for *each* update always having a window offset 1 less than the
-      // previous sample-set ?
-      if( data[key].datapoints.length > this.width && data[key].aggregationMethod == 'avg' ) {
-        var rawLength= data[key].datapoints.length;
-        var skipFactor= Math.round( rawLength / this.width );
-        var skipFactorCounter= 0;
-        var cumulative= 0;
-        var cumulativeX= data[key].datapoints[0][1];
-        var newDataPoints= [];
-        for( var i =0; i<rawLength; i++ ) {
-            cumulative += yCoord( data[key].datapoints[i] );
-            if( skipFactorCounter++ >= skipFactor ) {
-                newDataPoints[newDataPoints.length]= [cumulative/skipFactorCounter, cumulativeX];
-                skipFactorCounter= 0;
-                cumulative= 0;
-                if( i <=  rawLength ) {
-                    cumulativeX= data[key].datapoints[i][1];
-                }
-                else {
-                    cumulativeX= -1;
-                }
-            }
+  if( this._autoSampleData === true ) {
+    for( var key in data ) {
+        if( data[key].datapoints.length > this.width ) {
+          var rawLength= data[key].datapoints.length;
+          var skipFactor= Math.round( rawLength / this.width );
+          var skipFactorCounter= 0;
+          var cumulative= [];
+          var newTs= data[key].datapoints[0][1];
+          var initialTs= newTs;
+          var newDataPoints= [];
+          for( var i =0; i<rawLength; i++ ) {
+            // TODO: take into account xFileFactor and ensure nulls are treated appropriately.
+              var v= yCoord( data[key].datapoints[i] );
+              if( v == null ){
+                console.log( v );
+              }
+              else { 
+                cumulative.push( v );
+              }
+              if( skipFactorCounter++ >= skipFactor ) {
+                  newDataPoints.push( [this._aggregateSample(data[key].aggregationMethod, cumulative), newTs] );
+                  skipFactorCounter= 0;
+                  cumulative= [];
+                  if( i <=  rawLength ) {
+                      newTs= data[key].datapoints[i][1];
+                  }
+                  else {
+                      newTs= -1;
+                  }
+              }
+          }
+          if( newTs != -1 && skipFactorCounter != 0 ) {
+            newDataPoints.push( [this._aggregateSample(data[key].aggregationMethod, cumulative), newTs] );
+            data[key].tInfo[1]= newTs;
+          }
+          data[key].datapoints= newDataPoints;
+
+          // Update new sampled timestamp information.
+          data[key].tInfo[0]= initialTs;
+          data[key].tInfo[2]= data[key].tInfo[2] * skipFactor;
         }
-        if( cumulativeX != -1 && skipFactorCounter != 0 ) {
-          newDataPoints[newDataPoints.length]= [cumulative/skipFactorCounter, cumulativeX];
-        }
-        data[key].datapoints= newDataPoints;
       }
+      return data;
+    }
+    else {
+      return data;
     }
 }
 
 Chart.prototype.refreshData= function( data ) {
-    var unsampledData= data;
     if( data && data.length > 0 ) {
-//      this._sampleData( data );
+      data= this._sampleData( data );
 
 
 /*      var stack = d3.layout.stack()
@@ -344,6 +385,7 @@ Chart.prototype.refreshData= function( data ) {
         }
       }
       d3.select('#' + that.id +' svg').on("mouseover", function(d, i) {
+        if( page_mode == "readonly" ) {
           if( data && data.length > 0 && data[0].datapoints.length && data[0].datapoints.length > 0 ) {
             var chartOffset= $("#"+that.id).offset()
             var xPos= d3.mouse(this)[0] - that._margins.left;
@@ -361,11 +403,11 @@ Chart.prototype.refreshData= function( data ) {
                   paths.push({
                     name : data[d].target,
                     value : data[d].datapoints[offsetIndex][0],
+                    precision: data[d].tInfo[2],
                     colour : d3.rgb(colours(d)).toString()
                   });
                 }
               }
-              if( page_mode == "readonly" ) {
                 var $window= $(window);
                 d3.select('#' + that.tooltipId)
                   .style({ "left" : (chartOffset.left + xPos -$window.scrollLeft()) +"px", "top": (chartOffset.top + yPos - $window.scrollTop()) +"px"})
@@ -389,32 +431,36 @@ Chart.prototype.refreshData= function( data ) {
                   .selectAll('li')
                   .data(paths , function(d) { 
                     return d.name; })
-                  .html(function(d) { return '<div><span style="color:'+ d.colour +'">' + d.name + '</span>' + '<span style="color:'+ d.colour +'">&nbsp;:&nbsp;'+ d.value +'</span></div>'; } );
+                  .html(function(d) { return '<div><span style="color:'+ d.colour +'">' + d.name + ' (' + d.precision +')s</span>' + '<span style="color:'+ d.colour +'">&nbsp;:&nbsp;'+ d.value +'</span></div>'; } );
 
                 if( that._hidingTooltip ) {
                   clearTimeout(that._hidingTooltip);
                 }
 
                 d3.select('#' + that.tooltipId).classed("hidden", false);
-                }
+              }
             }
           }
       })
       .on("mouseout", function(d, i) {
-        that._hidingTooltip= setTimeout( function() {
-          if( that._hidingTooltip ) {
-            that._hidingTooltip= null;
-            d3.select('#' + that.tooltipId).classed("hidden", true);
-          }
-        }, 200 );
+        if( page_mode == "readonly" ) {
+          that._hidingTooltip= setTimeout( function() {
+            if( that._hidingTooltip ) {
+              that._hidingTooltip= null;
+              d3.select('#' + that.tooltipId).classed("hidden", true);
+            }
+          }, 200 );
+        }
       });      
       
       this._redrawAxes( leftAxis, rightAxis );
+      // If we're here because we've resized the chart to be *Wider* than previously
+      // we will have a loss of precision until the next true refresh occurs.
+      this.previousData= data;
     }
     else { 
       // TODO: no data returned
     }
-    this.previousData= unsampledData;
 }
 Chart.prototype._renderBarsLayer= function( data, metricLayer, dataKeys, colours )  {
   var barPadding = 1;
@@ -477,6 +523,12 @@ Chart.prototype.set_horizontalAxisVisible= function( visible ) {
   this._horizontalAxisVisible= visible;
   this._updateChartAreaSize();
 }
+
+// Note changes to this property only take effect on the next refresh.
+Chart.prototype.set_autoSampleData= function( sample ) {
+  this._autoSampleData= sample;
+}
+
 Chart.prototype.dispose= function() {
   document.getElementById(this.id).parentNode.removeChild(this.toolTipEl); 
 }

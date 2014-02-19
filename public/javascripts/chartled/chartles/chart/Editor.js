@@ -34,6 +34,7 @@ Chartled.registerChartleEditor( Chartled.ChartChartle, {
     html +=   "<fieldset><legend>Details</legend>";
     html +=   "<div class='form-group'><label class='col-sm-3 control-label'>Title</label><div class='controls col-sm-9'><input class='title form-control' type='text'/></div></div>";
     html +=   "<div class='form-group'><div class='controls col-sm-offset-3 col-sm-9'><div class='checkbox'><label><input type='checkbox' class='horizontalAxis'/>Horizontal Axis</label></div></div></div>";
+    html +=   "<div class='form-group'><div class='controls col-sm-offset-3 col-sm-9'><div class='checkbox'><label><input type='checkbox' class='autoSampleData'/>Auto-Sample Data</label></div></div></div>";
     html +=   "</fieldset>";
     html +=   "<fieldset><legend>Metrics</legend>";
     html +=   "<div class='metricEditorContainer'/>";
@@ -55,6 +56,7 @@ Chartled.registerChartleEditor( Chartled.ChartChartle, {
             that.editableMetrics= null;
             that.set_title($dialog.find(".title").val())
             that.set_horizontalAxisVisible($dialog.find(".horizontalAxis").prop('checked'));
+            that.set_autoSampleData($dialog.find(".autoSampleData").prop('checked'));
             that.refresh();
       },
       function() {
@@ -66,6 +68,7 @@ Chartled.registerChartleEditor( Chartled.ChartChartle, {
     this._metricEditor= new Chartled.MetricEditor( $dialog, $dialog.find(".metricEditorContainer"), that.editableMetrics, {allowAdd: true, allowRemove: true} );
     $dialog.find(".title").val(that._title);
     $dialog.find(".horizontalAxis").prop('checked', that._horizontalAxisVisible);
+    $dialog.find(".autoSampleData").prop('checked', that._autoSampleData);
   }
   , metricChartTypes : [
       {name:"Area", type: "area"},

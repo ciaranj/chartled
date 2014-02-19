@@ -15,6 +15,7 @@ describe('TargetParseContext', function(){
                       console.log( result.seriesList[0] )
                             assert.deepEqual( [2,4,6,8], result.seriesList[0].data.values );
                             assert.equal( "All The Foos", result.seriesList[0].name );
+                            assert.equal( "avg", result.seriesList[0].info.aggregationMethod );
                             done();
                     })
                     .end();
