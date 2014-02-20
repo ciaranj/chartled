@@ -12,7 +12,7 @@
     "q":"=0.8.9"
   },
   "devDependencies": {
-    "mocha" :"=1.6.0",
+    "mocha" :"=1.17.1",
     "sinon" : "=1.7.3",
     "uglify-js" : "=2.4.4"
   },
