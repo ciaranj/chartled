@@ -29,10 +29,10 @@ describe('TargetParseContext', function(){
     })
     it('should offset the metric values in the given series list (single), ignoring nulls ', function(done) {
         var metric=  "offset(foo.bar, 2)";
-        var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,null,3,null], "foo.tar":[10,20,30,50]} );
+        var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,,3,null], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.deepEqual( [3,null,5,null], result.seriesList[0].data.values );
+                            assert.deepEqual( [3,,5,null], result.seriesList[0].data.values );
                             done();
                     })
                     .end();

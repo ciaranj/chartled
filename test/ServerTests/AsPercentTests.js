@@ -99,13 +99,14 @@ describe('TargetParseContext', function(){
       });
       it('for multiple series', function(done) {
         var metric=  "asPercent(*.bar, foo.tar)";
-        var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("poo.bar"), new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"poo.bar":[2,4,6,8],"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
+        var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("poo.bar"), new MetricInfo("foo.bar"), new MetricInfo("foo.tar")],
+                                                           {"poo.bar":[null,4,6,8],"foo.bar":[1,2,,4], "foo.tar":[10,,30,null]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                      assert.equal( "asPercent(foo.bar,foo.tar)", result.seriesList[1].name );
-                      assert.deepEqual( [10,10,10,8], result.seriesList[1].data.values );
                       assert.equal( "asPercent(poo.bar,foo.tar)", result.seriesList[0].name );
-                      assert.deepEqual( [20,20,20,16], result.seriesList[0].data.values );
+                      assert.deepEqual( [null,null,(6/30)*100,null], result.seriesList[0].data.values );
+                      assert.equal( "asPercent(foo.bar,foo.tar)", result.seriesList[1].name );
+                      assert.deepEqual( [10,null,,null], result.seriesList[1].data.values );
                       done();
                     })
                     .end();

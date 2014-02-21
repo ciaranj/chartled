@@ -12,9 +12,9 @@ describe('TargetParseContext', function(){
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
                             assert.equal( 1, result.seriesList.length );
-                            assert.deepEqual( [11,22,33,54,null,null], result.seriesList[0].data.values );
-                            
                             assert.deepEqual( 6, result.seriesList[0].data.values.length );
+                            assert.deepEqual( [11,22,33,54,,null], result.seriesList[0].data.values );
+
                             done();
                     })
                     .end();

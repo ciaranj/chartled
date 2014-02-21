@@ -9,11 +9,11 @@ describe('TargetParseContext', function(){
     it('should sum nulls as we expect', function(done) {
         // We treat all nulls as resulting in a null, any other sum results in the addition occuring as if there was no null.
         var metric=  "sum(foo.{bar,tar})";
-        var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,null,null,4], "foo.tar":[null,null,30,50]} );
+        var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,,null,4], "foo.tar":[null,,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
                             assert.equal( 1, result.seriesList.length );
-                            assert.deepEqual( [1,null,30,54], result.seriesList[0].data.values );
+                            assert.deepEqual( [1,,30,54], result.seriesList[0].data.values );
                             done();
                     })
                     .end();
