@@ -51,15 +51,20 @@ app.get('/metrics', function(req, res){
   });
 });
 
-app.get('/series', function(req, res){
-    var from= parseMoment(req.query.from, "yesterday");
-    var to= parseMoment(req.query.until, "now");
-    if( to <= from  || from < 0 || to < 0 ) throw new Error( "Calculated/Passed time frame invalid, '" + from + "' -> '"+ to +"'");
-    var now= new Date().getTime();
+app.get('/series',getSeriesData);
 
-    //TODO: danger, no checking of params!!!
-    var metrics= req.query.target;
-    var format= req.query.format;
+// Support graphite style 'render' urls too.
+app.get('/render',getSeriesData);
+
+function getSeriesData(req,res) {
+  var from= parseMoment(req.query.from, "yesterday");
+  var to= parseMoment(req.query.until, "now");
+  if( to <= from  || from < 0 || to < 0 ) throw new Error( "Calculated/Passed time frame invalid, '" + from + "' -> '"+ to +"'");
+  var now= new Date().getTime();
+
+  //TODO: danger, no checking of params!!!
+  var metrics= req.query.target;
+  var format= req.query.format;
 
 	if( !format ) format= "json";
 	
@@ -77,57 +82,57 @@ app.get('/series', function(req, res){
 			responseRenderer= JSONResponseRenderer;
 	}
 
-    var results= [];
-    if( !Array.isArray( metrics ) ) {
-        metrics= [metrics];
-    }
-    
-    var metricsCountDown= metrics.length;
-    var carryOn= function() {
-        metricsCountDown--;
-        if( metricsCountDown <=0 ) {
-			//TODO: think results should come back in target order. (wildcards alpha sorted)
-			var r= results.sort( function compare(a,b) {
-				return (a.target<b.target?-1:(a.target>b.target?1:0));
-			});
-			responseRenderer.renderResults( req, res, r, function(err) {
-				console.log(req.url + " completed in: " + (new Date().getTime() - now) + "ms");
-			});
-        }
-    };
-    
-    for( var k in metrics ) {
-        (function( metric ) {
-            var ctx= new TargetParseContext( metricsStore, metric, from, to );
-            TargetParser.parse( metric )( ctx ).then( 
-                function (result) {
-                    var seriesList= result.seriesList;
-                    for(var i=0; i< seriesList.length; i++ ) {
-                        var series= {
-                                datapoints : [],
-                                target: seriesList[i].name,
-                                targetSource: metric,
-                                aggregationMethod: seriesList[i].info.aggregationMethod,
-                                // Assumes all timeseries are the same shape (they should be!)
-                                tInfo: seriesList[i].data.tInfo
-                        };
-                        results[results.length]= series;
-                        var runningTime= seriesList[i].data.tInfo[0];
-                        
-                        for(var j=0;j < seriesList[i].data.values.length; j++) {
-                            series.datapoints[series.datapoints.length]= [ seriesList[i].data.values[j], runningTime ];
-                            runningTime+= seriesList[i].data.tInfo[2];
-                        }
-                    }
-                    carryOn();
-                }, function( error) {
-                    console.log( error.stack );
-                    carryOn();
-            })
-            .end();
-        })( unescape(metrics[k]) );
-    }
-});
+  var results= [];
+  if( !Array.isArray( metrics ) ) {
+      metrics= [metrics];
+  }
+  
+  var metricsCountDown= metrics.length;
+  var carryOn= function() {
+      metricsCountDown--;
+      if( metricsCountDown <=0 ) {
+		//TODO: think results should come back in target order. (wildcards alpha sorted)
+		var r= results.sort( function compare(a,b) {
+			return (a.target<b.target?-1:(a.target>b.target?1:0));
+		});
+		responseRenderer.renderResults( req, res, r, function(err) {
+			console.log(req.url + " completed in: " + (new Date().getTime() - now) + "ms");
+		});
+      }
+  };
+  
+  for( var k in metrics ) {
+      (function( metric ) {
+          var ctx= new TargetParseContext( metricsStore, metric, from, to );
+          TargetParser.parse( metric )( ctx ).then( 
+              function (result) {
+                  var seriesList= result.seriesList;
+                  for(var i=0; i< seriesList.length; i++ ) {
+                      var series= {
+                              datapoints : [],
+                              target: seriesList[i].name,
+                              targetSource: metric,
+                              aggregationMethod: seriesList[i].info.aggregationMethod,
+                              // Assumes all timeseries are the same shape (they should be!)
+                              tInfo: seriesList[i].data.tInfo
+                      };
+                      results[results.length]= series;
+                      var runningTime= seriesList[i].data.tInfo[0];
+                      
+                      for(var j=0;j < seriesList[i].data.values.length; j++) {
+                          series.datapoints[series.datapoints.length]= [ seriesList[i].data.values[j], runningTime ];
+                          runningTime+= seriesList[i].data.tInfo[2];
+                      }
+                  }
+                  carryOn();
+              }, function( error) {
+                  console.log( error.stack );
+                  carryOn();
+          })
+          .end();
+      })( unescape(metrics[k]) );
+  }
+}
 app.get('/favicon.ico', function(req,res){
   res.end();
 });
