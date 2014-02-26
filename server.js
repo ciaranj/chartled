@@ -147,6 +147,10 @@ app.post('/share', function(req,res) {
 });
 app.get('/:definition?', function(req, res){
   var d= req.param('definition');
+  var isDashboard= false;
+  if( req.query.dashboard ) {
+    isDashboard = req.query.dashboard.toLowerCase() == 'true';
+  }
   var sampleDefinition= {chartles: [{
       "id": "chartle-1"
     , "type": "Chartled.NumberChartle"
@@ -182,7 +186,7 @@ app.get('/:definition?', function(req, res){
     }
   };  
   if( typeof(d) == 'undefined' ) {
-    res.render('index', { title : 'Home', definition: JSON.stringify(sampleDefinition)})
+    res.render('index', { title : 'Home', definition: JSON.stringify(sampleDefinition), 'isDashboard': isDashboard});
   }
   else {
     definitionSharer.decode(d, function(err, definition) {
@@ -190,7 +194,7 @@ app.get('/:definition?', function(req, res){
         console.log( err );
         definition= sampleDefinition;
       }
-       res.render('index', { title : 'Home', definition: JSON.stringify(definition) })
+       res.render('index', { title : 'Home', definition: JSON.stringify(definition), 'isDashboard': isDashboard })
     });
   }
 });

@@ -8,7 +8,7 @@ function startAgain( definition ) {
 
   var gridster= document.createElement("div");
   gridster.setAttribute("id", "gridster");
-  gridster.setAttribute("class", "container gridster");
+  gridster.setAttribute("class", "gridster");
   document.getElementById("contents").appendChild( gridster );
   chartledDefinition= new Chartled.ChartledDefinition(definition, gridster, "");
   

@@ -24,10 +24,13 @@
   opacity:    hidden;
   visibility: hidden;
 }
-body {
+body.editor {
   padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
 }
 
+body.dashboard div#temporaryDatePicker {
+  display: none;
+}
 #index .x_tick {
   border-left: 1px dotted rgba(255, 255, 255, .2);
 }
@@ -56,8 +59,7 @@ html, body {
   height:100%;
 }
 
-body>div.container, 
-body>div.container div#contents {
+div#contents, div#gridster {
   height:100%
 }
 

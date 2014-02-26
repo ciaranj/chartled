@@ -45,8 +45,8 @@ html
     script(type='text/javascript', src='/javascripts/chartled/chartles/spacer/Renderer.js')
     script(type='text/javascript', src='/javascripts/chartled/deps/jquery.boxfit.js')
 
-  body#index
-    div.container
+  body#index(class=isDashboard?'dashboard':'editor')
+    unless isDashboard
       nav.navbar.navbar-inverse.navbar-fixed-top#navbar(role="navigation")
         .navbar-header
           button.navbar-toggle(type="button", data-toggle="collapse", data-target="#chartled-navbar-collapse-1")
@@ -59,12 +59,12 @@ html
           .navbar-left
             a#padlock.btn.btn-primary(href="#", role="button")
               i.fa.fa-lock(style="width:15px")
-      div#contents
-        div.no-print
-          span From  &nbsp;
-          input#from(value='now - 30 minutes')
-          span   &nbsp;To &nbsp;
-          input#to(value='now')
+    div#contents(style="width:3000px")
+      div#temporaryDatePicker.no-print
+        span From  &nbsp;
+        input#from(value='now - 30 minutes')
+        span   &nbsp;To &nbsp;
+        input#to(value='now')
       div#edit-context-menu.context-menu
         ul.dropdown-menu(role="menu")
           li.editable-only
@@ -76,115 +76,115 @@ html
             a.remove-chartled(tabindex="-1", href="#")
               i.fa.fa-times
               |&nbsp;Remove
-      div#page-context-menu.context-menu
-        ul.dropdown-menu(role="menu")
-          li.editable-only
-            a(href='#', onclick="var c=addNewChart([]); chartledDefinition.configureChartle(c.id)")
-              i.fa.fa-bar-chart-o
-              |&nbsp;Add Chart
-          li.editable-only
-            a(href='#', onclick="var c=addNewNumber(); chartledDefinition.configureChartle(c.id)")
-              i.fa.fa-subscript
-              |&nbsp;Add Number
-          li.editable-only
-            a(href='#', onclick="addNewClock();")
-              i.fa.fa-clock-o
-              |&nbsp;Add Clock-face
-          li.editable-only
-            a(href='#', onclick="addNewTextBox()")
-              i.fa.fa-font
-              |&nbsp;Add Textbox
-          li.editable-only
-            a(href='#', onclick="addNewSpacer()")
-              i.fa.fa-arrows
-              |&nbsp;Add Spacer
-          li.divider
-          li
-            a.import(tabindex="-1", href="#", onclick="importChartles()")
-              i.fa.fa-upload
-              |&nbsp;Import Dashboard
-          li
-            a.export(tabindex="-1", href="#", onclick="exportChartles()")
-              i.fa.fa-download
-              |&nbsp;Export Dashboard
+        div#page-context-menu.context-menu
+          ul.dropdown-menu(role="menu")
+            li.editable-only
+              a(href='#', onclick="var c=addNewChart([]); chartledDefinition.configureChartle(c.id)")
+                i.fa.fa-bar-chart-o
+                |&nbsp;Add Chart
+            li.editable-only
+              a(href='#', onclick="var c=addNewNumber(); chartledDefinition.configureChartle(c.id)")
+                i.fa.fa-subscript
+                |&nbsp;Add Number
+            li.editable-only
+              a(href='#', onclick="addNewClock();")
+                i.fa.fa-clock-o
+                |&nbsp;Add Clock-face
+            li.editable-only
+              a(href='#', onclick="addNewTextBox()")
+                i.fa.fa-font
+                |&nbsp;Add Textbox
+            li.editable-only
+              a(href='#', onclick="addNewSpacer()")
+                i.fa.fa-arrows
+                |&nbsp;Add Spacer
+            li.divider
+            li
+              a.import(tabindex="-1", href="#", onclick="importChartles()")
+                i.fa.fa-upload
+                |&nbsp;Import Dashboard
+            li
+              a.export(tabindex="-1", href="#", onclick="exportChartles()")
+                i.fa.fa-download
+                |&nbsp;Export Dashboard
 
-  script(type='text/javascript')
-    var page_mode= "readonly"; // readonly, editable
+    script(type='text/javascript')
+      var page_mode= "readonly"; // readonly, editable
 
-    $(function() {
-      $('.btn').button()
-      startAgain(!{definition});
+      $(function() {
+        $('.btn').button()
+        startAgain(!{definition});
       
-      $("#padlock").on("click", togglePageMode);
-      var chartledEditorContextMenuDefinition= {
-        target: '#edit-context-menu',
-        before: function(e,element) {
-          this.getMenu()[0].selectedChartleId= element[0].id;
-          e.preventDefault();
-          return true;
-        },
-        onItem: function(e, element) {
-          if( $(element).hasClass("edit-chartled") ) {
-            chartledDefinition.configureChartle( this.selectedChartleId );
+        $("#padlock").on("click", togglePageMode);
+        var chartledEditorContextMenuDefinition= {
+          target: '#edit-context-menu',
+          before: function(e,element) {
+            this.getMenu()[0].selectedChartleId= element[0].id;
+            e.preventDefault();
+            return true;
+          },
+          onItem: function(e, element) {
+            if( $(element).hasClass("edit-chartled") ) {
+              chartledDefinition.configureChartle( this.selectedChartleId );
+            }
+            else if( $(element).hasClass("remove-chartled") ) {
+              chartledDefinition.removeChartle( this.selectedChartleId );
+            }
           }
-          else if( $(element).hasClass("remove-chartled") ) {
-            chartledDefinition.removeChartle( this.selectedChartleId );
+        };
+
+        $(".chartled").contextmenu(chartledEditorContextMenuDefinition);
+        document.addEventListener('DOMNodeInserted', function(e) {
+          var el = $(e.target);
+          if(el.hasClass('chartled')) {
+            el.contextmenu(chartledEditorContextMenuDefinition);
           }
-        }
-      };
-
-      $(".chartled").contextmenu(chartledEditorContextMenuDefinition);
-      document.addEventListener('DOMNodeInserted', function(e) {
-        var el = $(e.target);
-        if(el.hasClass('chartled')) {
-          el.contextmenu(chartledEditorContextMenuDefinition);
-        }
+        });
+        $("#contents").contextmenu({
+          target: '#page-context-menu'
+        });
       });
-      $("#contents").contextmenu({
-        target: '#page-context-menu'
-      });
-    });
 
-    function updatePageCss() {
-      $("body").removeClass("pageMode-readonly");
-      $("body").removeClass("pageMode-editable");
-      $("body").addClass("pageMode-" + page_mode);
-    }
+      function updatePageCss() {
+        $("body").removeClass("pageMode-readonly");
+        $("body").removeClass("pageMode-editable");
+        $("body").addClass("pageMode-" + page_mode);
+      }
 
-    function setPageModeReadOnly() {
-      page_mode= "readonly";
-      var $padlock= $(document.getElementById("padlock"));
-      $padlock.removeClass("active");
-      $padlock.children("i")
-              .removeClass("fa-unlock")
-              .addClass("fa-lock");
+      function setPageModeReadOnly() {
+        page_mode= "readonly";
+        var $padlock= $(document.getElementById("padlock"));
+        $padlock.removeClass("active");
+        $padlock.children("i")
+                .removeClass("fa-unlock")
+                .addClass("fa-lock");
       
-      layout.disable();
-      layout.disable_resize();
-      $( ".text .realValue" ).hallo({editable: false});
-      $('.context-menu').find("li.editable-only").addClass("disabled");
-      updatePageCss();
-    }
-
-    function setPageModeEditable() {
-      page_mode= "editable";
-      var $padlock= $(document.getElementById("padlock"));
-      $padlock.addClass("active");
-      $padlock.children("i")
-              .removeClass("fa-lock")
-              .addClass("fa-unlock");
-      layout.enable();
-      layout.enable_resize();
-      $( ".text .realValue" ).hallo({editable: true});
-      $('.context-menu').find("li.editable-only").removeClass("disabled");
-      updatePageCss();
-    }
-
-    function togglePageMode() {
-      if( page_mode == "readonly" ) {
-        setPageModeEditable();
+        layout.disable();
+        layout.disable_resize();
+        $( ".text .realValue" ).hallo({editable: false});
+        $('.context-menu').find("li.editable-only").addClass("disabled");
+        updatePageCss();
       }
-      else {
-        setPageModeReadOnly();
+
+      function setPageModeEditable() {
+        page_mode= "editable";
+        var $padlock= $(document.getElementById("padlock"));
+        $padlock.addClass("active");
+        $padlock.children("i")
+                .removeClass("fa-lock")
+                .addClass("fa-unlock");
+        layout.enable();
+        layout.enable_resize();
+        $( ".text .realValue" ).hallo({editable: true});
+        $('.context-menu').find("li.editable-only").removeClass("disabled");
+        updatePageCss();
       }
-    }
+
+      function togglePageMode() {
+        if( page_mode == "readonly" ) {
+          setPageModeEditable();
+        }
+        else {
+          setPageModeReadOnly();
+        }
+      }
