@@ -4,8 +4,7 @@
   "author": "ciaranj@gmail.com",
   "version": "0.0.1",
   "dependencies": {
-    "hoard": "git://github.com/ciaranj/hoard.git#add_aggregation_type_support" ,
-    "express": "=3.0.0rc5" ,
+    "express": "=3.4.7",
     "jade": "=0.27.6",
     "moment": "=2.5.0",
     "pegjs": "=0.7.0",

@@ -25,11 +25,10 @@ function parseMoment(momentReqParam, unspecifiedValue) {
 var definitionSharer= new DefinitionSharer();
 
 var app = express();
-app.use(express.static(__dirname + '/public'));
 app.use(express.bodyParser());
 app.set('views', __dirname + '/views')
 app.set('view engine', 'jade')
-
+app.disable('etag');
 
 
 app.get('/explorer', function(req, res){
@@ -195,6 +194,8 @@ app.get('/:definition?', function(req, res){
     });
   }
 });
+
+app.use(express.static(__dirname + '/public'));
 
 process.on('uncaughtException', function (err) {
   console.log( err.stack );
