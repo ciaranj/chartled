@@ -50,7 +50,7 @@ spaceFunctionName = ws* functionName:functionName
     { return functionName; }
 
 functionName
-    = "summarize" / "sumSeries" / "sum" / "averageSeries" / "avg" / "scale" / "aliasByNode" / "asPercent" / "alias" / "bestFit" / "sinFunction" / "sin" / "constantLine" / "offset"
+    = "summarize" / "sumSeries" / "sum" / "averageSeries" / "avg" / "scale" / "aliasByNode" / "asPercent" / "alias" / "bestFit" / "sinFunction" / "sin" / "constantLine" / "offset" / "removeAboveValue" / "removeBelowValue"
 
 spaceexpression  = ws* expression:expression
     { return expression; }
