@@ -14,5 +14,6 @@ chartd.functions = [
     { name: 'offset', example: 'offset(metric*, factor)', description: "Takes a metric or a wildcard metric follwed by a constant that will be applied to each point." },
     { name: 'scale', example: 'scale(metric*, 1.0)', description: "Scales a series by the provided factor"},
     { name: 'sin', example: 'sin("title",amplitude=1)', description: "Generates a sine function based on current time range (10s interval)"},
-    { name: 'sumSeries', example: 'sumSeries(metric*)', description: "Sums a series"}
+    { name: 'sumSeries', example: 'sumSeries(metric*)', description: "Sums a series"},
+    { name: 'removeAboveValue', example: 'removeAboveValue(metric*, 3)', description: "Removes data above the given threshold from the series or list of series provided. Values above this threshold are assigned a value of 'null'"}
 ];
