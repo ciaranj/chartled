@@ -27,7 +27,7 @@ Chartled.FetchMetric = function(baseUrl, metrics, clock,  cb) {
 
     }
     else {
-      targetString += "&target=" + metrics[k].value;
+      targetString += "&target=" + encodeURIComponent(metrics[k].value);
     }
   }
   if( targetString == "" ) {
