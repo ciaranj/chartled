@@ -59,54 +59,55 @@ html
           .navbar-left
             a#padlock.btn.btn-primary(href="#", role="button")
               i.fa.fa-lock(style="width:15px")
+    div#edit-context-menu.context-menu
+      ul.dropdown-menu(role="menu")
+        li.editable-only
+          a.edit-chartled(tabindex="-1", href="#")
+            i.fa.fa-pencil
+            |&nbsp;Edit
+        li.divider
+        li.editable-only
+          a.remove-chartled(tabindex="-1", href="#")
+            i.fa.fa-times
+            |&nbsp;Remove
+    div#page-context-menu.context-menu
+      ul.dropdown-menu(role="menu")
+        li.editable-only
+          a(href='#', onclick="var c=addNewChart([]); chartledDefinition.configureChartle(c.id)")
+            i.fa.fa-bar-chart-o
+            |&nbsp;Add Chart
+        li.editable-only
+          a(href='#', onclick="var c=addNewNumber(); chartledDefinition.configureChartle(c.id)")
+            i.fa.fa-subscript
+            |&nbsp;Add Number
+        li.editable-only
+          a(href='#', onclick="addNewClock();")
+            i.fa.fa-clock-o
+            |&nbsp;Add Clock-face
+        li.editable-only
+          a(href='#', onclick="addNewTextBox()")
+            i.fa.fa-font
+            |&nbsp;Add Textbox
+        li.editable-only
+          a(href='#', onclick="addNewSpacer()")
+            i.fa.fa-arrows
+            |&nbsp;Add Spacer
+        li.divider
+        li
+          a.import(tabindex="-1", href="#", onclick="importChartles()")
+            i.fa.fa-upload
+            |&nbsp;Import Dashboard
+        li
+          a.export(tabindex="-1", href="#", onclick="exportChartles()")
+            i.fa.fa-download
+            |&nbsp;Export Dashboard
     div#contents(style="width:3000px")
       div#temporaryDatePicker.no-print
         span From  &nbsp;
         input#from(value='now - 30 minutes')
         span   &nbsp;To &nbsp;
         input#to(value='now')
-      div#edit-context-menu.context-menu
-        ul.dropdown-menu(role="menu")
-          li.editable-only
-            a.edit-chartled(tabindex="-1", href="#")
-              i.fa.fa-pencil
-              |&nbsp;Edit
-          li.divider
-          li.editable-only
-            a.remove-chartled(tabindex="-1", href="#")
-              i.fa.fa-times
-              |&nbsp;Remove
-        div#page-context-menu.context-menu
-          ul.dropdown-menu(role="menu")
-            li.editable-only
-              a(href='#', onclick="var c=addNewChart([]); chartledDefinition.configureChartle(c.id)")
-                i.fa.fa-bar-chart-o
-                |&nbsp;Add Chart
-            li.editable-only
-              a(href='#', onclick="var c=addNewNumber(); chartledDefinition.configureChartle(c.id)")
-                i.fa.fa-subscript
-                |&nbsp;Add Number
-            li.editable-only
-              a(href='#', onclick="addNewClock();")
-                i.fa.fa-clock-o
-                |&nbsp;Add Clock-face
-            li.editable-only
-              a(href='#', onclick="addNewTextBox()")
-                i.fa.fa-font
-                |&nbsp;Add Textbox
-            li.editable-only
-              a(href='#', onclick="addNewSpacer()")
-                i.fa.fa-arrows
-                |&nbsp;Add Spacer
-            li.divider
-            li
-              a.import(tabindex="-1", href="#", onclick="importChartles()")
-                i.fa.fa-upload
-                |&nbsp;Import Dashboard
-            li
-              a.export(tabindex="-1", href="#", onclick="exportChartles()")
-                i.fa.fa-download
-                |&nbsp;Export Dashboard
+
 
     script(type='text/javascript')
       var page_mode= "readonly"; // readonly, editable
@@ -114,7 +115,7 @@ html
       $(function() {
         $('.btn').button()
         startAgain(!{definition});
-      
+
         $("#padlock").on("click", togglePageMode);
         var chartledEditorContextMenuDefinition= {
           target: '#edit-context-menu',
