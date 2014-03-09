@@ -94,6 +94,14 @@ Chartled.ChartledDefinition.prototype.deserialize = function( definition ) {
     chartleBlocks[pos.id]= pos;
   }
 
+  // Because when we add chartles, using the gridster layout
+  // if a chartle is added to a row with enough of a gap above it, then that
+  // chartle will slide up, we will have un-expected re-draws of saved configuration
+  // if we don't make sure to add the earlier rows in first :)
+  definition.chartles.sort( function(c1,c2) {
+    return chartleBlocks[c1.id].row - chartleBlocks[c2.id].row;
+  });
+
   for(var k in definition.chartles) {
     var chartle= definition.chartles[k];
     var chartlePos= chartleBlocks[chartle.id];
