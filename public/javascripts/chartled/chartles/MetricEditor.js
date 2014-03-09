@@ -74,11 +74,15 @@ Chartled.MetricEditor.prototype= {
       if( this._functionsDropDownString == null ) {
           this._functionsDropDownString= "";
           var functions= chartd.functions
-          for( var f in functions ) {
-              this._functionsDropDownString += "<li><a href='#' onclick='Chartled.MetricEditor.prototype.appendMetricText(\"" + this._encodeHtml(functions[f].example) + "\")'>"+ this._encodeHtml(functions[f].name)+"</a></li>"
+          for( var k=0;k<functions.length;k++ ) {
+              this._functionsDropDownString += "<li><a href='#' onclick='Chartled.MetricEditor.prototype.appendFunction("+k+")'>"+ this._encodeHtml(functions[k].name)+"</a></li>"
           }
       }
       return this._functionsDropDownString;
+  },
+  appendFunction: function(functionKey) {
+    var functions= chartd.functions;
+    this.appendMetricText( chartd.functions[functionKey].example );
   },
   getMetricsDropDown : function() {
     if( this._metricsDropDownString == null ) {
