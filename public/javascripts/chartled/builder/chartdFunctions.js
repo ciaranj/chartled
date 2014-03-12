@@ -18,6 +18,8 @@ chartd.functions = [
       description: "Produces a 'Best Fit' line" },
     { name: 'constantLine', example: 'constantLine(value)',
       description: "Produces a line of constant 'value'" },
+    { name: 'derivative', example: 'derivative(metric*)',
+      description: "Calculates the delta between consecutive data points of a running total metric. (Note: doesn't normalise for time, as a true derivative would)" },
     { name: 'integral', example: 'integral(metric*)',
       description: "Shows the sum over time (like a continuous addition function). Useful for finding totals or trends in metrics that are collected per minute." },
     { name: 'keepLastValue', example: 'keepLastValue(metric*,limit=inf)',
