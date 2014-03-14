@@ -20,6 +20,8 @@ chartd.functions = [
       description: "Produces a line of constant 'value'" },
     { name: 'derivative', example: 'derivative(metric*)',
       description: "Calculates the delta between consecutive data points of a running total metric. (Note: doesn't normalise for time, as a true derivative would)" },
+    { name: 'diffSeries', example: 'diffSeries(metric*/1.0)',
+      description: "Takes metrics, lists of metrics or constant values (in any order) and subtracts parameters 2 through n from parameter 1. One of parameters must be a metric." },
     { name: 'integral', example: 'integral(metric*)',
       description: "Shows the sum over time (like a continuous addition function). Useful for finding totals or trends in metrics that are collected per minute." },
     { name: 'keepLastValue', example: 'keepLastValue(metric*,limit=inf)',
@@ -34,7 +36,7 @@ chartd.functions = [
       description: "Scales a series by the provided factor"},
     { name: 'sin', example: 'sin("title",amplitude=1)',
       description: "Generates a sine function based on current time range (10s interval)"},
-    { name: 'summarize', example: 'summarize(requestContext, seriesList, intervalString, func="sum", alignToFrom=False)',
+    { name: 'summarize', example: 'summarize(metric*, intervalString, func="sum", alignToFrom=False)',
       description: 'Summarize the data into interval buckets of a certain size. Using the provided aggregation function.'},
     { name: 'sumSeries', example: 'sumSeries(metric*)',
       description: "Sums a series"}
