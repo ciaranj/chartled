@@ -29,8 +29,7 @@ Chart= function(parentEl, outerWidth, outerHeight, config ) {
 
   this.chartArea = this.canvasArea.append("g")
                       .classed("layers", true);
-  // Add in layer containers.
-  for(var k in this.config.layers){
+  for(var k in this.config.groups){
     this.chartArea.append("g")
                   .classed("layer" + k, true);
   }
@@ -176,11 +175,12 @@ var xCoord= function(point) {
 }
 
 Chart.prototype._getLayerForMetric= function( metric ) {
-  for(var key in this.config.metrics ) {
+/*  for(var key in this.config.metrics ) {
     if( this.config.metrics[key].value == metric.targetSource ) {
       return this.config.metrics[key].layer;
     }
-  }
+  }*/
+  
 
   // If we got here we couldn't find the layer configuration.. assume layer 0.
   return 0;
@@ -274,22 +274,13 @@ Chart.prototype._sampleData= function( data ) {
 }
 
 Chart.prototype.refreshData= function( data ) {
+    for( var k in this.config.groups ) {
+      var layerEl= this.chartArea.select( "g.layer" + k );
+      layerEl.selectAll("*").remove();
+    }
+
     if( data && data.length > 0 ) {
       data= this._sampleData( data );
-
-
-/*      var stack = d3.layout.stack()
-          .x( xCoord )
-          .y( yCoord )
-          .out( function(d, y0, y) {
-            d.oy= d[0];
-            d[0] = y+y0;
-          })
-          .values(function(d) { 
-            return d.datapoints; });
-
-      var data= stack(data);
-  */
 
       // Assumes that all the data coming back is the same timespan.
       this.scales.x.domain( [xCoord(data[0].datapoints[0]),
@@ -305,35 +296,57 @@ Chart.prototype.refreshData= function( data ) {
 
       var leftAxis= this._getLeftAxis();
       var rightAxis= this._getRightAxis();
-      
-/*      this._updateChartAreaSize({
-        top: 5,
-        right: (rightAxis ? 40 : 2),
-        bottom: (this.config.axes.x.display ? 20: 2),
-        left:  (leftAxis ? 40 : 2)
-      });
-*/
+
       var that= this;
-      var line = d3.svg.line()
+  /*    var line = d3.svg.line()
                        .x(function(d) {
-                         return that.scales.x( xCoord(d) );  
+                         return that.scales.x( xCoord(d) );
                        })
                        .y(function(d) {
-                          return that.scales.y[0]( yCoord(d) ); 
+                          return that.scales.y[0]( yCoord(d) );
                         })
       var area = d3.svg.area()
         .x(line.x())
         .y1(line.y())
         .y0(this.scales.y[0](0));
-
+*/
       // Render layers
       var colours= d3.scale.category10().domain(d3.range(10));
+      var colourKey= 0;
+      // Iterate over each group (only really ever 2 at the minute.)
+      for( var g in this.config.groups ) {
+        var metrics= this.config.groups[g].metrics;
+        if( metrics && metrics.length > 0 ) {
+          var layerEl= this.chartArea.select( "g.layer" + g );
 
-      for( var k=0 ; k< this.config.layers.length; k++ ) {
-        var layerEl= this.chartArea.select( "g.layer" + k );
-        layerEl.selectAll("*").remove();
+          // Build the renderer for this group.
+          var line = d3.svg.line()
+                 .x(function(d) {
+                   return that.scales.x( xCoord(d) );
+                 })
+                 .y(function(d) {
+                    return that.scales.y[0]( yCoord(d) );
+                  })
+                  .interpolate( this.config.groups[g].interpolation );
+
+          for( var m in metrics ) {
+            for( var d in data ) {
+              if( data[d].targetSource == metrics[m] ) {
+                var c= d3.rgb(colours(colourKey));
+                colourKey= (++colourKey)%10;
+                var lPath= line(data[d].datapoints);
+                layerEl.append("path")
+                      .attr("fill", "none")
+                      .attr("stroke-width", "2px")
+                      .attr("stroke", c )
+                      .attr("d", lPath );
+              }
+            }
+          }
+        }
       }
-      
+
+/*
       // Group by layers
       var layered= [];
       for( var key in data ) {
@@ -374,7 +387,7 @@ Chart.prototype.refreshData= function( data ) {
                               .attr("fill", c.toString() )
                               .attr("opacity", 0.6)
                               .attr("d", area(data[key].datapoints) );
-                          
+
               var linePath= layerEl.append("path")
                                .attr("fill", "none")
                                .attr("stroke-width", "2px")
@@ -383,7 +396,7 @@ Chart.prototype.refreshData= function( data ) {
             }
           }
         }
-      }
+      }*/
       d3.select('#' + that.id +' svg').on("mouseover", function(d, i) {
         if( page_mode == "readonly" ) {
           if( data && data.length > 0 && data[0].datapoints.length && data[0].datapoints.length > 0 ) {

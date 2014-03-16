@@ -78,7 +78,7 @@ html
     div#page-context-menu.context-menu
       ul.dropdown-menu(role="menu")
         li.editable-only
-          a(href='#', onclick="if(!$(this).hasClass('disabled')) { var c=addNewChart([]); chartledDefinition.configureChartle(c.id); }")
+          a(href='#', onclick="if(!$(this).hasClass('disabled')) { var c=addNewChart([{metrics:[]},{metrics:[]}]); chartledDefinition.configureChartle(c.id); }")
             i.fa.fa-bar-chart-o
             |&nbsp;Add Chart
         li.editable-only
@@ -175,7 +175,7 @@ html
         $("li.unlock").removeClass("disabled");
         $("li.lock a").addClass("disabled");
         $("li.lock").addClass("disabled");
-      
+
         layout.disable();
         layout.disable_resize();
         $( ".text .realValue" ).hallo({editable: false});

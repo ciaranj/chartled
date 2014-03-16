@@ -27,10 +27,13 @@ Chartled.MetricEditor.prototype= {
       html +="</tfoot>";
     }
     html +="</table>";
-    parentEl[0].innerHTML = html; 
+
+    var jel= $(html);
+    parentEl[0].appendChild(jel[0]);
+    
     this._buildMetrics();
     if( this.config.allowAdd ) {
-      $('.add-metric').on("click", function() {
+      jel.find('.add-metric').on("click", function() {
         that.configureMetric(-1);
       });
     }
@@ -54,7 +57,7 @@ Chartled.MetricEditor.prototype= {
         if( this.config.allowRemove ) {
           html += "<td style='width:20px' class='metric-deletion'> <button class='btn btn-danger btn-xs' type='button' data-metric-id='" + k+ "'><i class='fa fa-times'></i></button></td>";
         }
-        html += "<td class='metric' data-metric-id='" + k+ "' data-original-title='Metric Details' data-content=\"" + that._encodeHtml(that.editableMetrics[k].value) + "\">" + (that.editableMetrics[k].value.length> 60 ? that._encodeHtml(that.editableMetrics[k].value.substring(0, 60)) +"..." : that._encodeHtml(that.editableMetrics[k].value)) + "</td>";
+        html += "<td class='metric' data-metric-id='" + k+ "' data-original-title='Metric Details' data-content=\"" + that._encodeHtml(that.editableMetrics[k]) + "\">" + (that.editableMetrics[k].length> 60 ? that._encodeHtml(that.editableMetrics[k].substring(0, 60)) +"..." : that._encodeHtml(that.editableMetrics[k])) + "</td>";
         html += "</tr>";
     }
     metricsTable[0].innerHTML = html;
@@ -118,7 +121,7 @@ Chartled.MetricEditor.prototype= {
     this._buildMetrics();
   },
   appendMetricText : function( txt ) {
-    var metricEditor= $('#editingMetric');
+    var metricEditor= $('.editingMetric');
     metricEditor.val( metricEditor.val() + txt );
   },
   configureMetric : function( metricId ) {
@@ -126,7 +129,7 @@ Chartled.MetricEditor.prototype= {
     that.hideChartleEditor();
 
 
-    var metric= {value:"", layer:2, axis:0};
+    var metric= "";
     if( metricId != -1) {
         metric= that.editableMetrics[ metricId ];
     }
@@ -143,15 +146,15 @@ Chartled.MetricEditor.prototype= {
     html += "</div>";
     html += "</div>";
     html += "<br/>"
-    html += "<textarea id='editingMetric' rows='8' style='width:99%;'>" + this._encodeHtml(metric.value) + "</textarea>";
+    html += "<textarea class='editingMetric' rows='8' style='width:99%;'>" + this._encodeHtml(metric) + "</textarea>";
 
     this._chartEditorDialog.show( html, 
       function ($dialog) {
-        var newMetricValue= $('#editingMetric').val().replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+        var newMetricValue= $('.editingMetric').val().replace(/^\s\s*/, '').replace(/\s\s*$/, '');
         if( newMetricValue != "" ) {
             //TODO: assert valid  here..
             if( metricId == -1 ) metricId= that.editableMetrics.length;
-            that.editableMetrics[metricId]= { value: newMetricValue };
+            that.editableMetrics[metricId]= newMetricValue;
         }
         that._buildMetrics();
         that.showChartleEditor();

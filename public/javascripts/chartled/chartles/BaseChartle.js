@@ -23,11 +23,11 @@ Chartled.FetchMetric = function(baseUrl, metrics, clock,  cb) {
 
   var targetString= "";
   for( var k in metrics ) {
-    if( !metrics[k] || /^\s*$/.test(metrics[k].value) ) {
+    if( !metrics[k] || /^\s*$/.test(metrics[k]) ) {
 
     }
     else {
-      targetString += "&target=" + encodeURIComponent(metrics[k].value);
+      targetString += "&target=" + encodeURIComponent(metrics[k]);
     }
   }
   if( targetString == "" ) {

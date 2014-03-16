@@ -14,9 +14,7 @@ Chartled.inheritPrototype(Chartled.DashingChartle, Chartled.BaseChartle, {
       this.metrics = definition.metrics;
     }
     else if( typeof(definition.metric) != 'undefined' ) { 
-      this.metrics= [{
-          value: definition.metric
-        }];
+      this.metrics= [definition.metric];
     }
 
     // Need to grab the given element size prior to adding child elements as they may force it
@@ -98,7 +96,7 @@ Chartled.inheritPrototype(Chartled.DashingChartle, Chartled.BaseChartle, {
     var o= Chartled.BaseChartle.prototype.serialize.call(this);
     if( this.metrics ) {
       if( this.metrics.length ==1 ) {
-        o.metric= this.metrics[0].value;
+        o.metric= this.metrics[0];
       }
       else {
         o.metrics= this.metrics;

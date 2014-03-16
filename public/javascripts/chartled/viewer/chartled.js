@@ -33,10 +33,10 @@ setInterval(function(){
     }
 }, 1000);
 
-function addNewChart( metrics ) {
+function addNewChart( groups ) {
 	return chartledDefinition.addNewChartle( {
-		"type": "Chartled.ChartChartle", 
-		"metrics": metrics
+		"type": "Chartled.ChartChartle",
+		"groups": groups
 	}, 1, 4, 2 );
 }
 

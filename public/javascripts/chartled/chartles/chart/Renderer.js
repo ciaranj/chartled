@@ -6,7 +6,22 @@ Chartled.inheritPrototype(Chartled.ChartChartle, Chartled.BaseChartle, {
   initialize: function( definition ) {
     Chartled.BaseChartle.prototype.initialize.call(this, definition);
 
-    this.metrics= definition.metrics;
+    if( definition.metrics ) {
+      // Deal with legacy version of definition
+      var metricValues= [];
+      for(var k in definition.metrics) {
+        metricValues.push( definition.metrics[k].value );
+      }
+      this.groups= [{
+        metrics: metricValues
+      }];
+    }
+    else {
+      this.groups= definition.groups;
+    }
+    if( typeof(this.groups[1]) == 'undefined' ) {
+      this.groups[1]= {metrics:[]}
+    }
     if( definition.title ) this.set_title(definition.title);
     else this.set_title("");
     if( definition.horizontalAxisVisible ) this.set_horizontalAxisVisible(definition.horizontalAxisVisible);
@@ -14,14 +29,14 @@ Chartled.inheritPrototype(Chartled.ChartChartle, Chartled.BaseChartle, {
     if( definition.autoSampleData ) this.set_autoSampleData(definition.autoSampleData);
     else this.set_autoSampleData(true);
 
-    for(var key in this.metrics) {
-      this.metrics[key].axis= 0;
-      this.metrics[key].layer =2;
-    }
+//    for(var key in this.metrics) {
+//      this.metrics[key].axis= 0;
+//      this.metrics[key].layer =2;
+//    }
     this._previousWidth= this.jEl.width();
     this._previousHeight= this.jEl.width();
     this.chart = new Chart( this.id, this.jEl.width(), this.jEl.height(), {
-      "metrics": this.metrics,
+      groups: this.groups,
       title: this._title,
       horizontalAxisVisible : this._horizontalAxisVisible,
       autoSampleData : this._autoSampleData,
@@ -48,7 +63,13 @@ Chartled.inheritPrototype(Chartled.ChartChartle, Chartled.BaseChartle, {
   },
   serialize: function() {
     var o= Chartled.BaseChartle.prototype.serialize.call(this);
-    o.metrics= this.metrics;
+
+    // Only bother exporting groups that have configured metrics.
+    var outGroups= [];
+    for(var g in this.groups) {
+      if( this.groups[g].metrics && this.groups[g].metrics.length > 0) outGroups.push(this.groups[g]);
+    }
+    o.groups= outGroups;
     o.title= this._title;
 
     // Only bother writing it out if it is false (the default of true is fine).
@@ -56,7 +77,15 @@ Chartled.inheritPrototype(Chartled.ChartChartle, Chartled.BaseChartle, {
     return o;
   },
   fetch: function(clock, cb) {
-    Chartled.FetchMetric( this.baseUrl, this.metrics, clock, cb );
+    var metricsToFetch= {};
+    // Only fetch the same metric once, the same metric *might* be in the each group.
+    for(var group in this.groups) {
+      for(var metric in this.groups[group].metrics) {
+        var m= this.groups[group].metrics[metric];
+        metricsToFetch[m]= m;
+      }
+    }
+    Chartled.FetchMetric( this.baseUrl, metricsToFetch, clock, cb );
   },
   update: function(err, data) {
     if(!err) {
