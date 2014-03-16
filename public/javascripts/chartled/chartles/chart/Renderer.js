@@ -13,7 +13,9 @@ Chartled.inheritPrototype(Chartled.ChartChartle, Chartled.BaseChartle, {
         metricValues.push( definition.metrics[k].value );
       }
       this.groups= [{
-        metrics: metricValues
+        metrics: metricValues,
+        interpolation: 'linear',
+        renderer: 'line'
       }];
     }
     else {

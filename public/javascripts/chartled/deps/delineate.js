@@ -329,17 +329,50 @@ Chart.prototype.refreshData= function( data ) {
                   })
                   .interpolate( this.config.groups[g].interpolation );
 
+          var area = d3.svg.area()
+            .x(line.x())
+            .y1(line.y())
+            .y0(this.scales.y[0](0))
+            .interpolate( this.config.groups[g].interpolation );
+
+          var renderer= this.config.groups[g].renderer;
           for( var m in metrics ) {
             for( var d in data ) {
               if( data[d].targetSource == metrics[m] ) {
                 var c= d3.rgb(colours(colourKey));
                 colourKey= (++colourKey)%10;
-                var lPath= line(data[d].datapoints);
-                layerEl.append("path")
-                      .attr("fill", "none")
-                      .attr("stroke-width", "2px")
-                      .attr("stroke", c )
-                      .attr("d", lPath );
+
+                if( renderer == "line" ) {
+                  var lPath= line(data[d].datapoints);
+                   /*if( this.config.layers[metricLayer].dropShadow ) {
+                      layerEl.append("path")
+                             .classed("shadow", true)
+                             .attr("fill", "none")
+                             .attr("stroke-width", "2px")
+                             .attr("stroke", "black" )
+                             .attr("d", lPath )
+                             .attr("opacity", 0.6)
+                             .attr("transform", "translate(1,1)");
+                   }*/
+                   layerEl.append("path")
+                          .attr("fill", "none")
+                          .attr("stroke-width", "2px")
+                          .attr("stroke", c )
+                          .attr("d", lPath );
+                }
+                else if( renderer == "area" ){
+                  var areaPath= layerEl.append("path")
+                                  .attr("fill", c.toString() )
+                                  .attr("opacity", 0.6)
+                                  .attr("d", area(data[d].datapoints) );
+
+                  var linePath= layerEl.append("path")
+                                   .attr("fill", "none")
+                                   .attr("stroke-width", "2px")
+                                   .attr("stroke", c.darker().toString() )
+                                   .attr("d", line(data[d].datapoints) );
+                }
+
               }
             }
           }

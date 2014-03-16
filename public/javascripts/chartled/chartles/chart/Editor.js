@@ -25,7 +25,8 @@ Chartled.registerChartleEditor( Chartled.ChartChartle, {
     for(var i=0;i<metricGroups;i++) {
       that.editableGroups.push({
         metrics: [],
-        interpolation: "linear"
+        interpolation: "linear",
+        renderer: "line"
       });
     }
 
@@ -34,6 +35,7 @@ Chartled.registerChartleEditor( Chartled.ChartChartle, {
         that.editableGroups[i].metrics.push( that.groups[i].metrics[m] );
       }
       if(typeof(that.groups[i].interpolation) != 'undefined') that.editableGroups[i].interpolation = that.groups[i].interpolation;
+      if(typeof(that.groups[i].renderer) != 'undefined') that.editableGroups[i].renderer = that.groups[i].renderer;
     }
     var html = "";
     html += "  <ul class='nav nav-tabs'>";
@@ -64,8 +66,8 @@ Chartled.registerChartleEditor( Chartled.ChartChartle, {
       html += "          <div class='metricValueEditorContainer'/>";
       html += "          <div class='form-group col-sm-12'>";
       html += "            <label class='col-sm-2 control-label'>Style</label><div class='col-sm-3'>"
-      html += "              <select disabled class='form-control selectpicker'>";
-      html +=                  buildSelectOptions([["line","Line"],["area", "Area"],["bar", "Bar"]], "line");
+      html += "              <select class='form-control selectpicker renderer'>";
+      html +=                  buildSelectOptions([["line","Line"],["area", "Area"],["bar", "Bar"]], that.editableGroups[i].renderer);
       html += "              </select>";
       html += "            </div>";
       html += "            <label class='col-sm-2 control-label'>Interpolation</label><div class='col-sm-3'>"
@@ -110,6 +112,7 @@ Chartled.registerChartleEditor( Chartled.ChartChartle, {
             for(var i=0;i<that.editableGroups.length;i++) {
               var metricEditor= $dialog.find(".metricEditor"+ i);
               that.editableGroups[i].interpolation= metricEditor.find(".interpolation").val();
+              that.editableGroups[i].renderer= metricEditor.find(".renderer").val();
             }
 
             // Bleurghhh this is nasty, avoiding shared mutable states??
