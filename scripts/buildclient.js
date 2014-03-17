@@ -14,6 +14,7 @@ var filesToInclude= [
   , 'public/javascripts/chartled/chartles/DashingChartle.js'
   , 'public/javascripts/chartled/chartles/clock/Renderer.js'
   , 'public/javascripts/chartled/chartles/number/Renderer.js'
+  , 'public/javascripts/chartled/chartles/list/Renderer.js'
   , 'public/javascripts/chartled/chartles/text/Renderer.js'
   , 'public/javascripts/chartled/chartles/spacer/Renderer.js'
 ]
