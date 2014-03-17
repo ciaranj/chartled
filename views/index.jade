@@ -55,10 +55,6 @@ html
           span.icon-bar
           span.icon-bar
           a.navbar-brand(href="#") Chartled
-        div#chartled-navbar-collapse-1.collapse.navbar-collapse
-          .navbar-left
-            a#padlock.btn.btn-primary(href="#", role="button")
-              i.fa.fa-lock(style="width:15px")
     div#edit-context-menu.context-menu
       ul.dropdown-menu(role="menu")
         li.editable-only
@@ -70,26 +66,35 @@ html
           a.remove-chartled(tabindex="-1", href="#")
             i.fa.fa-times
             |&nbsp;Remove
+        li.divider
+        li.unlock
+          a.disabled(tabindex="-1", href="#", onclick="setPageModeEditable();")
+            i.fa.fa-unlock(style="width:15px")
+            |&nbsp;Unlock Dashboard
+        li.lock.disabled
+          a.disabled(tabindex="-1", href="#", onclick="setPageModeReadOnly();")
+            i.fa.fa-lock(style="width:15px")
+            |&nbsp;Lock Dashboard
     div#page-context-menu.context-menu
       ul.dropdown-menu(role="menu")
         li.editable-only
-          a(href='#', onclick="var c=addNewChart([]); chartledDefinition.configureChartle(c.id)")
+          a(href='#', onclick="if(!$(this).hasClass('disabled')) { var c=addNewChart([]); chartledDefinition.configureChartle(c.id); }")
             i.fa.fa-bar-chart-o
             |&nbsp;Add Chart
         li.editable-only
-          a(href='#', onclick="var c=addNewNumber(); chartledDefinition.configureChartle(c.id)")
+          a(href='#', onclick="if(!$(this).hasClass('disabled')) { var c=addNewNumber(); chartledDefinition.configureChartle(c.id); }")
             i.fa.fa-subscript
             |&nbsp;Add Number
         li.editable-only
-          a(href='#', onclick="addNewClock();")
+          a(href='#', onclick="if(!$(this).hasClass('disabled')) { addNewClock(); }")
             i.fa.fa-clock-o
             |&nbsp;Add Clock-face
         li.editable-only
-          a(href='#', onclick="addNewTextBox()")
+          a(href='#', onclick="if(!$(this).hasClass('disabled')) { addNewTextBox(); }")
             i.fa.fa-font
             |&nbsp;Add Textbox
         li.editable-only
-          a(href='#', onclick="addNewSpacer()")
+          a(href='#', onclick="if(!$(this).hasClass('disabled')) { addNewSpacer(); }")
             i.fa.fa-arrows
             |&nbsp;Add Spacer
         li.divider
@@ -101,6 +106,16 @@ html
           a.export(tabindex="-1", href="#", onclick="exportChartles()")
             i.fa.fa-download
             |&nbsp;Export Dashboard
+        li.divider
+        li.unlock
+          a(tabindex="-1", href="#", onclick="setPageModeEditable();")
+            i.fa.fa-unlock(style="width:15px")
+            |&nbsp;Unlock Dashboard
+        li.lock.disabled
+          a.disabled(tabindex="-1", href="#", onclick="setPageModeReadOnly();")
+            i.disabled.fa.fa-lock(style="width:15px")
+            |&nbsp;Lock Dashboard
+
     div#contents(style="width:3000px")
       div#temporaryDatePicker.no-print
         span From  &nbsp;
@@ -125,11 +140,13 @@ html
             return true;
           },
           onItem: function(e, element) {
-            if( $(element).hasClass("edit-chartled") ) {
-              chartledDefinition.configureChartle( this.selectedChartleId );
-            }
-            else if( $(element).hasClass("remove-chartled") ) {
-              chartledDefinition.removeChartle( this.selectedChartleId );
+            if( !$(element).hasClass("disabled") ) {
+              if( $(element).hasClass("edit-chartled") ) {
+                chartledDefinition.configureChartle( this.selectedChartleId );
+              }
+              else if( $(element).hasClass("remove-chartled") ) {
+                chartledDefinition.removeChartle( this.selectedChartleId );
+              }
             }
           }
         };
@@ -154,30 +171,31 @@ html
 
       function setPageModeReadOnly() {
         page_mode= "readonly";
-        var $padlock= $(document.getElementById("padlock"));
-        $padlock.removeClass("active");
-        $padlock.children("i")
-                .removeClass("fa-unlock")
-                .addClass("fa-lock");
+        $("li.unlock a").removeClass("disabled");
+        $("li.unlock").removeClass("disabled");
+        $("li.lock a").addClass("disabled");
+        $("li.lock").addClass("disabled");
       
         layout.disable();
         layout.disable_resize();
         $( ".text .realValue" ).hallo({editable: false});
         $('.context-menu').find("li.editable-only").addClass("disabled");
+        $('.context-menu').find("li.editable-only *").addClass("disabled");
         updatePageCss();
       }
 
       function setPageModeEditable() {
         page_mode= "editable";
-        var $padlock= $(document.getElementById("padlock"));
-        $padlock.addClass("active");
-        $padlock.children("i")
-                .removeClass("fa-lock")
-                .addClass("fa-unlock");
+        $("li.lock a").removeClass("disabled");
+        $("li.lock").removeClass("disabled");
+        $("li.unlock a").addClass("disabled");
+        $("li.unlock").addClass("disabled");
+
         layout.enable();
         layout.enable_resize();
         $( ".text .realValue" ).hallo({editable: true});
         $('.context-menu').find("li.editable-only").removeClass("disabled");
+        $('.context-menu').find("li.editable-only *").removeClass("disabled");
         updatePageCss();
       }
 
