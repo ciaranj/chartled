@@ -4,6 +4,7 @@
   "author": "ciaranj@gmail.com",
   "version": "0.0.1",
   "dependencies": {
+    "ceres": "=0.0.1",
     "express": "=3.4.7",
     "jade": "=0.27.6",
     "moment": "=2.5.0",
