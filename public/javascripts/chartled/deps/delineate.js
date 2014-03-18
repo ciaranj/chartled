@@ -225,10 +225,21 @@ Chart.prototype._aggregateSample= function( aggregationMethod, values ) {
 };
 Chart.prototype._sampleData= function( data ) {
   if( this._autoSampleData === true ) {
+    var w= this.width;
+    
+    for( var g in this.config.groups ) {
+      var group= this.config.groups[g];
+      if(group.renderer == 'bar' ) {
+        // If we're drawing any bars, they take up more horizontal space per 'point' than lines or areas
+        // so we need to pretend we have less space around overall! 
+        w= w / 2;
+        break;
+      }
+    }
     for( var key in data ) {
-        if( data[key].datapoints.length > this.width ) {
+        if( data[key].datapoints.length > w ) {
           var rawLength= data[key].datapoints.length;
-          var skipFactor= Math.round( rawLength / this.width );
+          var skipFactor= Math.round( rawLength / w );
           var skipFactorCounter= 0;
           var cumulative= [];
           var newTs= data[key].datapoints[0][1];
@@ -372,8 +383,46 @@ Chart.prototype.refreshData= function( data ) {
                                    .attr("stroke", c.darker().toString() )
                                    .attr("d", line(data[d].datapoints) );
                 }
-
-              }
+                else if( renderer == "bar" ){
+                  var barPadding = 1;
+                  var maxBarWidth= (that.width / data[d].datapoints.length) - barPadding;
+                  var barOffset= -maxBarWidth/2;
+                  if( that.scales.y[0].domain()[0] < 0 ) {
+                    var originY= that.scales.y[0](0);
+                  }
+                  else {
+                    var originY= undefined;
+                  }
+                  
+                  layerEl.selectAll("rect")
+                          .data( data[d].datapoints )
+                          .enter()
+                          .append("rect")
+                          .attr("x", function(d, i) {
+                             return that.scales.x(xCoord(d)) + barOffset;
+                          })
+                          .attr("y", function(d) {
+                            var val= yCoord(d);
+                            if( typeof(originY) != 'undefined' ) {
+                              val= Math.max(0, yCoord(d));
+                            }
+                            return that.scales.y[0](val);
+                            
+                          })
+                          .attr("width", maxBarWidth)
+                          .attr("height", function(d) {
+                            if( originY ) {
+                              return Math.abs(that.scales.y[0](yCoord(d)) - originY);
+                            }
+                            else {
+                              return that.height - that.scales.y[0](yCoord(d));
+                            }
+                          })
+                          .attr("fill", function(d) {
+                             return c;
+                          });
+                }
+             }
             }
           }
         }
@@ -509,9 +558,9 @@ Chart.prototype.refreshData= function( data ) {
     }
 }
 Chart.prototype._renderBarsLayer= function( data, metricLayer, dataKeys, colours )  {
-  var barPadding = 1;
   var layerEl= this.chartArea.select( "g.layer" + metricLayer );
   var that= this;
+  var barPadding = 1;
   var maxBarWidth= that.width / data[0].datapoints.length - barPadding;
   var barOffset= 0;
   for( var key in dataKeys ) {
