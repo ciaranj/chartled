@@ -340,10 +340,17 @@ Chart.prototype.refreshData= function( data ) {
                   })
                   .interpolate( this.config.groups[g].interpolation );
 
+
+          if( that.scales.y[0].domain()[0] > 0 ) {
+            var areaY0 = this.scales.y[0](that.scales.y[0].domain()[0]);
+          }
+          else {
+            var areaY0 = this.scales.y[0](0);
+          }
           var area = d3.svg.area()
             .x(line.x())
             .y1(line.y())
-            .y0(this.scales.y[0](0))
+            .y0(areaY0)
             .interpolate( this.config.groups[g].interpolation );
 
           var renderer= this.config.groups[g].renderer;
