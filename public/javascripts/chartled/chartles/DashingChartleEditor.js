@@ -30,11 +30,7 @@ Chartled.DashingChartleEditor.prototype= {
     // Take a copy of the current metrics, prior to edit.
     that.editableMetrics= [];
     if( that.metrics ) {
-      for(var i=0;i< that.metrics.length; i++ ) {
-          that.editableMetrics[i]= {
-            value: that.metrics[i].value
-          };
-      }
+      that.editableMetrics= that.metrics.slice();
     }
     var html= "<form class='form-horizontal'>";
     if( that._editor_options.editable.details_title !== false && 
