@@ -5,7 +5,7 @@ var assert= require("assert"),
     Utils= require("./TestUtils");
 
 describe('TargetParseContext', function(){
-  describe('removeBelowValue', function(){
+  describe('keepLastValue', function(){
     var metricInfs = [new MetricInfo("foo.bar")
                      ,new MetricInfo("foo.car")
                      ,new MetricInfo("foo.far")

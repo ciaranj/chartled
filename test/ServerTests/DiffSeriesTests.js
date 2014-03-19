@@ -15,7 +15,7 @@ describe('TargetParseContext', function(){
                             assert.equal( 1, result.seriesList.length );
                             assert.equal( 11, result.seriesList[0].data.values.length );
                             assert.equal( "diffSeries(foo.bar,10,foo.{car,tar})", result.seriesList[0].name );
-                            assert.deepEqual( [84,75,66,57,48,38,27,16,5,-6,-12], result.seriesList[0].data.values );
+                            assert.deepEqual( [84,75,66,57,48,38,27,16,5,-6,null], result.seriesList[0].data.values );
                             done();
                     })
                     .end();
@@ -42,7 +42,7 @@ describe('TargetParseContext', function(){
                             assert.equal( 1, result.seriesList.length );
                             assert.equal( 11, result.seriesList[0].data.values.length );
                             assert.equal( "diffSeries(foo.{bar,car,tar})", result.seriesList[0].name );
-                            assert.deepEqual( [94,-5,76,67,55,-2,37,27,17,4,-2], result.seriesList[0].data.values );
+                            assert.deepEqual( [94,null,76,67,55,undefined,37,27,17,4,null], result.seriesList[0].data.values );
                             done();
                     })
                     .end();
@@ -56,7 +56,7 @@ describe('TargetParseContext', function(){
                             assert.equal( 1, result.seriesList.length );
                             assert.equal( 11, result.seriesList[0].data.values.length );
                             assert.equal( "diffSeries(*.*,0)", result.seriesList[0].name );
-                            assert.deepEqual( [94,-5,76,67,55,-2,37,27,17,4,-2], result.seriesList[0].data.values );
+                            assert.deepEqual( [94,null,76,67,55,undefined,37,27,17,4,null], result.seriesList[0].data.values );
                             done();
                     })
                     .end();
@@ -69,7 +69,7 @@ describe('TargetParseContext', function(){
                             assert.equal( 1, result.seriesList.length );
                             assert.equal( 4, result.seriesList[0].data.values.length );
                             assert.equal( "diffSeries(foo.[12]ar)", result.seriesList[0].name );
-                            assert.deepEqual( [-9,-38,-60,-46], result.seriesList[0].data.values );
+                            assert.deepEqual( [-9,-38,null,-46], result.seriesList[0].data.values );
                             done();
                     })
                     .end();
