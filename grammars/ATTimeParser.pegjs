@@ -25,14 +25,16 @@ reference
   =   "now" { return require('moment')(); }
     / h:paddedhr24 ":" m:paddedMinutes y:paddedYear mo:paddedMonth da:paddedDayOfMonth {
       //Format: 04:00_20110501
-      return require('moment')({ "year": y, "month": (mo-1), "date": da, "hour": +h, "minute": m});
+      return require('moment-timezone').tz({ "year": y, "month": (mo-1), "date": da, "hour": +h, "minute": m}, "Europe/London");
     }
     / tod:time_of_day_reference? moy:month_of_year_reference date:unpaddedDayOfMonth {
       //Format: 2pm? January 1
-      var day= require('moment')();
+      var day= require('moment-timezone')();
+
       day.month( moy );
       day.date( date );
       if( tod ) {
+        day.tz("Europe/London");
         day.hours(tod.hours).startOf('hour');
         if(tod.minutes) day.minutes(tod.minutes);
       }
@@ -40,16 +42,17 @@ reference
     }
     / tod:time_of_day_reference? dow:day_of_week_reference {
       //Format: 2pm? Monday  (Returns the most-recent (inc. today) day that was requested)
-      var now= require('moment')().startOf('second');
-      var day= require('moment')().startOf('second');
-      if( tod ) {
-        day.hours(tod.hours).startOf('hour');
-        if(tod.minutes) day.minutes(tod.minutes);
-      }
+      var now= require('moment-timezone')().startOf('second');
+      var day= require('moment-timezone')().startOf('second');
       day.day(dow);
       if(day.day() > now.day() ) {
         //Format: The day chosen would be in the future, so assume the past ... [for now, until we provide a next+previous extension to Graphite's formats] :/
         day.subtract({day: 7});
+      }
+      if( tod ) {
+        day.tz("Europe/London");
+        day.hours(tod.hours).startOf('hour');
+        if(tod.minutes) day.minutes(tod.minutes);
       }
       return day;
     }
@@ -58,8 +61,9 @@ reference
         //Format: 2pm/noon/midnight/teatime? 20091201?
         //Format: 2pm/noon/midnight/teatime? 040380?
         //Format: 2pm/noon/midnight/teatime? 04031980?
-        if(!day) day= require('moment')();
+        if(!day) day= require('moment-timezone')();
         if( tod ) {
+          day.tz("Europe/London");
           day.hours(tod.hours).startOf('hour');
           if( tod.minutes ) day.minutes(tod.minutes);
         }

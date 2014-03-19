@@ -1,10 +1,15 @@
 var   assert= require("assert")
     , DatesAndTimes= require("../../lib/utils/DatesAndTimes")
-    , moment= require("moment");
+    , moment= require("moment")
+    , tz_moment= require("moment-timezone");
+
+function current_year() {
+  return 2014; // Risky for tests running early on in the year ;) ..i.e. the first day ..or late on I suppose.
+}
 
 // uggh time based tests, what could possibly go wrong :/
 describe('DatesAndTimes.ParseATTime', function(){
-    it("should parse timestamps (such as 1234567890)", function() {
+    it("should parse unix timestamps (such as 1234567890)", function() {
       assert.equal( DatesAndTimes.parseATTime("1388656171"), 1388656171 );
       assert.throws( function() {
         DatesAndTimes.parseATTime("-1388656171")
@@ -42,67 +47,55 @@ describe('DatesAndTimes.ParseATTime', function(){
       assert.equal( DatesAndTimes.parseATTime("-120minute"), Math.floor(new Date().getTime()/1000) - 7200 );
     });
     it("should parse 'noon yesterday'", function() {
-      var m= moment();
-      m.subtract('days',1).hours(12).startOf('hour');
+      var m= tz_moment().tz("Europe/London").subtract('days',1).hours(12).startOf('hour');
       assert.equal( DatesAndTimes.parseATTime("noon yesterday"), m.unix() );
     });
     it("should parse 'noon today'", function() {
-      var m= moment();
-      m.hours(12).startOf('hour');
+      var m= tz_moment().tz("Europe/London").hours(12).startOf('hour');
       assert.equal( DatesAndTimes.parseATTime("noon"), m.unix() );
       assert.equal( DatesAndTimes.parseATTime("noon today"), m.unix() );
     });
     it("should parse 'noon tomorrow'", function() {
-      var m= moment();
-      m.add('days',1).hours(12).startOf('hour');
+      var m= tz_moment().tz("Europe/London").add('days',1).hours(12).startOf('hour');
       assert.equal( DatesAndTimes.parseATTime("noon tomorrow"), m.unix() );
     });
     it("should parse 'midnight yesterday'", function() {
-      var m= moment();
-      m.subtract('days',1).hours(0).startOf('hour');
+      var m= tz_moment().tz("Europe/London").subtract('days',1).hours(0).startOf('hour');
       assert.equal( DatesAndTimes.parseATTime("midnight yesterday"), m.unix() );
     });
     it("should parse 'midnight today'", function() {
-      var m= moment();
-      m.hours(0).startOf('hour');
+      var m= tz_moment().tz("Europe/London").hours(0).startOf('hour');
       assert.equal( DatesAndTimes.parseATTime("midnight"), m.unix() );
       assert.equal( DatesAndTimes.parseATTime("midnight today"), m.unix() );
     });
     it("should parse 'midnight tomorrow'", function() {
-      var m= moment();
-      m.add('days',1).hours(0).startOf('hour');
+      var m= tz_moment().tz("Europe/London").add('days',1).hours(0).startOf('hour');
       assert.equal( DatesAndTimes.parseATTime("midnight tomorrow"), m.unix() );
     });
     //teatime?
     it("should parse 'teatime yesterday'", function() {
-      var m= moment();
-      m.subtract('days',1).hours(16).startOf('hour');
+      var m= tz_moment().tz("Europe/London").subtract('days',1).hours(16).startOf('hour');
       assert.equal( DatesAndTimes.parseATTime("teatime yesterday"), m.unix() );
     });
     it("should parse 'teatime today'", function() {
-      var m= moment();
-      m.hours(16).startOf('hour');
+      var m= tz_moment().tz("Europe/London").hours(16).startOf('hour');
       assert.equal( DatesAndTimes.parseATTime("teatime"), m.unix() );
       assert.equal( DatesAndTimes.parseATTime("teatime today"), m.unix() );
     });
     it("should parse 'teatime tomorrow'", function() {
-      var m= moment();
-      m.add('days',1).hours(16).startOf('hour');
+      var m= tz_moment().tz("Europe/London").add('days',1).hours(16).startOf('hour');
       assert.equal( DatesAndTimes.parseATTime("teatime tomorrow"), m.unix() );
     });
     it("should parse '6pm today'", function() {
-      var m= moment();
-      m.hours(18).startOf('hour');
+      var m= tz_moment().tz("Europe/London").hours(18).startOf('hour');
       assert.equal( DatesAndTimes.parseATTime("6pm today"), m.unix() );
     })
     it("should parse '6am today'", function() {
-      var m= moment();
-      m.hours(6).startOf('hour');
+      var m= tz_moment().tz("Europe/London").hours(6).startOf('hour');
       assert.equal( DatesAndTimes.parseATTime("6am today"), m.unix() );
     })
     it("should parse '4:23pm yesterday'", function() {
-      var m= moment();
-      m.hours(16).startOf('hour').minutes(23).subtract('days',1);
+      var m= tz_moment().tz("Europe/London").subtract('days',1).hours(16).startOf('hour').minutes(23);
       assert.equal( DatesAndTimes.parseATTime("4:23pm yesterday"), m.unix() );
     })
     it("should parse 'tomorrow'", function() { 
@@ -129,19 +122,17 @@ describe('DatesAndTimes.ParseATTime', function(){
       assert.equal( DatesAndTimes.parseATTime("jan 5"), m.unix() );
     })
     it("should parse '7:23pm june 28'", function() {
-      // Note, currently the time will be translated from the current locale (GMT Where I run the tests) to UTC epoch result.
-      // So, 7:23pm on June 28 in the UK will actually be 6:23pm UTC
-      var m= moment().utc().month(5).date(28).hour(18).minute(23).startOf("minute");
-      assert.equal( DatesAndTimes.parseATTime("7:23pm jun 28"), m.unix() );
-      assert.equal( DatesAndTimes.parseATTime("7:23pm june 28"), m.unix() );
+      var expected= tz_moment.tz( current_year() + "-06-28 19:23", "Europe/London").unix();
+      assert.equal( DatesAndTimes.parseATTime("7:23pm jun 28"), expected );
+      assert.equal( DatesAndTimes.parseATTime("7:23pm june 28"), expected );
     })
     it("should parse '2:05pm january 5 + 3h'", function() {
-      var m= moment().month(0).date(5).hours(17).minutes(5).startOf('minute');
-      assert.equal( DatesAndTimes.parseATTime("2:05pm january 5 + 3h"), m.unix() );
+      var expected= tz_moment.tz(current_year() + "-01-05 17:05", "Europe/London").unix();
+      assert.equal( DatesAndTimes.parseATTime("2:05pm january 5 + 3h"), expected );
     })
     it("should parse '04:05am january 5 - 3hour'", function() {
-      var m= moment().month(0).date(5).hours(1).minutes(5).startOf('minute');
-      assert.equal( DatesAndTimes.parseATTime("04:05am january 5 - 3hour"), m.unix() );
+      var expected= tz_moment.tz(current_year() + "-01-05 01:05", "Europe/London").unix();
+      assert.equal( DatesAndTimes.parseATTime("04:05am january 5 - 3hour"), expected );
     })
     it("should parse 'monday' (previous monday [or today if currently monday])", function() {
       // Previous monday (ughh which I could abstract a clock to check 'today is monday, tomorrow is monday, yesterday is monday' properly :(
@@ -160,11 +151,11 @@ describe('DatesAndTimes.ParseATTime', function(){
       assert( parsed.isBefore(moment()) );
     })
     it("should parse 'noon monday'", function() {
-      var m= moment().day("Monday").hours(12).startOf('hour');
+      var m= tz_moment().tz("Europe/London").day("Monday").hours(12).startOf('hour');
       assert.equal( DatesAndTimes.parseATTime("noon monday"), m.unix() );
     })
     it("should parse 'noon monday +3h'", function() {
-      var m= moment().day("Monday").hours(15).startOf('hour');
+      var m= tz_moment().tz("Europe/London").day("Monday").hours(15).startOf('hour');
       assert.equal( DatesAndTimes.parseATTime("noon monday +3h"), m.unix() );
     })
     it("should parse '20091201'", function() {
@@ -172,19 +163,19 @@ describe('DatesAndTimes.ParseATTime', function(){
       assert.equal( DatesAndTimes.parseATTime("20091201"), m.unix() );
     })
     it("should parse 'midnight 20091201 +2h'", function() {
-      var m= moment().years(2009).months(11).date(1).hours(2).startOf('hour');
+      var m= tz_moment.tz( "2009-12-01 02:00", "Europe/London");
       assert.equal( DatesAndTimes.parseATTime("midnight 20091201 +2h"), m.unix() );
     })
     it("should parse '04:00_20110501'", function() {
-      var m= moment().years(2011).months(4).date(1).hours(4).startOf('hour');
+      var m= tz_moment.tz( "2011-05-01 04:00", "Europe/London");
       assert.equal( DatesAndTimes.parseATTime("04:00_20110501"), m.unix() );
     })
-    it("should parse '16:00_20110501'", function() {
-      var m= moment().years(2011).months(4).date(3).hours(16).startOf('hour');
+    it("should parse '16:00_20110501 +2d'", function() {
+      var m= tz_moment.tz( "2011-05-03 16:00", "Europe/London");
       assert.equal( DatesAndTimes.parseATTime("16:00_20110501 +2d"), m.unix() );
     })
     it("should parse '16:00_20110501 +3min'", function() {
-      var m= moment().years(2011).months(4).date(1).hours(16).minutes(3).startOf('minute');
+      var m= tz_moment.tz( "2011-05-01 16:03", "Europe/London");
       assert.equal( DatesAndTimes.parseATTime("16:00_20110501 +3min"), m.unix() );
     })
     it("should parse '04/03/70'", function() {
@@ -210,7 +201,7 @@ describe('DatesAndTimes.ParseATTime', function(){
       assert.equal( DatesAndTimes.parseATTime("04/03/2011"), m.unix() );
     })
     it("should parse 'midnight 04/03/2011+1days'", function() {
-      var m= moment().years(2011).months(3).date(4).hours(0).startOf('hour');
+      var m= tz_moment.tz( "2011-04-04 00:00", "Europe/London");
       assert.equal(  DatesAndTimes.parseATTime("midnight 04/03/2011+1days"), m.unix() );
     })
 });
