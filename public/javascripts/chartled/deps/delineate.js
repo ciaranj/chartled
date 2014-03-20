@@ -400,8 +400,8 @@ Chart.prototype.refreshData= function( data ) {
                   else {
                     var originY= undefined;
                   }
-                  
-                  layerEl.selectAll("rect")
+                  // Not sure why selectAll(BLANK!!) works here, but it does .. must get a better understanding soon.
+                  layerEl.selectAll()
                           .data( data[d].datapoints )
                           .enter()
                           .append("rect")
