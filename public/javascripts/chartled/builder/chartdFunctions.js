@@ -43,5 +43,7 @@ chartd.functions = [
     { name: 'summarize', example: 'summarize(metric*, intervalString, func="sum", alignToFrom=False)',
       description: 'Summarize the data into interval buckets of a certain size. Using the provided aggregation function.'},
     { name: 'sumSeries', example: 'sumSeries(metric*)',
-      description: "Sums a series"}
+      description: "Sums a series"},
+    { name: 'transformNull', example: 'transformNull(metric*,default=0)',
+      description: "Takes one metric or a wildcard metric, and optionally a default value to transform Nulls to. If no default is specified, 0 will be used."}
 ];
