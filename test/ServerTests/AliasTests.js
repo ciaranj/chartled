@@ -11,8 +11,8 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.deepEqual( [2,4,6,8], result.seriesList[0].data.values );
-                            assert.equal( "All The Foos", result.seriesList[0].name );
+                            assert.deepEqual( [2,4,6,8], result[0].data.values );
+                            assert.equal( "All The Foos", result[0].name );
                             done();
                     })
                     .end();
@@ -22,8 +22,8 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.deepEqual( [1,2,3,4], result.seriesList[0].data.values );
-                            assert.equal( "All The Foos", result.seriesList[0].name );
+                            assert.deepEqual( [1,2,3,4], result[0].data.values );
+                            assert.equal( "All The Foos", result[0].name );
                             done();
                     })
                     .end();
@@ -33,10 +33,10 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.deepEqual( [2,4,6,8], result.seriesList[0].data.values );
-                            assert.deepEqual( [20,40,60,100], result.seriesList[1].data.values );
-                            assert.equal( "All The Foos", result.seriesList[0].name );
-                            assert.equal( "All The Foos", result.seriesList[1].name );
+                            assert.deepEqual( [2,4,6,8], result[0].data.values );
+                            assert.deepEqual( [20,40,60,100], result[1].data.values );
+                            assert.equal( "All The Foos", result[0].name );
+                            assert.equal( "All The Foos", result[1].name );
                             done();
                     })
                     .end();
@@ -46,10 +46,10 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.deepEqual( [2,4,6,8], result.seriesList[0].data.values );
-                            assert.deepEqual( [20,40,60,100], result.seriesList[1].data.values );
-                            assert.equal( "scale(All The Foos,2)", result.seriesList[0].name );
-                            assert.equal( "scale(All The Foos,2)", result.seriesList[1].name );
+                            assert.deepEqual( [2,4,6,8], result[0].data.values );
+                            assert.deepEqual( [20,40,60,100], result[1].data.values );
+                            assert.equal( "scale(All The Foos,2)", result[0].name );
+                            assert.equal( "scale(All The Foos,2)", result[1].name );
                             done();
                     })
                     .end();
@@ -59,7 +59,7 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 0, result.seriesList.length );
+                            assert.equal( 0, result.length );
                             done();
                     })
                     .end();

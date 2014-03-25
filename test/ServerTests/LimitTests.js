@@ -26,14 +26,13 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric, metricInfs, metricVals());
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 2, result.seriesList.length );
-                            assert.equal( 12, result.seriesList[0].data.values.length );
-                            assert.equal( 7, result.seriesList[1].data.values.length );
-                            assert.equal( "limit(foo.{bar,car,far,gar,rar,tar,zar},2)", result.name );
-                            assert.deepEqual( "foo.bar", result.seriesList[0].name );
-                            assert.deepEqual( "foo.zar", result.seriesList[1].name );
-                            assert.deepEqual( metricVals()["foo.bar"] , result.seriesList[0].data.values );
-                            assert.deepEqual( metricVals()["foo.zar"], result.seriesList[1].data.values );
+                            assert.equal( 2, result.length );
+                            assert.equal( 12, result[0].data.values.length );
+                            assert.equal( 7, result[1].data.values.length );
+                            assert.deepEqual( "foo.bar", result[0].name );
+                            assert.deepEqual( "foo.zar", result[1].name );
+                            assert.deepEqual( metricVals()["foo.bar"] , result[0].data.values );
+                            assert.deepEqual( metricVals()["foo.zar"], result[1].data.values );
                             done();
                     })
                     .end();
@@ -43,12 +42,11 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric, metricInfs, metricVals());
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.equal( 12, result.seriesList[0].data.values.length );
-                            assert.equal( "limit(foo.bar,1)", result.name );
-                            assert.deepEqual( "foo.bar", result.seriesList[0].name );
-                            
-                            assert.deepEqual( metricVals()["foo.bar"] , result.seriesList[0].data.values );
+                            assert.equal( 1, result.length );
+                            assert.equal( 12, result[0].data.values.length );
+                            assert.deepEqual( "foo.bar", result[0].name );
+
+                            assert.deepEqual( metricVals()["foo.bar"] , result[0].data.values );
                             done();
                     })
                     .end();
@@ -58,8 +56,7 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric, metricInfs, metricVals());
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 0, result.seriesList.length );
-                            assert.equal( "limit(foo.bar,0)", result.name );
+                            assert.equal( 0, result.length );
                             done();
                     })
                     .end();
@@ -69,20 +66,19 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric, metricInfs, metricVals());
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 4, result.seriesList.length );
-                            assert.equal( 12, result.seriesList[0].data.values.length );
-                            assert.equal( 4, result.seriesList[1].data.values.length );
-                            assert.equal( 6, result.seriesList[2].data.values.length );
-                            assert.equal( 7, result.seriesList[3].data.values.length );
-                            assert.equal( "limit(foo.*,4)", result.name );
-                            assert.deepEqual( "foo.bar", result.seriesList[0].name );
-                            assert.deepEqual( "foo.car", result.seriesList[1].name );
-                            assert.deepEqual( "foo.far", result.seriesList[2].name );
-                            assert.deepEqual( "foo.zar", result.seriesList[3].name );
-                            assert.deepEqual( metricVals()["foo.bar"], result.seriesList[0].data.values );
-                            assert.deepEqual( metricVals()["foo.car"], result.seriesList[1].data.values );
-                            assert.deepEqual( metricVals()["foo.far"], result.seriesList[2].data.values );
-                            assert.deepEqual( metricVals()["foo.zar"], result.seriesList[3].data.values );
+                            assert.equal( 4, result.length );
+                            assert.equal( 12, result[0].data.values.length );
+                            assert.equal( 4, result[1].data.values.length );
+                            assert.equal( 6, result[2].data.values.length );
+                            assert.equal( 7, result[3].data.values.length );
+                            assert.deepEqual( "foo.bar", result[0].name );
+                            assert.deepEqual( "foo.car", result[1].name );
+                            assert.deepEqual( "foo.far", result[2].name );
+                            assert.deepEqual( "foo.zar", result[3].name );
+                            assert.deepEqual( metricVals()["foo.bar"], result[0].data.values );
+                            assert.deepEqual( metricVals()["foo.car"], result[1].data.values );
+                            assert.deepEqual( metricVals()["foo.far"], result[2].data.values );
+                            assert.deepEqual( metricVals()["foo.zar"], result[3].data.values );
                             done();
                     })
                     .end();
@@ -92,14 +88,13 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric, metricInfs, metricVals());
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 2, result.seriesList.length );
-                            assert.equal( 12, result.seriesList[0].data.values.length );
-                            assert.equal( 4, result.seriesList[1].data.values.length );
-                            assert.equal( "limit(foo.{bar,car},57)", result.name );
-                            assert.deepEqual( "foo.bar", result.seriesList[0].name );
-                            assert.deepEqual( "foo.car", result.seriesList[1].name );
-                            assert.deepEqual( metricVals()["foo.bar"], result.seriesList[0].data.values );
-                            assert.deepEqual( metricVals()["foo.car"], result.seriesList[1].data.values );
+                            assert.equal( 2, result.length );
+                            assert.equal( 12, result[0].data.values.length );
+                            assert.equal( 4, result[1].data.values.length );
+                            assert.deepEqual( "foo.bar", result[0].name );
+                            assert.deepEqual( "foo.car", result[1].name );
+                            assert.deepEqual( metricVals()["foo.bar"], result[0].data.values );
+                            assert.deepEqual( metricVals()["foo.car"], result[1].data.values );
                             done();
                     })
                     .end();

@@ -11,9 +11,9 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [], {}, [10,250,60], 10, 250  );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.equal( "The.Time.Series", result.seriesList[0].name );
-                            assert.deepEqual( [-0.5440211108893698,0.7738906815578891,-0.9301059501867618,0.9977992786806003,-0.9705280195418053], result.seriesList[0].data.values );
+                            assert.equal( 1, result.length );
+                            assert.equal( "The.Time.Series", result[0].name );
+                            assert.deepEqual( [-0.5440211108893698,0.7738906815578891,-0.9301059501867618,0.9977992786806003,-0.9705280195418053], result[0].data.values );
                             done();
                     })
                     .end();
@@ -23,9 +23,9 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [], {}, [10,250,60], 10, 250  );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.equal( "The.Time.Series", result.seriesList[0].name );
-                            assert.deepEqual( [-1.0880422217787395,1.5477813631157782,-1.8602119003735236,1.9955985573612005,-1.9410560390836107], result.seriesList[0].data.values );
+                            assert.equal( 1, result.length );
+                            assert.equal( "The.Time.Series", result[0].name );
+                            assert.deepEqual( [-1.0880422217787395,1.5477813631157782,-1.8602119003735236,1.9955985573612005,-1.9410560390836107], result[0].data.values );
                             done();
                     })
                     .end();
@@ -35,9 +35,9 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [], {}, [10,250,60], 10, 250  );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.equal( "The.Time.Series", result.seriesList[0].name );
-                            assert.deepEqual( [-0.5440211108893698,0.7738906815578891,-0.9301059501867618,0.9977992786806003,-0.9705280195418053], result.seriesList[0].data.values );
+                            assert.equal( 1, result.length );
+                            assert.equal( "The.Time.Series", result[0].name );
+                            assert.deepEqual( [-0.5440211108893698,0.7738906815578891,-0.9301059501867618,0.9977992786806003,-0.9705280195418053], result[0].data.values );
                             done();
                     })
                     .end();

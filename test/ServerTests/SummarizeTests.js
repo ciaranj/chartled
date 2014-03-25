@@ -11,9 +11,9 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar")], {"foo.bar":[1,2,3,4] }, [10,190,60], 10, 190 );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.deepEqual( [3,7], result.seriesList[0].data.values );
-                            assert.equal( result.seriesList[0].name, "summarize(foo.bar,\"120s\",\"sum\")" );
-                            assert.equal( result.seriesList[0].info.aggregationMethod, "sum" );
+                            assert.deepEqual( [3,7], result[0].data.values );
+                            assert.equal( result[0].name, "summarize(foo.bar,\"120s\",\"sum\")" );
+                            assert.equal( result[0].info.aggregationMethod, "sum" );
                             done();
                     })
                     .end();
@@ -24,9 +24,9 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar")], {"foo.bar":[1,,4] }, [10,190,60], 10, 190 );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.deepEqual( [1,4], result.seriesList[0].data.values );
-                            assert.equal( result.seriesList[0].name, "summarize(foo.bar,\"120s\",\"sum\")" );
-                            assert.equal( result.seriesList[0].info.aggregationMethod, "sum" );
+                            assert.deepEqual( [1,4], result[0].data.values );
+                            assert.equal( result[0].name, "summarize(foo.bar,\"120s\",\"sum\")" );
+                            assert.equal( result[0].info.aggregationMethod, "sum" );
                             done();
                     })
                     .end();
@@ -36,9 +36,9 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar")], {"foo.bar":[1,2,3,4] }, [10,190,60], 10, 190 );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.deepEqual( [1.5,3.5], result.seriesList[0].data.values );
-                            assert.equal( result.seriesList[0].name, "summarize(foo.bar,\"120s\",\"avg\")" );
-                            assert.equal( result.seriesList[0].info.aggregationMethod, "avg" );
+                            assert.deepEqual( [1.5,3.5], result[0].data.values );
+                            assert.equal( result[0].name, "summarize(foo.bar,\"120s\",\"avg\")" );
+                            assert.equal( result[0].info.aggregationMethod, "avg" );
                             done();
                     })
                     .end();
@@ -48,9 +48,9 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar")], {"foo.bar":[1,2,3,4] }, [10,190,60], 10, 190 );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.deepEqual( [1.5,3.5], result.seriesList[0].data.values );
-                            assert.equal( result.seriesList[0].name, "summarize(foo.bar,\"120s\",\"average\")" );
-                            assert.equal( result.seriesList[0].info.aggregationMethod, "average" );
+                            assert.deepEqual( [1.5,3.5], result[0].data.values );
+                            assert.equal( result[0].name, "summarize(foo.bar,\"120s\",\"average\")" );
+                            assert.equal( result[0].info.aggregationMethod, "average" );
                             done();
                     })
                     .end();

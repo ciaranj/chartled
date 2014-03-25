@@ -11,9 +11,9 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar")], {"foo.bar":[,,null,undefined]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.deepEqual( [null,null,null,null], result.seriesList[0].data.values );
-                            assert.equal( "bestFit(foo.bar)", result.seriesList[0].name );
+                            assert.equal( 1, result.length );
+                            assert.deepEqual( [null,null,null,null], result[0].data.values );
+                            assert.equal( "bestFit(foo.bar)", result[0].name );
                             done();
                     })
                     .end();
@@ -23,9 +23,9 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar")], {"foo.bar":[,,2,undefined]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.deepEqual( [2,2,2,2], result.seriesList[0].data.values );
-                            assert.equal( "bestFit(foo.bar)", result.seriesList[0].name );
+                            assert.equal( 1, result.length );
+                            assert.deepEqual( [2,2,2,2], result[0].data.values );
+                            assert.equal( "bestFit(foo.bar)", result[0].name );
                             done();
                     })
                     .end();
@@ -35,9 +35,9 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar")], {"foo.bar":[1,2,3,4]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.deepEqual( [1,2,3,4], result.seriesList[0].data.values );
-                            assert.equal( "bestFit(foo.bar)", result.seriesList[0].name );
+                            assert.equal( 1, result.length );
+                            assert.deepEqual( [1,2,3,4], result[0].data.values );
+                            assert.equal( "bestFit(foo.bar)", result[0].name );
                             done();
                     })
                     .end();
@@ -47,9 +47,9 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar")], {"foo.bar":[2,2,2,2]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.deepEqual( [2,2,2,2], result.seriesList[0].data.values );
-                            assert.equal( "bestFit(foo.bar)", result.seriesList[0].name );
+                            assert.equal( 1, result.length );
+                            assert.deepEqual( [2,2,2,2], result[0].data.values );
+                            assert.equal( "bestFit(foo.bar)", result[0].name );
                             done();
                     })
                     .end();
@@ -59,9 +59,9 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar")], {"foo.bar":[,2,2,2]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.deepEqual( [2,2,2,2], result.seriesList[0].data.values );
-                            assert.equal( "bestFit(foo.bar)", result.seriesList[0].name );
+                            assert.equal( 1, result.length );
+                            assert.deepEqual( [2,2,2,2], result[0].data.values );
+                            assert.equal( "bestFit(foo.bar)", result[0].name );
                             done();
                     })
                     .end();
@@ -71,9 +71,9 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar")], {"foo.bar":[2,2,2,null]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.deepEqual( [2,2,2,2], result.seriesList[0].data.values );
-                            assert.equal( "bestFit(foo.bar)", result.seriesList[0].name );
+                            assert.equal( 1, result.length );
+                            assert.deepEqual( [2,2,2,2], result[0].data.values );
+                            assert.equal( "bestFit(foo.bar)", result[0].name );
                             done();
                     })
                     .end();
@@ -83,9 +83,9 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar")], {"foo.bar":[2,null,,2]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.deepEqual( [2,2,2,2], result.seriesList[0].data.values );
-                            assert.equal( "bestFit(foo.bar)", result.seriesList[0].name );
+                            assert.equal( 1, result.length );
+                            assert.deepEqual( [2,2,2,2], result[0].data.values );
+                            assert.equal( "bestFit(foo.bar)", result[0].name );
                             done();
                     })
                     .end();

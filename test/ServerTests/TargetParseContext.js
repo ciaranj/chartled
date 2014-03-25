@@ -39,9 +39,17 @@ function checkExpandMetrics( availableMetrics, metricsToTest, expectedResults, d
          var ctx= Utils.buildTargetParseContext( metric, convertFromArrayToIndexedCollectionOfLiterals(availableMetrics), undefined, [] );
          TargetParser.parse( metric )(ctx).then(
             function (result) {
-              assert.equal( expectedResult.realName, result.seriesList.realName);
-              assert.equal( expectedResult.name, result.seriesList.name);
-              assert.deepEqual( expectedResult.info, result.seriesList.info);
+               assert.equal( expectedResult.length, result.length );
+               if( expectedResult.length ==0 )  {
+                assert.deepEqual( expectedResult, result);
+               }
+               else {
+                for(var i=0;i< expectedResult.length;i++) {
+                  assert.equal( expectedResult[i].realName, result[i].realName);
+                  assert.equal( expectedResult[i].name, result[i].name);
+                  assert.deepEqual( expectedResult[i].info, result[i].info);
+                }
+              }
               doneCnt();
             })
         .end( );

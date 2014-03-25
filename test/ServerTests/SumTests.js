@@ -12,8 +12,8 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,,null,4], "foo.tar":[null,,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.deepEqual( [1,,30,54], result.seriesList[0].data.values );
+                            assert.equal( 1, result.length );
+                            assert.deepEqual( [1,,30,54], result[0].data.values );
                             done();
                     })
                     .end();
@@ -23,8 +23,8 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.deepEqual( [11,22,33,54], result.seriesList[0].data.values );
+                            assert.equal( 1, result.length );
+                            assert.deepEqual( [11,22,33,54], result[0].data.values );
                             done();
                     })
                     .end();
@@ -34,8 +34,8 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.deepEqual( [11,22,33,54], result.seriesList[0].data.values );
+                            assert.equal( 1, result.length );
+                            assert.deepEqual( [11,22,33,54], result[0].data.values );
                             done();
                     })
                     .end();
@@ -45,8 +45,8 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.deepEqual( [1,2,3,4], result.seriesList[0].data.values );
+                            assert.equal( 1, result.length );
+                            assert.deepEqual( [1,2,3,4], result[0].data.values );
                             done();
                     })
                     .end();
@@ -56,7 +56,7 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 0, result.seriesList.length );
+                            assert.equal( 0, result.length );
                             done();
                     })
                     .end();
@@ -66,8 +66,8 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.equal( "sum(foo.{bar,tar})", result.seriesList[0].name );
+                            assert.equal( 1, result.length );
+                            assert.equal( "sum(foo.{bar,tar})", result[0].name );
                             done();
                     })
                     .end();
@@ -77,8 +77,8 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar"), new MetricInfo("foo.tar")], {"foo.bar":[1,2,3,4], "foo.tar":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.equal( "sum(foo.*)", result.seriesList[0].name );
+                            assert.equal( 1, result.length );
+                            assert.equal( "sum(foo.*)", result[0].name );
                             done();
                     })
                     .end();
@@ -88,8 +88,8 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.1"), new MetricInfo("foo.2")], {"foo.1":[1,2,3,4], "foo.2":[10,20,30,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.equal( "sum(foo.[2])", result.seriesList[0].name );
+                            assert.equal( 1, result.length );
+                            assert.equal( "sum(foo.[2])", result[0].name );
                             done();
                     })
                     .end();

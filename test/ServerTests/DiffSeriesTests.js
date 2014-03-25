@@ -12,10 +12,10 @@ describe('TargetParseContext', function(){
                           {"foo.bar":[100,90,80,70,60,50,40,30,20,10,null], "foo.car":[1,1,1,1,1,1,1,1,1,1,1], "foo.tar":[5,4,3,2,1,1,2,3,4,5,1]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.equal( 11, result.seriesList[0].data.values.length );
-                            assert.equal( "diffSeries(foo.bar,10,foo.{car,tar})", result.seriesList[0].name );
-                            assert.deepEqual( [84,75,66,57,48,38,27,16,5,-6,null], result.seriesList[0].data.values );
+                            assert.equal( 1, result.length );
+                            assert.equal( 11, result[0].data.values.length );
+                            assert.equal( "diffSeries(foo.bar,10,foo.{car,tar})", result[0].name );
+                            assert.deepEqual( [84,75,66,57,48,38,27,16,5,-6,null], result[0].data.values );
                             done();
                     })
                     .end();
@@ -25,10 +25,10 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar")], {"foo.bar":[null,100,null,200,undefined,300,400,500,null,undefined]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.equal( 10, result.seriesList[0].data.values.length );
-                            assert.equal( "diffSeries(1000,foo.bar)", result.seriesList[0].name );
-                            assert.deepEqual( [1000,900,1000,800,1000,700,600,500,1000,1000], result.seriesList[0].data.values );
+                            assert.equal( 1, result.length );
+                            assert.equal( 10, result[0].data.values.length );
+                            assert.equal( "diffSeries(1000,foo.bar)", result[0].name );
+                            assert.deepEqual( [1000,900,1000,800,1000,700,600,500,1000,1000], result[0].data.values );
                             done();
                     })
                     .end();
@@ -39,10 +39,10 @@ describe('TargetParseContext', function(){
                           {"foo.bar":[100,null,80,70,60,undefined,40,30,20,10,null], "foo.car":[1,1,1,1,5,1,1,null,3,1,1], "foo.tar":[5,4,3,2,undefined,1,2,3,null,5,1]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.equal( 11, result.seriesList[0].data.values.length );
-                            assert.equal( "diffSeries(foo.{bar,car,tar})", result.seriesList[0].name );
-                            assert.deepEqual( [94,null,76,67,55,undefined,37,27,17,4,null], result.seriesList[0].data.values );
+                            assert.equal( 1, result.length );
+                            assert.equal( 11, result[0].data.values.length );
+                            assert.equal( "diffSeries(foo.{bar,car,tar})", result[0].name );
+                            assert.deepEqual( [94,null,76,67,55,undefined,37,27,17,4,null], result[0].data.values );
                             done();
                     })
                     .end();
@@ -53,10 +53,10 @@ describe('TargetParseContext', function(){
                           {"foo.bar":[100,null,80,70,60,undefined,40,30,20,10,null], "foo.car":[1,1,1,1,5,1,1,null,3,1,1], "foo.tar":[5,4,3,2,undefined,1,2,3,null,5,1]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.equal( 11, result.seriesList[0].data.values.length );
-                            assert.equal( "diffSeries(*.*,0)", result.seriesList[0].name );
-                            assert.deepEqual( [94,null,76,67,55,undefined,37,27,17,4,null], result.seriesList[0].data.values );
+                            assert.equal( 1, result.length );
+                            assert.equal( 11, result[0].data.values.length );
+                            assert.equal( "diffSeries(*.*,0)", result[0].name );
+                            assert.deepEqual( [94,null,76,67,55,undefined,37,27,17,4,null], result[0].data.values );
                             done();
                     })
                     .end();
@@ -66,10 +66,10 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.1ar"), new MetricInfo("foo.2ar"), new MetricInfo("foo.12ar"), new MetricInfo("foo.21ar")], {"foo.1ar":[1,2,null,4], "foo.2ar":[10,20,30,undefined], "foo.12ar":[undefined,20,30,50], "foo.21ar":[10,20,null,50]} );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.equal( 4, result.seriesList[0].data.values.length );
-                            assert.equal( "diffSeries(foo.[12]ar)", result.seriesList[0].name );
-                            assert.deepEqual( [-9,-38,null,-46], result.seriesList[0].data.values );
+                            assert.equal( 1, result.length );
+                            assert.equal( 4, result[0].data.values.length );
+                            assert.equal( "diffSeries(foo.[12]ar)", result[0].name );
+                            assert.deepEqual( [-9,-38,null,-46], result[0].data.values );
                             done();
                     })
                     .end();

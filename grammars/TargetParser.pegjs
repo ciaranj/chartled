@@ -1,7 +1,7 @@
 start =
     expression: expression
     { 
-        var f= eval( "(function( ctx )  {\n return ctx.$chkSeries(" + expression + ", true);\n})" );
+        var f= eval( "(function( ctx )  {\n return ctx.$chkSeries(" + expression + ", true).then(function(metric){return metric.seriesList;});\n})" );
         //console.log( f.toString() );
         return f;
     }

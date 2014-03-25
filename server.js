@@ -104,8 +104,7 @@ function getSeriesData(req,res) {
       (function( metric ) {
           var ctx= new TargetParseContext( metricsStore, metric, from, to );
           TargetParser.parse( metric )( ctx ).then( 
-              function (result) {
-                  var seriesList= result.seriesList;
+              function (seriesList) {
                   for(var i=0; i< seriesList.length; i++ ) {
                       var series= {
                               datapoints : [],

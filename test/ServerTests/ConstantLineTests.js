@@ -11,9 +11,9 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [], {}, [10,250,60], 10, 250 );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.equal( "constantLine(2)", result.seriesList[0].name );
-                            assert.deepEqual( [2,2,2,2,2], result.seriesList[0].data.values );
+                            assert.equal( 1, result.length );
+                            assert.equal( "constantLine(2)", result[0].name );
+                            assert.deepEqual( [2,2,2,2,2], result[0].data.values );
                             done();
                     })
                     .end();
@@ -23,9 +23,9 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [], {}, [10,250,60], 10, 250 );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.equal( "constantLine(0)", result.seriesList[0].name );
-                            assert.deepEqual( [0,0,0,0,0], result.seriesList[0].data.values );
+                            assert.equal( 1, result.length );
+                            assert.equal( "constantLine(0)", result[0].name );
+                            assert.deepEqual( [0,0,0,0,0], result[0].data.values );
                             done();
                     })
                     .end();
@@ -35,9 +35,9 @@ describe('TargetParseContext', function(){
         var ctx= Utils.buildTargetParseContext( metric,  [], {}, [10,250,60], 10, 250 );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
-                            assert.equal( 1, result.seriesList.length );
-                            assert.equal( "constantLine(-5)", result.seriesList[0].name );
-                            assert.deepEqual( [-5,-5,-5,-5,-5], result.seriesList[0].data.values );
+                            assert.equal( 1, result.length );
+                            assert.equal( "constantLine(-5)", result[0].name );
+                            assert.deepEqual( [-5,-5,-5,-5,-5], result[0].data.values );
                             done();
                     })
                     .end();
