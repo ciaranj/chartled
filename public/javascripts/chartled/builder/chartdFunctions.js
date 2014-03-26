@@ -44,6 +44,8 @@ chartd.functions = [
       description: 'Summarize the data into interval buckets of a certain size. Using the provided aggregation function.'},
     { name: 'sumSeries', example: 'sumSeries(metric*)',
       description: "Sums a series"},
+    { name: 'timeShift', example: 'timeShift(metric*, intervalString)',
+      description: "'Shifts' (in time) the metric or wildcard metric by the amount specified in the intervalString. e.g. -/+7days (if no sign provided will assume negative)."},
     { name: 'transformNull', example: 'transformNull(metric*,default=0)',
       description: "Takes one metric or a wildcard metric, and optionally a default value to transform Nulls to. If no default is specified, 0 will be used."}
 ];

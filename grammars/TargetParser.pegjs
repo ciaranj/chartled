@@ -1,7 +1,7 @@
 start =
     expression: expression
     { 
-        var f= eval( "(function( ctx )  {\n return ctx.$chkSeries(" + expression + ", true).then(function(metric){return metric.seriesList;});\n})" );
+        var f= eval( "(function( ctx )  {\n return ctx.$chkSeries(" + expression + ", true, 0).then(function(metric){return metric.seriesList;});\n})" );
         //console.log( f.toString() );
         return f;
     }
@@ -50,7 +50,7 @@ spaceFunctionName = ws* functionName:functionName
     { return functionName; }
 
 functionName
-    = "summarize" / "sumSeries" / "sum" / "averageSeries" / "avg" / "transformNull" / "scale" / "aliasByNode" / "asPercent" / "alias" / "bestFit" / "sinFunction" / "sin" / "constantLine" / "offset" / "removeAboveValue" / "removeBelowValue" / "keepLastValue" / "integral" / "derivative" / "diffSeries" / "movingAverage" / "limit"
+    = "summarize" / "sumSeries" / "sum" / "averageSeries" / "avg" / "transformNull" / "scale" / "aliasByNode" / "asPercent" / "alias" / "bestFit" / "sinFunction" / "sin" / "constantLine" / "offset" / "removeAboveValue" / "removeBelowValue" / "keepLastValue" / "integral" / "derivative" / "diffSeries" / "movingAverage" / "limit" / "timeShift"
 
 spaceexpression  = ws* expression:expression
     { return expression; }

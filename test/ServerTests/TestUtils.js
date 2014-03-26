@@ -1,5 +1,7 @@
-var TargetParseContext= require("../../lib/TargetParseContext"),
-    MetricStore= require("../../lib/MetricsStore");
+var 
+    CeresTree= require("ceres").CeresTree,
+    TargetParseContext= require("../../lib/TargetParseContext"),
+    MetricsStore= require("../../lib/MetricsStore");
 
 function buildTargetParseContext( targetString, metrics, metricValues, tInfo, from, to) {
     var realMetrics= {};
@@ -28,9 +30,48 @@ function buildTargetParseContext( targetString, metrics, metricValues, tInfo, fr
     if( from === undefined ) from= 0;
     if( to === undefined ) to= 0;
 
-    var ms= new MetricStore( "/tmp" );
+    var ms= new MetricsStore( "/tmp" );
     ms.availableMetrics= realMetrics;
     return new TargetParseContext( ms, targetString, from, to ) ;
 }
 
+function populateRealMetricsStore( storedData, cb ) {
+  var tmp_dir= "tree_" + new Date().getTime();
+  CeresTree.create(tmp_dir, function(err, tree) {
+    if( err ) { cb(err); }
+    else {
+      var keys=[];
+      for(var k in storedData) { keys.push(k); }
+      function popNext() {
+        if( keys.length == 0 ) { 
+          var metricsStore= new MetricsStore(tree.root, function(err) {
+            if( err ) { cb(err); }
+            else {
+              metricsStore.getAvailableMetrics( function(err) {
+                cb( err, metricsStore );
+              });
+            }
+          });
+        }
+        else {
+          var key= keys.shift();
+          tree.createNode(key, {}, function(err, node) {
+            if( err ) { cb(err); }
+            else {
+              node.write(storedData[key].data, function(err) {
+                if( err ) { cb(err); }
+                else {
+                  setImmediate( popNext );
+                }
+              });
+            }
+          });
+        }
+      }
+      popNext();
+    }
+  });
+};
+
 module.exports.buildTargetParseContext= buildTargetParseContext;
+module.exports.populateRealMetricsStore= populateRealMetricsStore;
