@@ -29,7 +29,7 @@ chartd.functions = [
     { name: 'limit', example: 'keepLastValue(limit*,2)',
       description: "Takes one metric or a wildcard metric, and a limit to the number of metrics to return. Useful for returning first n metrics from a large list of metrics." },      
     { name: 'movingAverage', example: 'movingAverage(metric*,windowSize)',
-      description: "Graphs the moving average of a metric (or metrics) over a fixed number of past points, or a time interval." },
+      description: "Graphs the moving average of a metric (or metrics) over a time interval." },
     { name: 'offset', example: 'offset(metric*, factor)',
       description: "Takes a metric or a wildcard metric followed by a constant that will be applied to each point." },
     { name: 'removeAboveValue', example: 'removeAboveValue(metric*, 3)',
