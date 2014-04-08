@@ -16,19 +16,22 @@ function startAgain( definition ) {
   var defaultClock= chartledDefinition.timeKeeper.getClock("default");
   $("#from").val( defaultClock.from );
   $("#to").val( defaultClock.until );
+  $("#timeZone").val( defaultClock.timeZone );
   
   setPageModeReadOnly();
 }
 
 var previousFromValue= "";
 var previousToValue= "";
+var previousTimeZoneValue= "";
 setInterval(function(){
-    if( previousFromValue != $("#from").val() || previousToValue != $("#to").val()) {
+    if( previousTimeZoneValue != $("#timeZone").val() || previousFromValue != $("#from").val() || previousToValue != $("#to").val()) {
       if( typeof(chartledDefinition) != 'undefined' ) {
         previousFromValue= $("#from").val();
         previousToValue= $("#to").val();
+        previousTimeZoneValue= $("#timeZone").val();
         var defaultClock= chartledDefinition.timeKeeper.getClock("default");
-        chartledDefinition.timeKeeper.updateClock( defaultClock.id, {from: previousFromValue, until: previousToValue} );
+        chartledDefinition.timeKeeper.updateClock( defaultClock.id, {from: previousFromValue, until: previousToValue, timeZone: previousTimeZoneValue} );
       }
     }
 }, 1000);

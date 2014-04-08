@@ -68,6 +68,11 @@ describe('DatesAndTimes.ParseATTime', function(){
       assert.equal( DatesAndTimes.parseATTime("midnight"), m.unix() );
       assert.equal( DatesAndTimes.parseATTime("midnight today"), m.unix() );
     });
+    it("should parse 'midnight today (Los Angeles)", function() {
+      var m= tz_moment().tz("America/Los_Angeles").hours(0).startOf('hour');
+      assert.equal( DatesAndTimes.parseATTime("midnight","America/Los_Angeles"), m.unix() );
+      assert.equal( DatesAndTimes.parseATTime("midnight today","America/Los_Angeles"), m.unix() );
+    });
     it("should parse 'midnight tomorrow'", function() {
       var m= tz_moment().tz("Europe/London").add('days',1).hours(0).startOf('hour');
       assert.equal( DatesAndTimes.parseATTime("midnight tomorrow"), m.unix() );

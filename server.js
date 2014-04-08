@@ -10,10 +10,10 @@ var CSVResponseRenderer = require("./lib/response_renderers/csv"),
     TargetParseContext= require("./lib/TargetParseContext"),
     TargetParser= require("./lib/TargetParser");
   
-function parseMoment(momentReqParam, unspecifiedValue) {
+function parseMoment(momentReqParam, unspecifiedValue, tz) {
   var moment = momentReqParam ? momentReqParam: unspecifiedValue;
   try {
-    var result= DatesAndTimes.parseATTime( moment );
+    var result= DatesAndTimes.parseATTime( moment, tz );
     return result
   }
   catch(e) {
@@ -24,12 +24,23 @@ function parseMoment(momentReqParam, unspecifiedValue) {
   
 var definitionSharer= new DefinitionSharer();
 
+var zones= require('moment-timezone').tz.zones();
+var timeZones= [];
+for( var k in zones ) {
+  timeZones.push(zones[k].displayName);
+}
+timeZones.sort();
+zones= null;
+
 var app = express();
 app.use(express.bodyParser());
 app.set('views', __dirname + '/views')
 app.set('view engine', 'jade')
 app.disable('etag');
 
+app.get('/timezones', function(req,res) {
+  res.send( timeZones );
+});
 
 app.get('/explorer', function(req, res){
   metricsStore.getAvailableMetrics( function( err, metrics ) {
@@ -56,8 +67,10 @@ app.get('/series',getSeriesData);
 app.get('/render',getSeriesData);
 
 function getSeriesData(req,res) {
-  var from= parseMoment(req.query.from, "yesterday");
-  var to= parseMoment(req.query.until, "now");
+  var tz= req.query.tz;
+  if( !tz ) tz="Europe/London";
+  var from= parseMoment(req.query.from, "yesterday", tz);
+  var to= parseMoment(req.query.until, "now", tz);
   if( to <= from  || from < 0 || to < 0 ) throw new Error( "Calculated/Passed time frame invalid, '" + from + "' -> '"+ to +"'");
   var now= new Date().getTime();
 
@@ -161,8 +174,8 @@ app.get('/:definition?', function(req, res){
       "id": "chartle-2"
     , "type": "Chartled.ClockChartle"
   }]
-  , clocks: [{id:1, refreshRate:60, from:"-30minutes", to: "now", description:"default", chartleIds:["chartle-1"]}, 
-             {id:2, refreshRate:1, from:'now-1s', to:'now', description: "LastSecond", chartleIds:["chartle-2"]}]
+  , clocks: [{id:1, refreshRate:60, from:"-30minutes", to: "now", description:"default", chartleIds:["chartle-1"], timeZone: "Europe/London"}, 
+             {id:2, refreshRate:1, from:'now-1s', to:'now', description: "LastSecond", chartleIds:["chartle-2"], timeZone: "Europe/London"}]
   , "nextChartleId": 3
   , layout: {
       type: "fixed-grid",

@@ -9,7 +9,7 @@
     "jade": "=0.27.6",
     "moment": "=2.5.0",
     "moment-timezone": "=0.0.3",
-    "pegjs": "=0.7.0",
+    "pegjs": "=0.8.0",
     "q":"=0.8.9"
   },
   "devDependencies": {

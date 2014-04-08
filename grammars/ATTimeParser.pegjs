@@ -25,7 +25,7 @@ reference
   =   "now" { return require('moment')(); }
     / h:paddedhr24 ":" m:paddedMinutes y:paddedYear mo:paddedMonth da:paddedDayOfMonth {
       //Format: 04:00_20110501
-      return require('moment-timezone').tz({ "year": y, "month": (mo-1), "date": da, "hour": +h, "minute": m}, "Europe/London");
+      return require('moment-timezone').tz({ "year": y, "month": (mo-1), "date": da, "hour": +h, "minute": m}, options.tz);
     }
     / tod:time_of_day_reference? moy:month_of_year_reference date:unpaddedDayOfMonth {
       //Format: 2pm? January 1
@@ -34,7 +34,7 @@ reference
       day.month( moy );
       day.date( date );
       if( tod ) {
-        day.tz("Europe/London");
+        day.tz(options.tz);
         day.hours(tod.hours).startOf('hour');
         if(tod.minutes) day.minutes(tod.minutes);
       }
@@ -50,7 +50,7 @@ reference
         day.subtract({day: 7});
       }
       if( tod ) {
-        day.tz("Europe/London");
+        day.tz(options.tz);
         day.hours(tod.hours).startOf('hour');
         if(tod.minutes) day.minutes(tod.minutes);
       }
@@ -63,7 +63,7 @@ reference
         //Format: 2pm/noon/midnight/teatime? 04031980?
         if(!day) day= require('moment-timezone')();
         if( tod ) {
-          day.tz("Europe/London");
+          day.tz(options.tz);
           day.hours(tod.hours).startOf('hour');
           if( tod.minutes ) day.minutes(tod.minutes);
         }

@@ -20,7 +20,11 @@ Chartled.Clock.prototype = {
     // How far into the future this clock will care about (default is 'now', i.e. not at all into the future).
     if( typeof(definition.until) == 'undefined' || definition.until == null ) that.until= "now";
     else that.until= definition.until;
-    
+
+    // The timezone of the clock (only relative for absolute from & until times)
+    if( typeof(definition.timeZone) == 'undefined' || definition.timeZone == null ) that.timeZone= "Europe/London";
+    else that.timeZone= definition.timeZone;
+
     if( typeof(definition.description) == 'undefined' || definition.description == null ) that.description= "From '" + that.from + "' to '" + that.until + "' every "+ that.refreshRate +" seconds";
     else that.description= definition.description;
   },
@@ -29,7 +33,8 @@ Chartled.Clock.prototype = {
              "refreshRate"    : this.refreshRate,
              "from"           : this.from,
              "until"          : this.until,
-             "description"    : this.description
+             "description"    : this.description,
+             "timeZone"       : this.timeZone
     };
   },
   dispose: function() {}

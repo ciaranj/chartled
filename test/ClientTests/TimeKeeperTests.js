@@ -66,7 +66,7 @@ describe('TimeKeeper', function(){
   describe("getClock", function() {
     it("should retrieve a clock by an id", function() {
       var clock1= {id:1, refreshRate:30, from:'a', until:'b', description:'d'};
-      var clock2= {id:2, refreshRate:30, from:'c', until:'z', description:'e'};
+      var clock2= {id:2, refreshRate:30, from:'c', until:'z', description:'e', timeZone:'Europe/London'};
       var clock3= {id:3, refreshRate:30, from:'c', until:'z', description:'2'};
       keeper.addClock(clock1 );
       keeper.addClock(clock2);
@@ -76,7 +76,7 @@ describe('TimeKeeper', function(){
     });
     it("should retrieve a clock by a description", function() {
       var clock1= {id:1, refreshRate:30, from:'a', until:'b', description:'d'};
-      var clock2= {id:2, refreshRate:30, from:'c', until:'z', description:'e'};
+      var clock2= {id:2, refreshRate:30, from:'c', until:'z', description:'e', timeZone:'Europe/London'};
       keeper.addClock(clock1 );
       keeper.addClock(clock2);
       assert.deepEqual( keeper.getClock("e"), clock2 );
@@ -149,11 +149,11 @@ describe('TimeKeeper', function(){
     it("should update a clock to the new details", function() {
       keeper.addClock({id:5, refreshRate:5, from:"a", until:"b", description:""});
       keeper.updateClock(5, {refreshRate:6});
-      assert.deepEqual( keeper.getClock(5), {id:5, refreshRate:6, from:"a", until:"b", description:""} );
+      assert.deepEqual( keeper.getClock(5), {id:5, refreshRate:6, from:"a", until:"b", description:"", timeZone:'Europe/London'} );
       keeper.updateClock(5, {refreshRate:10, until:"c"});
-      assert.deepEqual( keeper.getClock(5), {id:5, refreshRate:10, from:"a", until:"c", description:""} );
+      assert.deepEqual( keeper.getClock(5), {id:5, refreshRate:10, from:"a", until:"c", description:"", timeZone:'Europe/London'} );
       keeper.updateClock(5, {from:"b"});
-      assert.deepEqual( keeper.getClock(5), {id:5, refreshRate:10, from:"b", until:"c", description:""} );
+      assert.deepEqual( keeper.getClock(5), {id:5, refreshRate:10, from:"b", until:"c", description:"", timeZone:'Europe/London'} );
     });
     it("should adjust to a change in refreshRate", function() {
       var clock = sinon.useFakeTimers();
@@ -277,9 +277,9 @@ describe('TimeKeeper', function(){
     it("should remove the specified chartle", function() {
       keeper.addClock({description:'a'});
       keeper.registerChartle(1, {id:5});
-      assert.deepEqual( keeper.serialize(), [{"id":1, "refreshRate":30, "from":"-24hours", "until":"now", "chartleIds":[5], "description":"a"}] );
+      assert.deepEqual( keeper.serialize(), [{"id":1, "refreshRate":30, "from":"-24hours", "until":"now", "chartleIds":[5], "description":"a", timeZone:'Europe/London'}] );
       keeper.unRegisterChartle(5);
-      assert.deepEqual( keeper.serialize(), [{"id":1, "refreshRate":30, "from":"-24hours", "until":"now", "chartleIds":[], "description":"a"}] );
+      assert.deepEqual( keeper.serialize(), [{"id":1, "refreshRate":30, "from":"-24hours", "until":"now", "chartleIds":[], "description":"a", timeZone:'Europe/London'}] );
     });
     it("should stop fetches for the specified chartle if it is unregistered prior to a fetch+update cycle", function() {
       var clock = sinon.useFakeTimers();
@@ -510,22 +510,22 @@ describe('TimeKeeper', function(){
         assert.equal(chartle1.cnt, 2); 
 
         assert.equal(chartle2.cnt, 1);
-        assert.deepEqual( keeper.serialize(), [{"id":1, "refreshRate":30, "from":"a", "until":"b", "chartleIds":[1,2], "description":"a"}] );
+        assert.deepEqual( keeper.serialize(), [{"id":1, "refreshRate":30, "from":"a", "until":"b", "chartleIds":[1,2], "description":"a", timeZone:'Europe/London'}] );
     });
 
     it("Should create a time keeper with no chartles if no chartles are passed", function() {
         keeper._deserialize( [{"id":1, "refreshRate":30, "from":"a", "until":"b", "description":"a"},
                                                {"id":2, "refreshRate":30, "from":"a", "until":"b", "description":"b"}] );
 
-        assert.deepEqual( keeper.serialize(), [{"id":1, "refreshRate":30, "from":"a", "until":"b", chartleIds:[], "description":"a"}, 
-                                                {"id":2, "refreshRate":30, "from":"a", "until":"b", chartleIds:[], "description":"b"}]);
+        assert.deepEqual( keeper.serialize(), [{"id":1, "refreshRate":30, "from":"a", "until":"b", chartleIds:[], "description":"a", timeZone:'Europe/London'}, 
+                                                {"id":2, "refreshRate":30, "from":"a", "until":"b", chartleIds:[], "description":"b", timeZone:'Europe/London'}]);
     });
     it("Should create a time keeper re-ordering clocks by id if necessary", function() {
         keeper._deserialize( [{"id":2, "refreshRate":30, "from":"a", "until":"b", "description":"b"},
                               {"id":1, "refreshRate":30, "from":"a", "until":"b", "description":"a"}] );
 
-        assert.deepEqual( keeper.serialize(), [{"id":1, "refreshRate":30, "from":"a", "until":"b", chartleIds:[], "description":"a"}, 
-                                                {"id":2, "refreshRate":30, "from":"a", "until":"b", chartleIds:[], "description":"b"}]);
+        assert.deepEqual( keeper.serialize(), [{"id":1, "refreshRate":30, "from":"a", "until":"b", chartleIds:[], "description":"a", timeZone:'Europe/London'}, 
+                                                {"id":2, "refreshRate":30, "from":"a", "until":"b", chartleIds:[], "description":"b", timeZone:'Europe/London'}]);
     });
     it("Should create a time keeper and register any relevant associated chartles", function() {
         var chartle= {id:9};
@@ -546,7 +546,8 @@ describe('TimeKeeper', function(){
         "until": "now",
         "refreshRate": 30,
         "chartleIds": [4,5],
-        "description": "a"
+        "description": "a",
+        "timeZone":"Europe/London"
       }] );
     });
     it("should produce an array of clocks and their associated chartle ids (no chartles)", function() {
@@ -557,7 +558,8 @@ describe('TimeKeeper', function(){
         "until": "now",
         "refreshRate": 30,
         "chartleIds": [],
-        "description": "a"
+        "description": "a",
+        "timeZone":"Europe/London"
       }] );
     });
     it("should produce an empty array if no clocks defined", function() {

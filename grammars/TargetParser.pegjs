@@ -38,7 +38,7 @@ number =
     signs:sign? digits:digit+ "." decimals: digit+
     { return digits.join("")+"."+ decimals.join(""); } /
     signs:sign? digits: digit+ 
-    { return "ctx.$("+ signs + digits.join("") +")" }
+    { return "ctx.$("+ (signs?signs:"") + digits.join("") +")" }
 
 boolean = "true" / "false"
 digit= [0-9]

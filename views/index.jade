@@ -118,6 +118,10 @@ html
 
     div#contents(style="width:3000px")
       div#temporaryDatePicker.no-print
+        span   &nbsp;TimeZone &nbsp;
+        select#timeZone
+          option(value="America/Los_Angeles") America/Los Angeles
+          option(value="Europe/London", selected=true) Europe/London
         span From  &nbsp;
         input#from(value='now - 30 minutes')
         span   &nbsp;To &nbsp;
@@ -129,7 +133,12 @@ html
 
       $(function() {
         $('.btn').button()
-        startAgain(!{definition});
+        $.getJSON( "/timezones",function( data, textStatus, jqXHR ){
+          $.each(data, function (index, value) {
+            $("#timeZone").append('<option value="'+value+'">'+value+'</option>');
+          });
+          startAgain(!{definition});
+        });
 
         $("#padlock").on("click", togglePageMode);
         var chartledEditorContextMenuDefinition= {

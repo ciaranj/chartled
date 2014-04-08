@@ -19,7 +19,7 @@ Chartled.inheritPrototype = function(childObject, parentObject, childPrototype) 
 Chartled.FetchMetric = function(baseUrl, metrics, clock,  cb) {
   if(!metrics) cb( new Error("No metrics defined.") );
 
-  var dataUrl=  baseUrl + "/series?from=" + clock.from+ "&until=" + clock.until + "&jsonp=?";
+  var dataUrl=  baseUrl + "/series?from=" + clock.from+ "&until=" + clock.until + "&tz=" + encodeURIComponent(clock.timeZone) + "&jsonp=?";
 
   var targetString= "";
   for( var k in metrics ) {
