@@ -1,8 +1,8 @@
 start =
     expression: expression
     { 
-        var f= eval( "(function( ctx )  {\n return ctx.$chkSeries(" + expression + ", true, 0, 0).then(function(metric){return metric.seriesList;});\n})" );
-        //console.log( f.toString() );
+        var f= eval( "(function( ctx )  {\n return ctx.$chkSeries(" + expression + ", true, 0, 0);\n})" );
+//        console.log( f.toString() );
         return f;
     }
 

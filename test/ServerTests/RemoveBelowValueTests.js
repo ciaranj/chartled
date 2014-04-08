@@ -17,8 +17,7 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( [null,11,null,12,null,13,null,14,5,15,6,16], result[0].data.values );
                             assert.deepEqual( [null,null,6,8,5,null], result[1].data.values );
                             done();
-                    })
-                    .end();
+                    });
     });
     it('should null the metric values in the given series list (multiple, accounting for nulls) that are above the specified constant', function(done) {
         var metric=  "removeBelowValue(foo.*, 2)";
@@ -31,8 +30,7 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( [null,null,3,5], result[1].data.values );
                             assert.deepEqual( [2,,3,7,,8,null], result[2].data.values );
                             done();
-                    })
-                    .end();
+                    });
     });
     it('should null the metric values in the given series list (single) that are above the specified constant', function(done) {
         var metric=  "removeBelowValue(foo.{bar}, 5)";
@@ -43,8 +41,7 @@ describe('TargetParseContext', function(){
                             assert.equal( 12, result[0].data.values.length );
                             assert.deepEqual( [null,5,6,null,5,6,null,5,6,null,7,8], result[0].data.values );
                             done();
-                    })
-                    .end();
+                    });
     });
     it('should null the metric values in the given series list (none) that are above the specified constant', function(done) {
         var metric=  "removeBelowValue(foo.{rar}, 5)";
@@ -53,8 +50,7 @@ describe('TargetParseContext', function(){
                     .then(function (result) {
                             assert.equal( 0, result.length );
                             done();
-                    })
-                    .end();
+                    });
     });
     it('should update the metric name correctly for multiple series', function(done) {
         var metric=  "removeBelowValue(foo.{bar,tar}, 2)";
@@ -65,8 +61,7 @@ describe('TargetParseContext', function(){
                             assert.equal( "removeBelowValue(foo.bar,2)", result[0].name );
                             assert.equal( "removeBelowValue(foo.tar,2)", result[1].name );
                             done();
-                    })
-                    .end();
+                    });
     });
     it('should update the metric name correctly for wildcards', function(done) {
         var metric=  "removeBelowValue(*oo.*ar, 2)";
@@ -77,8 +72,7 @@ describe('TargetParseContext', function(){
                             assert.equal( "removeBelowValue(poo.bar,2)", result[0].name );
                             assert.equal( "removeBelowValue(foo.tar,2)", result[1].name );
                             done();
-                    })
-                    .end();
+                    });
     });
     it('should update the metric name correctly for ranges', function(done) {
         var metric=  "removeBelowValue(foo.[12]ar, 2)";
@@ -90,8 +84,7 @@ describe('TargetParseContext', function(){
                             assert.equal( "removeBelowValue(foo.2ar,2)", result[1].name );
                             assert.equal( "removeBelowValue(foo.12ar,2)", result[2].name );
                             done();
-                    })
-                    .end();
+                    });
     });
   });
 });

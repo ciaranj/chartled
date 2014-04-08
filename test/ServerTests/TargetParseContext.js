@@ -52,7 +52,7 @@ function checkExpandMetrics( availableMetrics, metricsToTest, expectedResults, d
               }
               doneCnt();
             })
-        .end( );
+            .fail(doneCnt);
       })( metricsToTest[k], convertFromArrayToCollectionOfLiterals(expectedResults[k]));
     }
 }

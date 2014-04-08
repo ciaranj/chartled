@@ -46,8 +46,9 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( [null,null,null,null,null,null,null], result[6].data.values );
                             assert.deepEqual( [null,1,1,1,1], result[7].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should sum over time the metric values in the given series list (multiple)', function(done) {
         var metric=  "derivative(foo.{bar})";
@@ -58,8 +59,9 @@ describe('TargetParseContext', function(){
                             assert.equal( 12, result[0].data.values.length );
                             assert.deepEqual( [null,118,122,-233,-9,196,-195,10,-9,10,-9,2994], result[0].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should update the metric name correctly for multiple series', function(done) {
         var metric=  "derivative(foo.{bar,car,far,gar,rar,tar,zar,war})";
@@ -76,8 +78,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "derivative(foo.zar)", result[6].name );
                             assert.equal( "derivative(foo.war)", result[7].name );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     
     it('should update the metric name correctly for a single series', function(done) {
@@ -88,8 +91,9 @@ describe('TargetParseContext', function(){
                             assert.equal( 1, result.length );
                             assert.equal( "derivative(foo.bar)", result[0].name );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should update the metric name correctly for wildcards', function(done) {
         var metric=  "derivative(*oo.*ar, 2)";
@@ -106,8 +110,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "derivative(foo.zar)", result[6].name );
                             assert.equal( "derivative(foo.war)", result[7].name );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should update the metric name correctly for ranges', function(done) {
         var metric=  "derivative(foo.[12]ar, 2)";
@@ -119,8 +124,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "derivative(foo.2ar)", result[1].name );
                             assert.equal( "derivative(foo.12ar)", result[2].name );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
   });
 });

@@ -15,8 +15,9 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( [null,null,null,null], result[0].data.values );
                             assert.equal( "bestFit(foo.bar)", result[0].name );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     })
     it('should return a horizontally intersecting bestfit of a single value if present', function(done) {
         var metric=  "bestFit(foo.bar)";
@@ -27,8 +28,9 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( [2,2,2,2], result[0].data.values );
                             assert.equal( "bestFit(foo.bar)", result[0].name );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     })    
     it('should return an exact match for a linear set of data points (growth)', function(done) {
         var metric=  "bestFit(foo.bar)";
@@ -39,8 +41,9 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( [1,2,3,4], result[0].data.values );
                             assert.equal( "bestFit(foo.bar)", result[0].name );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     })
     it('should return an exact match for a linear set of data points (stable)', function(done) {
         var metric=  "bestFit(foo.bar)";
@@ -51,8 +54,9 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( [2,2,2,2], result[0].data.values );
                             assert.equal( "bestFit(foo.bar)", result[0].name );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     })
     it('should ignore nulls (at start)', function(done) {
         var metric=  "bestFit(foo.bar)";
@@ -63,8 +67,9 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( [2,2,2,2], result[0].data.values );
                             assert.equal( "bestFit(foo.bar)", result[0].name );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     })
     it('should ignore nulls (at end)', function(done) {
         var metric=  "bestFit(foo.bar)";
@@ -75,8 +80,9 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( [2,2,2,2], result[0].data.values );
                             assert.equal( "bestFit(foo.bar)", result[0].name );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     })
     it('should ignore nulls (middle)', function(done) {
         var metric=  "bestFit(foo.bar)";
@@ -87,8 +93,31 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( [2,2,2,2], result[0].data.values );
                             assert.equal( "bestFit(foo.bar)", result[0].name );
                             done();
-                    })
-                    .end();
-    })    
+                    }).fail( function(err) {
+                      done(err);
+                    });
+    })
+    it('should return nothing if no metrics match (single)', function(done) {
+        var metric=  "bestFit(foo.tar)";
+        var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar")], {"foo.bar":[2,null,,2]} );
+        TargetParser.parse( metric )(ctx)
+                    .then(function (result) {
+                            assert.equal( 0, result.length );
+                            done();
+                    }).fail( function(err) {
+                      done(err);
+                    });
+    })
+    it('should return nothing if no metrics match (wildcard)', function(done) {
+        var metric=  "bestFit(bleurgh.*)";
+        var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.bar")], {"foo.bar":[2,null,,2]} );
+        TargetParser.parse( metric )(ctx)
+                    .then(function (result) {
+                            assert.equal( 0, result.length );
+                            done();
+                    }).fail( function(err) {
+                      done(err);
+                    });
+    })
   });
 })

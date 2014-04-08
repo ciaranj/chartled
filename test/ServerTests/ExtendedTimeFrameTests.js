@@ -16,7 +16,6 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( [11,22,33,54,,null], result[0].data.values );
 
                             done();
-                    })
-                    .end();
+                    });
     });
 });

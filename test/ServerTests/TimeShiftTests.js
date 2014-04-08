@@ -37,8 +37,9 @@ describe('TargetParseContext', function(){
                       assert.deepEqual( result[0].data.tInfo, [660, 1260, 60] );
                       assert.deepEqual( result[0].data.values, [2,3,4,5,6,7,8,9,10,11] );
                       done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
       });
       it("should handle a basic (precision unaware) time slip into the past [default to history when no sign present]", function(done) {
         var metric=  "timeShift(foo.bar,\"10min\")";
@@ -49,8 +50,9 @@ describe('TargetParseContext', function(){
                       assert.deepEqual( result[0].data.tInfo, [660, 1260, 60] );
                       assert.deepEqual( result[0].data.values, [2,3,4,5,6,7,8,9,10,11] );
                       done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
       });
       it("should handle a basic (precision unaware) time slip into the future", function(done) {
         var metric=  "timeShift(foo.bar,\"+10min\")";
@@ -61,8 +63,9 @@ describe('TargetParseContext', function(){
                       assert.deepEqual( result[0].data.tInfo, [660, 1260, 60] );
                       assert.deepEqual( result[0].data.values, [22,23,24,25,26,27,28,29,30,31] );
                       done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
       });
       it("should handle a basic (precision unaware) time slip into the future for where we've not recorded any data yet.", function(done) {
         var metric=  "timeShift(foo.bar,\"+10min\")";
@@ -76,8 +79,9 @@ describe('TargetParseContext', function(){
                         assert.ok( typeof(result[0].data.values[i]) == 'undefined' || result[0].data.values[i] == null);
                       }
                       done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
       });
       //TODO: handle historic transitions over archive precision boundaries :/
     });

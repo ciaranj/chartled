@@ -17,8 +17,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "diffSeries(foo.bar,10,foo.{car,tar})", result[0].name );
                             assert.deepEqual( [84,75,66,57,48,38,27,16,5,-6,null], result[0].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should subtract a series from a constant value (handling nulls and undefined)', function(done) {
         var metric=  "diffSeries(1000, foo.bar)";
@@ -30,8 +31,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "diffSeries(1000,foo.bar)", result[0].name );
                             assert.deepEqual( [1000,900,1000,800,1000,700,600,500,1000,1000], result[0].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should subtract series 2 through \'n\' in a multiple series list from series 1 (handling nulls and undefined)', function(done) {
         var metric=  "diffSeries(foo.{bar,car,tar})";
@@ -44,8 +46,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "diffSeries(foo.{bar,car,tar})", result[0].name );
                             assert.deepEqual( [94,null,76,67,55,undefined,37,27,17,4,null], result[0].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should subtract series 2 through \'n\' in a wild card series list from series 1 (handling nulls and undefined)', function(done) {
         var metric=  "diffSeries(*.*, 0)";
@@ -58,8 +61,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "diffSeries(*.*,0)", result[0].name );
                             assert.deepEqual( [94,null,76,67,55,undefined,37,27,17,4,null], result[0].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
      it('should subtract series 2 through \'n\' in a range series list from series 1 (handling nulls and undefined)', function(done) {
         var metric=  "diffSeries(foo.[12]ar)";
@@ -71,8 +75,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "diffSeries(foo.[12]ar)", result[0].name );
                             assert.deepEqual( [-9,-38,null,-46], result[0].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
   });
 });

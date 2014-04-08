@@ -15,8 +15,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "asPercent(foo.bar,4)", result[0].name );
                             assert.deepEqual( [25,50,75,100], result[0].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
       });
       it('for an empty series', function(done) {
         var metric=  "asPercent(foo.x, 4)";
@@ -25,8 +26,9 @@ describe('TargetParseContext', function(){
                     .then(function (result) {
                             assert.equal( 0, result.length );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
       });
       it('for multiple series', function(done) {
         var metric=  "asPercent(foo.*, 4)";
@@ -38,8 +40,9 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( [25,50,75,100], result[0].data.values );
                             assert.deepEqual( [250,500,750,1250], result[1].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
       });
     });
     it('should throw an error if the second argument is not null and a collection of series', function(done) {
@@ -48,8 +51,7 @@ describe('TargetParseContext', function(){
        TargetParser.parse( metric )(ctx)
                    .fail( function(err) {
                       done();
-                   })
-                   .end();
+                   });
     });
     it('should throw an error if the second argument is an unmatched series', function(done) {
       var metric=  "asPercent(foo.bar, foo.xxx)";
@@ -57,8 +59,7 @@ describe('TargetParseContext', function(){
        TargetParser.parse( metric )(ctx)
                    .fail( function(err) {
                       done();
-                   })
-                   .end();
+                   });
     });
     describe('should correctly calculate percentages of a different (calculated) series', function(done) {
       it('for a single series', function(done) {
@@ -69,11 +70,12 @@ describe('TargetParseContext', function(){
                             assert.equal( "asPercent(foo.bar,sum(foo.{tar,bar}))", result[0].name );
                             assert.deepEqual( [9.090909090909092,9.090909090909092,9.090909090909092,7.4074074074074066], result[0].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
+
       });
     });
-
     describe('should correctly calculate percentages of a different series', function(done) {
       it('for a single series', function(done) {
         var metric=  "asPercent(foo.bar, foo.tar)";
@@ -83,8 +85,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "asPercent(foo.bar,foo.tar)", result[0].name );
                             assert.deepEqual( [10,10,10,8], result[0].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
       });
       
       it('for an empty series', function(done) {
@@ -94,8 +97,9 @@ describe('TargetParseContext', function(){
                     .then(function (result) {
                             assert.equal( 0, result.length );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
       });
       it('for multiple series', function(done) {
         var metric=  "asPercent(*.bar, foo.tar)";
@@ -108,9 +112,10 @@ describe('TargetParseContext', function(){
                       assert.equal( "asPercent(foo.bar,foo.tar)", result[1].name );
                       assert.deepEqual( [10,null,,null], result[1].data.values );
                       done();
-                    })
-                    .end();
-      });      
+                    }).fail( function(err) {
+                      done(err);
+                    });
+      });
     })
     describe('should correctly calculate percentages within the same series', function(done) {
       it('for a single series', function(done) {
@@ -121,8 +126,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "asPercent(foo.bar)", result[0].name );
                             assert.deepEqual( [100,100,100,100], result[0].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
       });
       it('for an empty series', function(done) {
         var metric=  "asPercent(foo.x)";
@@ -131,8 +137,9 @@ describe('TargetParseContext', function(){
                     .then(function (result) {
                             assert.equal( 0, result.length );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
       });
       it('for multiple series', function(done) {
         var metric=  "asPercent(*.bar)";
@@ -144,8 +151,9 @@ describe('TargetParseContext', function(){
                       assert.equal( "asPercent(poo.bar)", result[0].name );
                       assert.deepEqual( [66.66666666666666,66.66666666666666,66.66666666666666,66.66666666666666], result[0].data.values );
                       done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
       });
     })
   });
