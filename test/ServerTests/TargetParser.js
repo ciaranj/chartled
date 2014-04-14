@@ -10,7 +10,7 @@ describe('TargetParser', function(){
   describe('#parse()', function(){
     it('should parse scale(stats.gauges.overwatch.backlog,1)', function(){
         var functionString= TargetParser.parse( "scale(stats.gauges.overwatch.backlog,1)" ).toString() ;
-        assert.ok( functionString.indexOf("ctx.$chkSeries(ctx.scale(ctx.$m({\"o\":\"stats.gauges.overwatch.backlog\",\"r\":\"^stats\\\\.gauges\\\\.overwatch\\\\.backlog$\"}),ctx.$(1)), true, 0, 0)") != -1 );
+        assert.ok( functionString.indexOf("ctx.$chkSeries(ctx.scale(ctx.$m(\"stats.gauges.overwatch.backlog\"),ctx.$(1)), true, 0, 0)") != -1 );
     })
     it('should parse scale(avg(stats.*.processor.[7].pct_processor_time),100)', function(){
         TargetParser.parse( "scale(avg(stats.*.processor.[7].pct_processor_time),100)" );
