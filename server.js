@@ -139,8 +139,7 @@ function getSeriesData(req,res) {
               }, function( error) {
                   console.log( error.stack );
                   carryOn();
-          })
-          .end();
+          });
       })( unescape(metrics[k]) );
   }
 }
