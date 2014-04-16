@@ -24,6 +24,8 @@ chartd.functions = [
       description: "Takes metrics, lists of metrics or constant values (in any order) and subtracts parameters 2 through n from parameter 1. One of parameters must be a metric." },
     { name: 'integral', example: 'integral(metric*)',
       description: "Shows the sum over time (like a continuous addition function). Useful for finding totals or trends in metrics that are collected per minute." },
+    { name: 'groupByNode', example: 'groupByNode(*.*.*.cpu.*,2,"sumSeries")',
+      description: "Takes a serieslist and maps a callback to subgroups within as defined by a common node ( 0 indexed )" },
     { name: 'keepLastValue', example: 'keepLastValue(metric*,limit=inf)',
       description: "Takes one metric or a wildcard metric, and optionally a limit to the number of 'None' values to skip over. Continues the line with the last received value when gaps ('None' values) appear in your data, rather than breaking your line." },      
     { name: 'limit', example: 'keepLastValue(limit*,2)',
