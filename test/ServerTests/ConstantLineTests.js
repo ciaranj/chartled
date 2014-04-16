@@ -15,8 +15,7 @@ describe('TargetParseContext', function(){
                             assert.equal( "constantLine(2)", result[0].name );
                             assert.deepEqual( [2,2,2,2,2], result[0].data.values );
                             done();
-                    })
-                    .end();
+                    });
     })
     it('should produce a constantLine for the requested timeseries (0)', function(done) {
         var metric=  'constantLine(0)';
@@ -27,8 +26,7 @@ describe('TargetParseContext', function(){
                             assert.equal( "constantLine(0)", result[0].name );
                             assert.deepEqual( [0,0,0,0,0], result[0].data.values );
                             done();
-                    })
-                    .end();
+                    });
     })
     it('should produce a constantLine for the requested timeseries (-5)', function(done) {
         var metric=  'constantLine(-5)';
@@ -39,8 +37,7 @@ describe('TargetParseContext', function(){
                             assert.equal( "constantLine(-5)", result[0].name );
                             assert.deepEqual( [-5,-5,-5,-5,-5], result[0].data.values );
                             done();
-                    })
-                    .end();
+                    });
     })
   });
 })

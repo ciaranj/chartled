@@ -15,8 +15,9 @@ describe('TargetParseContext', function(){
                             assert.equal( result[0].name, "summarize(foo.bar,\"120s\",\"sum\")" );
                             assert.equal( result[0].info.aggregationMethod, "sum" );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should summarize using the sum function when given sparse data', function(done) {
       var metric=  "summarize(foo.*,\"120s\", \"sum\")";
@@ -28,8 +29,9 @@ describe('TargetParseContext', function(){
                             assert.equal( result[0].name, "summarize(foo.bar,\"120s\",\"sum\")" );
                             assert.equal( result[0].info.aggregationMethod, "sum" );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should summarize using the avg function', function(done) {
         var metric=  "summarize(foo.*,\"120s\", \"avg\")";
@@ -40,8 +42,9 @@ describe('TargetParseContext', function(){
                             assert.equal( result[0].name, "summarize(foo.bar,\"120s\",\"avg\")" );
                             assert.equal( result[0].info.aggregationMethod, "avg" );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     })
     it('should summarize using the average function', function(done) {
       var metric=  "summarize(foo.*,\"120s\", \"average\")";
@@ -52,8 +55,9 @@ describe('TargetParseContext', function(){
                             assert.equal( result[0].name, "summarize(foo.bar,\"120s\",\"average\")" );
                             assert.equal( result[0].info.aggregationMethod, "average" );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     })
   });
 })

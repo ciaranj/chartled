@@ -14,8 +14,9 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( result[0].data.values, [1,2,3,4] );
                             assert.equal( result[0].name, "transformNull(foo.bar,0)" );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     })
     it('should add the default value to the metric name if none provided.', function(done) {
         var metric=  "transformNull(foo.bar)";
@@ -24,8 +25,9 @@ describe('TargetParseContext', function(){
                     .then(function (result) {
                             assert.equal( result[0].name, "transformNull(foo.bar,0)" );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should replace any null/undefined properties with the specified default.', function(done) {
         var metric=  "transformNull(foo.bar,-6)";
@@ -35,8 +37,9 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( result[0].data.values, [1,-6,-6,4] );
                             assert.equal( result[0].name, "transformNull(foo.bar,-6)" );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should replace any null/undefined properties with the specified default when presented with a wildcard metric.', function(done) {
         var metric=  "transformNull(foo.*,130.5)";
@@ -49,8 +52,9 @@ describe('TargetParseContext', function(){
                             assert.equal( result[1].name, "transformNull(foo.tar,130.5)" );
                             assert.deepEqual( result[1].data.values, [130.5,20,30,130.5] );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
   });
 })

@@ -15,7 +15,9 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( [20,40,60,100], result[1].data.values );
                             done();
                     })
-                    .end();
+                    .fail(function(err) {
+                        done(err);
+                    });
     })
     it('should scale the metric values in the given series list (single)', function(done) {
         var metric=  "scale(foo.bar, 2)";
@@ -25,7 +27,9 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( [2,4,6,8], result[0].data.values );
                             done();
                     })
-                    .end();
+                    .fail(function(err) {
+                        done(err);
+                    });
     })
     it('should scale the metric values in the given series list (single), ignoring nulls ', function(done) {
         var metric=  "scale(foo.bar, 2)";
@@ -35,7 +39,9 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( [2,,6,null], result[0].data.values );
                             done();
                     })
-                    .end();
+                    .fail(function(err) {
+                        done(err);
+                    });
     })	
     it('should scale the metric values in the given series list (none)', function(done) {
         var metric=  "scale(foo.{xar}, 2)";
@@ -45,7 +51,9 @@ describe('TargetParseContext', function(){
                             assert.equal( 0, result.length );
                             done();
                     })
-                    .end();
+                    .fail(function(err) {
+                        done(err);
+                    });
     })
     it('should update the metric name correctly for alternatives', function(done) {
         var metric=  "scale(foo.{bar,tar}, 2)";
@@ -56,7 +64,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "scale(foo.tar,2)", result[1].name );
                             done();
                     })
-                    .end();
+                    .fail(function(err) {
+                        done(err);
+                    });
     })
     it('should update the metric name correctly for wildcards', function(done) {
         var metric=  "scale(foo.*, 2)";
@@ -67,7 +77,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "scale(foo.tar,2)", result[1].name );
                             done();
                     })
-                    .end();
+                    .fail(function(err) {
+                        done(err);
+                    });
     })
     it('should update the metric name correctly for ranges', function(done) {
         var metric=  "scale(foo.[2], 2)";
@@ -78,7 +90,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "scale(foo.2,2)", result[1].name );
                             done();
                     })
-                    .end();
+                    .fail(function(err) {
+                        done(err);
+                    });
     })
   });
 })

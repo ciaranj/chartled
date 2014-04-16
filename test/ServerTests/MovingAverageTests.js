@@ -39,8 +39,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "movingAverage(foo.bar,\"180seconds\")", result[0].name );
                             assert.deepEqual( [12,13,14,15,16,17,18,19,20,21], result[0].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should graph the moving average of a metric (singular), utilising the current value and 2 minutes of previous data points for the average calculation.', function(done) {
         var metric=  "movingAverage(foo.bar,\"2minutes\")";
@@ -52,8 +53,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "movingAverage(foo.bar,\"2minutes\")", result[0].name );
                             assert.deepEqual( [12.5,13.5,14.5,15.5,16.5,17.5,18.5,19.5,20.5,21.5], result[0].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should graph the moving average of a metric (singular), utilising the current value and 60 seconds of previous data points for the average calculation.', function(done) {
         var metric=  "movingAverage(foo.bar,\"60seconds\")";
@@ -65,8 +67,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "movingAverage(foo.bar,\"60seconds\")", result[0].name );
                             assert.deepEqual( [13,14,15,16,17,18,19,20,21,22], result[0].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should graph the moving average of a metric (singular), utilising the current value 0 years of previous data points for the average calculation.', function(done) {
         var metric=  "movingAverage(foo.bar,\"0years\")";
@@ -78,8 +81,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "movingAverage(foo.bar,\"0years\")", result[0].name );
                             assert.deepEqual( [13,14,15,16,17,18,19,20,21,22], result[0].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should graph the moving average of a metric (multiple), utilising the current value and 180 seconds of previous data points for the average calculation.', function(done) {
         var metric=  "movingAverage(foo.{bar,car,dar},\"180seconds\")";
@@ -97,8 +101,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "movingAverage(foo.dar,\"180seconds\")", result[2].name );
                             assert.deepEqual( [1011,1012,1013,1014,1015,1016,1017,1018,1019,1020], result[2].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should graph the moving average of a metric (multiple), utilising the current value and 2 minutes of previous data points for the average calculation.', function(done) {
         var metric=  "movingAverage(foo.{bar,car,dar},\"2minutes\")";
@@ -116,8 +121,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "movingAverage(foo.dar,\"2minutes\")", result[2].name );
                             assert.deepEqual( [1011.5,1012.5,1013.5,1014.5,1015.5,1016.5,1017.5,1018.5,1019.5,1020.5], result[2].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should graph the moving average of a metric (multiple), utilising the current value and 60 seconds of previous data points for the average calculation.', function(done) {
         var metric=  "movingAverage(foo.{bar,car,dar},\"60seconds\")";
@@ -135,8 +141,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "movingAverage(foo.dar,\"60seconds\")", result[2].name );
                             assert.deepEqual( [1012,1013,1014,1015,1016,1017,1018,1019,1020,1021], result[2].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should graph the moving average of a metric (multiple), utilising the current value 0 years of previous data points for the average calculation.', function(done) {
         var metric=  "movingAverage(foo.{bar,car,dar},\"0years\")";
@@ -154,8 +161,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "movingAverage(foo.dar,\"0years\")", result[2].name );
                             assert.deepEqual( [1012,1013,1014,1015,1016,1017,1018,1019,1020,1021], result[2].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should graph the moving average of a metric (multiple - wildcard), utilising the current value and 180 seconds of previous data points for the average calculation.', function(done) {
         var metric=  "movingAverage(*.*,\"180seconds\")";
@@ -176,8 +184,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "movingAverage(foo.ear,\"180seconds\")", result[3].name );
                             assert.deepEqual( [,,,,,,,,,null], result[3].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
   });
 });

@@ -42,8 +42,9 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( [null,1,5,5,8,9,9], result[5].data.values );
                             assert.deepEqual( [,null,,null,,,null], result[6].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should replace any consecutive null/undefined metric values in the given series list (multiple) with the last non null/undefined value obtained (limited).', function(done) {
         var metric=  "keepLastValue(foo.{bar,car,far,gar,rar,tar,zar}, 2)";
@@ -65,8 +66,9 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( [null,1,5,5,8,9,9], result[5].data.values );
                             assert.deepEqual( [,null,,null,,,null], result[6].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should replace any consecutive null/undefined metric values in the given series list (single) with the last non null/undefined value obtained.', function(done) {
         var metric=  "keepLastValue(foo.{bar})";
@@ -78,8 +80,9 @@ describe('TargetParseContext', function(){
                             
                             assert.deepEqual( [1,11,2,2,2,2,2,14,5,5,6,16], result[0].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should replace any consecutive null/undefined metric values in the given series list (multiple) with the last non null/undefined value obtained (limited).', function(done) {
         var metric=  "keepLastValue(foo.{bar}, 2)";
@@ -90,8 +93,9 @@ describe('TargetParseContext', function(){
                             assert.equal( 12, result[0].data.values.length );
                             assert.deepEqual( [1,11,2,null,null,,,14,5,5,6,16], result[0].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should update the metric name correctly for multiple series (not limited)', function(done) {
         var metric=  "keepLastValue(foo.{bar,car,far,gar,rar,tar,zar})";
@@ -107,8 +111,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "keepLastValue(foo.tar)", result[5].name );
                             assert.equal( "keepLastValue(foo.zar)", result[6].name );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should update the metric name correctly for multiple series (limited)', function(done) {
         var metric=  "keepLastValue(foo.{bar,car,far,gar,rar,tar,zar}, 2)";
@@ -124,8 +129,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "keepLastValue(foo.tar)", result[5].name );
                             assert.equal( "keepLastValue(foo.zar)", result[6].name );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     
     it('should update the metric name correctly for a single series (not limited)', function(done) {
@@ -136,8 +142,9 @@ describe('TargetParseContext', function(){
                             assert.equal( 1, result.length );
                             assert.equal( "keepLastValue(foo.bar)", result[0].name );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should update the metric name correctly for a single series (limited)', function(done) {
         var metric=  "keepLastValue(foo.{bar}, 2)";
@@ -147,8 +154,9 @@ describe('TargetParseContext', function(){
                             assert.equal( 1, result.length );
                             assert.equal( "keepLastValue(foo.bar)", result[0].name );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should update the metric name correctly for wildcards', function(done) {
         var metric=  "keepLastValue(*oo.*ar, 2)";
@@ -164,8 +172,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "keepLastValue(foo.tar)", result[5].name );
                             assert.equal( "keepLastValue(foo.zar)", result[6].name );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should update the metric name correctly for ranges', function(done) {
         var metric=  "keepLastValue(foo.[12]ar, 2)";
@@ -177,8 +186,9 @@ describe('TargetParseContext', function(){
                             assert.equal( "keepLastValue(foo.2ar)", result[1].name );
                             assert.equal( "keepLastValue(foo.12ar)", result[2].name );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
   });
 });

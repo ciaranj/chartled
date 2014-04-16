@@ -10,6 +10,11 @@ var grammars= [{
     in: "grammars/ATTimeParser.pegjs"
   , out: "lib/ATTimeParser.js"
   , startRules: "timestring,offset"
+},
+{
+    in: "grammars/MetricRegexCreator.pegjs"
+  , out: "lib/MetricRegexCreator.js"
+  , startRules: "start"
 }];
 
 

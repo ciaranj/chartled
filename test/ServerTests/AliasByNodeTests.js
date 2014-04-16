@@ -14,8 +14,7 @@ describe('TargetParseContext', function(){
                           assert.deepEqual( [2,4,6,8], result[0].data.values );
                           assert.equal( "foo", result[0].name );
                           done();
-                  })
-                  .end();
+                  });
     })
     it('should alias a single metric (complex) by 1 node', function(done) {
         var metric=  "aliasByNode(scale(foo.bar,2),1)";
@@ -25,8 +24,7 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( [2,4,6,8], result[0].data.values );
                             assert.equal( "bar", result[0].name );
                             done();
-                    })
-                    .end();
+                    });
     })
     it('should return the original metric name if invalid node given', function(done) {
         var metric=  "aliasByNode(scale(foo.bar,2),8)";
@@ -36,8 +34,7 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( [2,4,6,8], result[0].data.values );
                             assert.equal( "scale(foo.bar,2)", result[0].name );
                             done();
-                    })
-                    .end();
+                    });
     })
     it('should alias a list of metrics', function(done) {
         var metric=  "aliasByNode(scale(foo.{bar,tar},2),1)";
@@ -49,8 +46,7 @@ describe('TargetParseContext', function(){
                             assert.equal( "bar", result[0].name );
                             assert.equal( "tar", result[1].name );
                             done();
-                    })
-                    .end();
+                    });
     })
     it('should safely handle missing series', function(done) {
         var metric=  "aliasByNode(scale(foo.{xar},2),1)";
@@ -59,8 +55,7 @@ describe('TargetParseContext', function(){
                     .then(function (result) {
                             assert.equal( 0, result.length );
                             done();
-                    })
-                    .end();
+                    });
     })
   });
 })

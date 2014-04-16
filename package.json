@@ -10,7 +10,7 @@
     "moment": "=2.5.0",
     "moment-timezone": "=0.0.3",
     "pegjs": "=0.8.0",
-    "q":"=0.8.9"
+    "q":"=0.9.7"
   },
   "devDependencies": {
     "mocha" :"=1.17.1",

@@ -34,8 +34,9 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( metricVals()["foo.bar"] , result[0].data.values );
                             assert.deepEqual( metricVals()["foo.zar"], result[1].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should limit the number of metrics returned from a metrics list (single) to the specified number.', function(done) {
         var metric=  "limit(foo.bar, 1)";
@@ -48,8 +49,9 @@ describe('TargetParseContext', function(){
 
                             assert.deepEqual( metricVals()["foo.bar"] , result[0].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should limit the number of metrics returned from a metrics list (single) to the specified number.', function(done) {
         var metric=  "limit(foo.bar, 0)";
@@ -58,8 +60,9 @@ describe('TargetParseContext', function(){
                     .then(function (result) {
                             assert.equal( 0, result.length );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should limit the number of metrics returned from a wildcard metrics list to the specified number.', function(done) {
         var metric=  "limit(foo.*, 4)";
@@ -80,8 +83,9 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( metricVals()["foo.far"], result[2].data.values );
                             assert.deepEqual( metricVals()["foo.zar"], result[3].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
     it('should return all the metrics in a metrics list if the limit is greater than the number of metrics available.', function(done) {
         var metric=  "limit(foo.{bar,car}, 57)";
@@ -96,8 +100,9 @@ describe('TargetParseContext', function(){
                             assert.deepEqual( metricVals()["foo.bar"], result[0].data.values );
                             assert.deepEqual( metricVals()["foo.car"], result[1].data.values );
                             done();
-                    })
-                    .end();
+                    }).fail( function(err) {
+                      done(err);
+                    });
     });
   });
 });
