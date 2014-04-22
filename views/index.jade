@@ -45,7 +45,7 @@ html
     script(type='text/javascript', src='/javascripts/chartled/chartles/spacer/Renderer.js')
     script(type='text/javascript', src='/javascripts/chartled/deps/jquery.boxfit.js')
 
-  body#index(class=isDashboard?'dashboard':'editor')
+  body#index(class=isDashboard?'dashboard':'editor', style='background-color:'+dashboardColour)
     unless isDashboard
       nav.navbar.navbar-inverse.navbar-fixed-top#navbar(role="navigation")
         .navbar-header

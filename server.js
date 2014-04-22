@@ -159,8 +159,12 @@ app.post('/share', function(req,res) {
 app.get('/:definition?', function(req, res){
   var d= req.param('definition');
   var isDashboard= false;
+  var dashboardColour= "black";
   if( req.query.dashboard ) {
     isDashboard = req.query.dashboard.toLowerCase() == 'true';
+  }
+  if( req.query.dashboardcolour ) {
+    dashboardColour= req.query.dashboardcolour;
   }
   var sampleDefinition= {chartles: [{
       "id": "chartle-1"
@@ -197,7 +201,7 @@ app.get('/:definition?', function(req, res){
     }
   };  
   if( typeof(d) == 'undefined' ) {
-    res.render('index', { title : 'Home', definition: JSON.stringify(sampleDefinition), 'isDashboard': isDashboard});
+    res.render('index', { title : 'Home', definition: JSON.stringify(sampleDefinition), 'isDashboard': isDashboard, 'dashboardColour': dashboardColour});
   }
   else {
     definitionSharer.decode(d, function(err, definition) {
@@ -205,7 +209,7 @@ app.get('/:definition?', function(req, res){
         console.log( err );
         definition= sampleDefinition;
       }
-       res.render('index', { title : 'Home', definition: JSON.stringify(definition), 'isDashboard': isDashboard })
+       res.render('index', { title : 'Home', definition: JSON.stringify(definition), 'isDashboard': isDashboard, 'dashboardColour': dashboardColour})
     });
   }
 });
