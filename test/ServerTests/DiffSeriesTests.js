@@ -79,5 +79,33 @@ describe('TargetParseContext', function(){
                       done(err);
                     });
     });
+     it('should be able to difference expressions and literals (literal from expression)', function(done) {
+        var metric=  "diffSeries(sin(\"title\",23),10)";
+        var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.1ar"), new MetricInfo("foo.2ar"), new MetricInfo("foo.12ar"), new MetricInfo("foo.21ar")], {"foo.1ar":[1,2,null,4], "foo.2ar":[10,20,30,undefined], "foo.12ar":[undefined,20,30,50], "foo.21ar":[10,20,null,50]},[0,180,60], 0, 180 );
+        TargetParser.parse( metric )(ctx)
+                    .then(function (result) {
+                            assert.equal( 1, result.length );
+                            assert.equal( 4, result[0].data.values.length );
+                            assert.equal( "diffSeries(title,10)", result[0].name );
+                            assert.deepEqual( [-10,-17.010644285350985,3.3540572368832287,-28.4265106218781], result[0].data.values );
+                            done();
+                    }).fail( function(err) {
+                      done(err);
+                    });
+    });
+    it('should be able to difference expressions and literals (expression from literal)', function(done) {
+      var metric=  "diffSeries(10,sin(\"title\",23))";
+      var ctx= Utils.buildTargetParseContext( metric,  [new MetricInfo("foo.1ar"), new MetricInfo("foo.2ar"), new MetricInfo("foo.12ar"), new MetricInfo("foo.21ar")], {"foo.1ar":[1,2,null,4], "foo.2ar":[10,20,30,undefined], "foo.12ar":[undefined,20,30,50], "foo.21ar":[10,20,null,50]},[0,180,60], 0, 180 );
+      TargetParser.parse( metric )(ctx)
+                  .then(function (result) {
+                          assert.equal( 1, result.length );
+                          assert.equal( 4, result[0].data.values.length );
+                          assert.equal( "diffSeries(10,title)", result[0].name );
+                          assert.deepEqual( [10,17.010644285350985,-3.3540572368832287,28.4265106218781], result[0].data.values );
+                          done();
+                  }).fail( function(err) {
+                    done(err);
+                  });
+    });
   });
 });
