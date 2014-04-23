@@ -78,7 +78,7 @@ Chartled.MetricEditor.prototype= {
           this._functionsDropDownString= "";
           var functions= chartd.functions
           for( var k=0;k<functions.length;k++ ) {
-              this._functionsDropDownString += "<li><a href='#' onclick='Chartled.MetricEditor.prototype.appendFunction("+k+")'>"+ this._encodeHtml(functions[k].name)+"</a></li>"
+              this._functionsDropDownString += "<li class='item'><a href='#' onclick='Chartled.MetricEditor.prototype.appendFunction("+k+")'>"+ this._encodeHtml(functions[k].name)+"</a></li>"
           }
       }
       return this._functionsDropDownString;
@@ -102,7 +102,7 @@ Chartled.MetricEditor.prototype= {
             return va > vb ? 1 : ( va === vb ? 0 : -1 );
         });
         for( var f in sortedMetrics ) {
-            this._metricsDropDownString += "<li><a href='#' onclick='Chartled.MetricEditor.prototype.appendMetricText(\"" + this._encodeHtml(sortedMetrics[f].name) + "\")'>"+ this._encodeHtml(sortedMetrics[f].name)+"</a></li>"
+            this._metricsDropDownString += "<li class='item'><a href='#' onclick='Chartled.MetricEditor.prototype.appendMetricText(\"" + this._encodeHtml(sortedMetrics[f].name) + "\")'>"+ this._encodeHtml(sortedMetrics[f].name)+"</a></li>"
         }
     }
     return this._metricsDropDownString;
@@ -135,12 +135,13 @@ Chartled.MetricEditor.prototype= {
     }
     var html = "<div class='btn-toolbar'>";
     html += "<div class='btn-group'>";
-    html += "<button class='btn dropdown-toggle btn-info' data-toggle='dropdown' href='#'>Functions <span class='caret'></span></button><ul class='dropdown-menu'>"
+    html += "<button class='btn dropdown-toggle btn-primary' data-toggle='dropdown' href='#'>Functions <span class='caret'></span></button><ul class='dropdown-menu'>"
     html += that.getFunctionsDropDown();
     html += "</ul>";
     html += "</div>";
     html += "<div class='btn-group'>";
-    html += "<a class='btn dropdown-toggle btn-info' data-toggle='dropdown' href='#'>Metrics <span class='caret'></span></a><ul class='dropdown-menu'>"
+    html += "<a class='btn dropdown-toggle btn-primary' data-toggle='dropdown' href='#' id='metricsDropDown'>Metrics <span class='caret'></span></a><ul class='dropdown-menu metrics'>"
+    html += "<li><input class='filter' type='text' style='width:100%' placeholder='Search...'/></li>";
     html += that.getMetricsDropDown();
     html += "</ul>";
     html += "</div>";
@@ -150,6 +151,7 @@ Chartled.MetricEditor.prototype= {
 
     this._chartEditorDialog.show( html, 
       function ($dialog) {
+        clearInterval( that._filterMetricsTimer );
         var newMetricValue= $('.editingMetric').val().replace(/^\s\s*/, '').replace(/\s\s*$/, '');
         if( newMetricValue != "" ) {
             //TODO: assert valid  here..
@@ -160,9 +162,39 @@ Chartled.MetricEditor.prototype= {
         that.showChartleEditor();
       },
       function ($dialog) {
+        clearInterval( that._filterMetricsTimer );
         that.showChartleEditor();
       }
     );
+     $('#metricsDropDown').click(function (e) {
+      $('.dropdown-menu.metrics .filter').val("");
+      that._lastMetricFilterString= null;
+     });
+    // Stop clicking in the input box from hiding the dropdown
+    $('.dropdown-menu.metrics .filter').click(function (e) {
+      e.stopPropagation();
+      var filter= $('.dropdown-menu.metrics .filter');
+      if( filter.val().toLowerCase() == "" ) {
+        filter.val("stats.");
+        filter.focus();
+      }
+    });
+    that._lastMetricFilterString= "";
+    that._filterMetricsTimer= setInterval(function() {
+      var filterString= $('.dropdown-menu.metrics .filter').val().toLowerCase();
+      if( filterString != that._lastMetricFilterString ) {
+        that._lastMetricFilterString= filterString;
+        $('.dropdown-menu.metrics li.item').each(function(index, value) {
+          var link = $(value).children("a")[0].innerText.toLowerCase();
+          // For now only do 'starts with' style matching
+          if( link.indexOf(filterString) != 0 ) {
+            value.style.display= 'none';
+          } else {
+            value.style.display= '';
+          }
+        });
+      }
+    }, 100);
   },  
   hideChartleEditor : function() {
     if ( this.chartleEditorDialog ) this.chartleEditorDialog.hide();
