@@ -185,7 +185,7 @@ Chartled.MetricEditor.prototype= {
       if( filterString != that._lastMetricFilterString ) {
         that._lastMetricFilterString= filterString;
         $('.dropdown-menu.metrics li.item').each(function(index, value) {
-          var link = $(value).children("a")[0].innerText.toLowerCase();
+          var link = $($(value).children("a")[0]).text().toLowerCase();
           // For now only do 'starts with' style matching
           if( link.indexOf(filterString) != 0 ) {
             value.style.display= 'none';
