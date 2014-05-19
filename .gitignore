@@ -1,2 +1,4 @@
 node_modules/
+public/javascripts/chartled/deps/moment-timezone.min.js
+public/javascripts/chartled/deps/moment.min.js
 public/js/chartled-client.js

@@ -9,6 +9,7 @@ var filesToInclude= [
   , 'public/javascripts/chartled/deps/jquery.gridster.js'
   , 'public/javascripts/chartled/deps/d3.v2.min.js'
   , 'public/javascripts/chartled/deps/delineate.js'
+  , 'public/javascripts/chartled/deps/moment-timezone-data.js'
   , 'public/javascripts/chartled/chartles/BaseChartle.js'
   , 'public/javascripts/chartled/chartles/chart/Renderer.js'
   , 'public/javascripts/chartled/chartles/DashingChartle.js'

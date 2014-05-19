@@ -59,9 +59,12 @@ Chartled.DashingChartleEditor.prototype= {
       html +=   "<div class='form-group'><label class='col-sm-3 control-label'>Colour (Class)</label><div class='controls col-sm-9'><input class='backgroundClass form-control' type='text'/></div></div>";
       html +=   "</fieldset>"
     }
+    if( that._additional_editor_html ) {
+      html = that._additional_editor_html( html );
+    }
     html +=  "</form>";
 
-    var $dialog= that._chartEditorDialog.show( html, 
+    var $dialog= that._chartEditorDialog.show( html,
       function ($dialog) {
         that.configuringChartle= false;
         // Bleurghhh this is nasty, avoiding shared mutable states??
@@ -82,6 +85,9 @@ Chartled.DashingChartleEditor.prototype= {
         if( that._editor_options.editable.details_timeStamp !== false) {
           that.set_displayUpdatedAt($dialog.find(".timestamp").prop('checked'));
         }
+        if( that._editor_dialog_completed ) {
+          that._editor_dialog_completed( $dialog );
+        }
         that.resize();
         that.refresh();
       },
@@ -101,5 +107,10 @@ Chartled.DashingChartleEditor.prototype= {
     $dialog.find(".moreInfo").val(that._moreInfo);
     $dialog.find(".title").val(that._title);
     $dialog.find(".timestamp").prop('checked', that._displayUpdatedAt);
+
+    if( that._editor_dialog_rendered ) {
+      that._editor_dialog_rendered( $dialog );
+    }
+    
   }
 }

@@ -31,6 +31,7 @@ html
     script(type='text/javascript', src='/javascripts/chartled/deps/hallo.js')
     script(type='text/javascript', src='/javascripts/chartled/chartles/BaseChartle.js')
     script(type='text/javascript', src='/javascripts/chartled/chartles/MetricEditor.js')
+    script(type='text/javascript', src='/javascripts/chartled/chartles/TimeZoneEditor.js')
     script(type='text/javascript', src='/javascripts/chartled/chartles/ChartleEditDialog.js')
     script(type='text/javascript', src='/javascripts/chartled/chartles/DashingChartleEditor.js')
     script(type='text/javascript', src='/javascripts/chartled/chartles/text/Renderer.js')
@@ -44,6 +45,10 @@ html
     script(type='text/javascript', src='/javascripts/chartled/chartles/number/Editor.js')
     script(type='text/javascript', src='/javascripts/chartled/chartles/spacer/Renderer.js')
     script(type='text/javascript', src='/javascripts/chartled/deps/jquery.boxfit.js')
+
+    script(type='text/javascript', src='/javascripts/chartled/deps/moment.min.js')
+    script(type='text/javascript', src='/javascripts/chartled/deps/moment-timezone.min.js')
+    script(type='text/javascript', src='/javascripts/chartled/deps/moment-timezone-data.js')
 
   body#index(class=isDashboard?'dashboard':'editor', style='background-color:'+dashboardColour)
     unless isDashboard
