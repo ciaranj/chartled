@@ -33,8 +33,8 @@ Chartled.DashingChartleEditor.prototype= {
       that.editableMetrics= that.metrics.slice();
     }
     var html= "<form class='form-horizontal'>";
-    if( that._editor_options.editable.details_title !== false && 
-        that._editor_options.editable.details_moreInfo !== false &&
+    if( that._editor_options.editable.details_title !== false ||
+        that._editor_options.editable.details_moreInfo !== false ||
         that._editor_options.editable.details_timeStamp !== false ) {
       html +=   "<fieldset><legend>Details</legend>";
     }

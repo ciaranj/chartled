@@ -9,7 +9,7 @@ Chartled.inheritPrototype(Chartled.ClockChartleEditor, Chartled.DashingChartleEd
       editable: {
         metrics: false,
         details_title: false,
-        details_moreInfo: false,
+        details_moreInfo: true,
         details_timeStamp: false
       }
     });
