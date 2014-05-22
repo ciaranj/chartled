@@ -35,9 +35,6 @@ body {
   display:table;
 }
 
-.chartled .chart {
-  line-height: 0;
-}
 .chartled .chart svg {
   position: absolute;
   top: 0px;
@@ -97,6 +94,5 @@ body {
   left: 0;
   top: 0;
   opacity: 0.25;
-  z-index: -100;
   color: white;
 }
