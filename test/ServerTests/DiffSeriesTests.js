@@ -107,5 +107,33 @@ describe('TargetParseContext', function(){
                     done(err);
                   });
     });
+    it('should be able to difference the result of a function from a constant', function (done) {
+        var metric = "diffSeries(10,scale(foo.bar, 2))";
+        var ctx = Utils.buildTargetParseContext(metric, [new MetricInfo("foo.bar")], { "foo.bar": [1, 2, 3, 4] });
+        TargetParser.parse(metric)(ctx)
+                    .then(function (result) {
+                        assert.equal(1, result.length);
+                        assert.equal(4, result[0].data.values.length);
+                        assert.equal("diffSeries(10,scale(foo.bar,2))", result[0].name);
+                        assert.deepEqual([8, 6, 4, 2], result[0].data.values);
+                        done();
+                    }).fail(function (err) {
+                        done(err);
+                    });
+    });
+    it('should be able to difference the result of a constant from a function', function (done) {
+        var metric = "diffSeries(scale(foo.bar, 2),10)";
+        var ctx = Utils.buildTargetParseContext(metric, [new MetricInfo("foo.bar")], { "foo.bar": [1, 2, 3, 4] });
+        TargetParser.parse(metric)(ctx)
+                    .then(function (result) {
+                        assert.equal(1, result.length);
+                        assert.equal(4, result[0].data.values.length);
+                        assert.equal("diffSeries(scale(foo.bar,2),10)", result[0].name);
+                        assert.deepEqual([-8, -6, -4, -2], result[0].data.values);
+                        done();
+                    }).fail(function (err) {
+                        done(err);
+                    });
+    });
   });
 });
