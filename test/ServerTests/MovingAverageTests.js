@@ -31,11 +31,13 @@ describe('TargetParseContext', function(){
     });    
     it('should graph the moving average of a metric (singular), utilising the current value and 180 seconds of previous data points for the average calculation.', function(done) {
         var metric=  "movingAverage(foo.bar,\"180seconds\")";
+        // 660 = 12 , 1260 = 22
         var ctx= new TargetParseContext( metricsStore, metric, 660, 1260 );
         TargetParser.parse( metric )(ctx)
                     .then(function (result) {
                             assert.equal( 1, result.length );
                             assert.equal( 10, result[0].data.values.length );
+                            assert.deepEqual( result[0].data.tInfo, [720,1320,60] );
                             assert.equal( "movingAverage(foo.bar,\"180seconds\")", result[0].name );
                             assert.deepEqual( [12,13,14,15,16,17,18,19,20,21], result[0].data.values );
                             done();
