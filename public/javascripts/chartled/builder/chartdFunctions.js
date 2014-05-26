@@ -30,7 +30,7 @@ chartd.functions = [
       description: "Takes one metric or a wildcard metric, and optionally a limit to the number of 'None' values to skip over. Continues the line with the last received value when gaps ('None' values) appear in your data, rather than breaking your line." },      
     { name: 'limit', example: 'keepLastValue(limit*,2)',
       description: "Takes one metric or a wildcard metric, and a limit to the number of metrics to return. Useful for returning first n metrics from a large list of metrics." },      
-    { name: 'movingAverage', example: 'movingAverage(metric*,windowSize)',
+    { name: 'movingAverage', example: 'movingAverage(metric*,intervalString)',
       description: "Graphs the moving average of a metric (or metrics) over a time interval." },
     { name: 'offset', example: 'offset(metric*, factor)',
       description: "Takes a metric or a wildcard metric followed by a constant that will be applied to each point." },
