@@ -28,7 +28,7 @@ describe('TargetParseContext', function(){
     afterEach(function(done) {
       if( metricsStore ) rimraf( metricsStore.tree.root, done );
       else done();
-    });    
+    });
     it('should graph the moving average of a metric (singular), utilising the current value and 180 seconds of previous data points for the average calculation.', function(done) {
         var metric=  "movingAverage(foo.bar,\"180seconds\")";
         // 660 = 12 , 1260 = 22
@@ -39,7 +39,7 @@ describe('TargetParseContext', function(){
                             assert.equal( 10, result[0].data.values.length );
                             assert.deepEqual( result[0].data.tInfo, [720,1320,60] );
                             assert.equal( "movingAverage(foo.bar,\"180seconds\")", result[0].name );
-                            assert.deepEqual( [12,13,14,15,16,17,18,19,20,21], result[0].data.values );
+                            assert.deepEqual( [13,13.5,14,15,16,17,18,19,20,21], result[0].data.values );
                             done();
                     }).fail( function(err) {
                       done(err);
@@ -53,7 +53,7 @@ describe('TargetParseContext', function(){
                             assert.equal( 1, result.length );
                             assert.equal( 10, result[0].data.values.length );
                             assert.equal( "movingAverage(foo.bar,\"2minutes\")", result[0].name );
-                            assert.deepEqual( [12.5,13.5,14.5,15.5,16.5,17.5,18.5,19.5,20.5,21.5], result[0].data.values );
+                            assert.deepEqual( [13,13.5,14.5,15.5,16.5,17.5,18.5,19.5,20.5,21.5], result[0].data.values );
                             done();
                     }).fail( function(err) {
                       done(err);
@@ -97,11 +97,11 @@ describe('TargetParseContext', function(){
                             assert.equal( 10, result[1].data.values.length );
                             assert.equal( 10, result[2].data.values.length );
                             assert.equal( "movingAverage(foo.bar,\"180seconds\")", result[0].name );
-                            assert.deepEqual( [12,13,14,15,16,17,18,19,20,21], result[0].data.values );
+                            assert.deepEqual( [13,13.5,14,15,16,17,18,19,20,21], result[0].data.values );
                             assert.equal( "movingAverage(foo.car,\"180seconds\")", result[1].name );
-                            assert.deepEqual( [61,62,63,64,65,66,67,68,69,70], result[1].data.values );
+                            assert.deepEqual( [62,62.5,63,64,65,66,67,68,69,70], result[1].data.values );
                             assert.equal( "movingAverage(foo.dar,\"180seconds\")", result[2].name );
-                            assert.deepEqual( [1011,1012,1013,1014,1015,1016,1017,1018,1019,1020], result[2].data.values );
+                            assert.deepEqual( [1012,1012.5,1013,1014,1015,1016,1017,1018,1019,1020], result[2].data.values );
                             done();
                     }).fail( function(err) {
                       done(err);
@@ -117,11 +117,11 @@ describe('TargetParseContext', function(){
                             assert.equal( 10, result[1].data.values.length );
                             assert.equal( 10, result[2].data.values.length );
                             assert.equal( "movingAverage(foo.bar,\"2minutes\")", result[0].name );
-                            assert.deepEqual( [12.5,13.5,14.5,15.5,16.5,17.5,18.5,19.5,20.5,21.5], result[0].data.values );
+                            assert.deepEqual( [13,13.5,14.5,15.5,16.5,17.5,18.5,19.5,20.5,21.5], result[0].data.values );
                             assert.equal( "movingAverage(foo.car,\"2minutes\")", result[1].name );
-                            assert.deepEqual( [61.5,62.5,63.5,64.5,65.5,66.5,67.5,68.5,69.5,70.5], result[1].data.values );
+                            assert.deepEqual( [62,62.5,63.5,64.5,65.5,66.5,67.5,68.5,69.5,70.5], result[1].data.values );
                             assert.equal( "movingAverage(foo.dar,\"2minutes\")", result[2].name );
-                            assert.deepEqual( [1011.5,1012.5,1013.5,1014.5,1015.5,1016.5,1017.5,1018.5,1019.5,1020.5], result[2].data.values );
+                            assert.deepEqual( [1012,1012.5,1013.5,1014.5,1015.5,1016.5,1017.5,1018.5,1019.5,1020.5], result[2].data.values );
                             done();
                     }).fail( function(err) {
                       done(err);
@@ -178,13 +178,73 @@ describe('TargetParseContext', function(){
                             assert.equal( 10, result[2].data.values.length );
                             assert.equal( 10, result[3].data.values.length );
                             assert.equal( "movingAverage(foo.bar,\"180seconds\")", result[0].name );
-                            assert.deepEqual( [12,13,14,15,16,17,18,19,20,21], result[0].data.values );
+                            assert.deepEqual( [13,13.5,14,15,16,17,18,19,20,21], result[0].data.values );
                             assert.equal( "movingAverage(foo.car,\"180seconds\")", result[1].name );
-                            assert.deepEqual( [61,62,63,64,65,66,67,68,69,70], result[1].data.values );
+                            assert.deepEqual( [62,62.5,63,64,65,66,67,68,69,70], result[1].data.values );
                             assert.equal( "movingAverage(foo.dar,\"180seconds\")", result[2].name );
-                            assert.deepEqual( [1011,1012,1013,1014,1015,1016,1017,1018,1019,1020], result[2].data.values );
+                            assert.deepEqual( [1012,1012.5,1013,1014,1015,1016,1017,1018,1019,1020], result[2].data.values );
                             assert.equal( "movingAverage(foo.ear,\"180seconds\")", result[3].name );
                             assert.deepEqual( [,,,,,,,,,null], result[3].data.values );
+                            done();
+                    }).fail( function(err) {
+                      done(err);
+                    });
+    });
+    it('should graph the moving average of the result of a function, utilising the current value and 0 seconds of previous data points (none) for the average calculation.', function(done) {
+        var metric=  "movingAverage(scale(foo.bar,2),\"0seconds\")";
+        var ctx= new TargetParseContext( metricsStore, metric, 660, 1260 );
+        TargetParser.parse( metric )(ctx)
+                    .then(function (result) {
+                            assert.equal( 1, result.length );
+                            assert.equal( 10, result[0].data.values.length );
+                            assert.deepEqual( result[0].data.tInfo, [720,1320,60] );
+                            assert.equal( "movingAverage(scale(foo.bar,2),\"0seconds\")", result[0].name );
+                            assert.deepEqual( [26,28,30,32,34,36,38,40,42,44], result[0].data.values );
+                            done();
+                    }).fail( function(err) {
+                      done(err);
+                    });
+    });
+    it('should graph the moving average of the result of a function, utilising the current value and 60 seconds of previous data points for the average calculation.', function(done) {
+        var metric=  "movingAverage(scale(foo.bar,2),\"60seconds\")";
+        var ctx= new TargetParseContext( metricsStore, metric, 660, 1260 );
+        TargetParser.parse( metric )(ctx)
+                    .then(function (result) {
+                            assert.equal( 1, result.length );
+                            assert.equal( 10, result[0].data.values.length );
+                            assert.deepEqual( result[0].data.tInfo, [720,1320,60] );
+                            assert.equal( "movingAverage(scale(foo.bar,2),\"60seconds\")", result[0].name );
+                            assert.deepEqual( [26,28,30,32,34,36,38,40,42,44], result[0].data.values );
+                            done();
+                    }).fail( function(err) {
+                      done(err);
+                    });
+    });
+    it('should graph the moving average of the result of a function, utilising the current value and 120 seconds of previous data points for the average calculation.', function(done) {
+        var metric=  "movingAverage(scale(foo.bar,2),\"120seconds\")";
+        var ctx= new TargetParseContext( metricsStore, metric, 660, 1260 );
+        TargetParser.parse( metric )(ctx)
+                    .then(function (result) {
+                            assert.equal( 1, result.length );
+                            assert.equal( 10, result[0].data.values.length );
+                            assert.deepEqual( result[0].data.tInfo, [720,1320,60] );
+                            assert.equal( "movingAverage(scale(foo.bar,2),\"120seconds\")", result[0].name );
+                            assert.deepEqual( [26,27,29,31,33,35,37,39,41,43], result[0].data.values );
+                            done();
+                    }).fail( function(err) {
+                      done(err);
+                    });
+    });
+    it('should graph the moving average of the result of a function, utilising the current value and 180 seconds of previous data points for the average calculation.', function(done) {
+        var metric=  "movingAverage(scale(foo.bar,2),\"180seconds\")";
+        var ctx= new TargetParseContext( metricsStore, metric, 660, 1260 );
+        TargetParser.parse( metric )(ctx)
+                    .then(function (result) {
+                            assert.equal( 1, result.length );
+                            assert.equal( 10, result[0].data.values.length );
+                            assert.deepEqual( result[0].data.tInfo, [720,1320,60] );
+                            assert.equal( "movingAverage(scale(foo.bar,2),\"180seconds\")", result[0].name );
+                            assert.deepEqual( [26,27,28,30,32,34,36,38,40,42], result[0].data.values );
                             done();
                     }).fail( function(err) {
                       done(err);

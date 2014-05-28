@@ -224,5 +224,65 @@ describe('TargetParseContext', function(){
                 done(err);
            });
     });
+    it("should only call fetchMetricData once when repeatedly calling chkSeries with populateMetrics set to true", function(done) {
+        var ctx= new TargetParseContext();
+        var myStore = { getAvailableMetrics: function (cb) {}, fetchMetricData: function() {} };
+        sandbox.stub(myStore, "getAvailableMetrics")
+               .callsArgWithAsync(0, null, buildAvailableMetrics(["foo.bar","foo.car","foo.dar"]));
+        sandbox.stub(myStore, "fetchMetricData")
+               .callsArgWithAsync(3, null, {values: [1,2,3,4], tInfo: [0, 5, 1] });
+
+        ctx.metricsStore= myStore;
+        ctx.$chkSeries( ctx.$m("foo.bar"), true )
+           .then( function(metrics) {
+                assert.notEqual( metrics, null );
+                assert.equal( metrics.length, 1);
+                assert.equal( metrics[0].name, "foo.bar");
+                assert.notEqual( metrics[0].data, null );
+                assert.deepEqual( metrics[0].data.values, [1,2,3,4] );
+                assert.equal( metrics[0].populated, true);
+                ctx.$chkSeries( metrics, true )
+                    .then( function(metrics) {
+                        ctx.$chkSeries( metrics, true )
+                            .then( function(metrics) {
+                                assert.ok(myStore.fetchMetricData.calledOnce);
+                                done();
+                            })
+                    })
+           })
+           .fail(function(err){
+                done(err);
+           });
+    });
+    it("should call fetchMetricData as many times as it is called when repeatedly calling chkSeries with populateMetrics set to 'always'", function(done) {
+        var ctx= new TargetParseContext();
+        var myStore = { getAvailableMetrics: function (cb) {}, fetchMetricData: function() {} };
+        sandbox.stub(myStore, "getAvailableMetrics")
+               .callsArgWithAsync(0, null, buildAvailableMetrics(["foo.bar","foo.car","foo.dar"]));
+        sandbox.stub(myStore, "fetchMetricData")
+               .callsArgWithAsync(3, null, {values: [1,2,3,4], tInfo: [0, 5, 1] });
+
+        ctx.metricsStore= myStore;
+        ctx.$chkSeries( ctx.$m("foo.bar"), 'always' )
+           .then( function(metrics) {
+                assert.notEqual( metrics, null );
+                assert.equal( metrics.length, 1);
+                assert.equal( metrics[0].name, "foo.bar");
+                assert.notEqual( metrics[0].data, null );
+                assert.deepEqual( metrics[0].data.values, [1,2,3,4] );
+                assert.equal( metrics[0].populated, true);
+                ctx.$chkSeries( metrics, 'always' )
+                    .then( function(metrics) {
+                        ctx.$chkSeries( metrics, 'always' )
+                            .then( function(metrics) {
+                                assert.ok(myStore.fetchMetricData.calledThrice);
+                                done();
+                            })
+                    })
+           })
+           .fail(function(err){
+                done(err);
+           });
+    });
   });
 });
