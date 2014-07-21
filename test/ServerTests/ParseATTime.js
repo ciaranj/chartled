@@ -171,9 +171,9 @@ describe('DatesAndTimes.ParseATTime', function(){
       var m= tz_moment.tz( "2009-12-01 02:00", "Europe/London");
       assert.equal( DatesAndTimes.parseATTime("midnight 20091201 +2h"), m.unix() );
     })
-    it("should parse '04:00_20110501'", function() {
-      var m= tz_moment.tz( "2011-05-01 04:00", "Europe/London");
-      assert.equal( DatesAndTimes.parseATTime("04:00_20110501"), m.unix() );
+    it("should parse '04:00_20110507'", function() {
+      var m= tz_moment.tz( "2011-05-07 04:00", "Europe/London");
+      assert.equal( DatesAndTimes.parseATTime("04:00_20110507"), m.unix() );
     })
     it("should parse '16:00_20110501 +2d'", function() {
       var m= tz_moment.tz( "2011-05-03 16:00", "Europe/London");
