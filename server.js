@@ -33,6 +33,12 @@ timeZones.sort();
 zones= null;
 
 var app = express();
+app.use(function(req, res, next){
+ res.setHeader('Access-Control-Allow-Origin', '*');
+ res.setHeader('Access-Control-Allow-Methods', '*');
+ next();
+});
+
 app.use(express.bodyParser());
 app.set('views', __dirname + '/views')
 app.set('view engine', 'jade')
@@ -45,6 +51,21 @@ app.get('/timezones', function(req,res) {
 app.get('/explorer', function(req, res){
   metricsStore.getAvailableMetrics( function( err, metrics ) {
       res.render('explorer', { title : 'Explorer', 'metrics': metrics })
+  });
+});
+app.get('/metrics/find', function(req, res){
+  metricsStore.getAvailableMetrics( function( err, metrics ) {
+    var resultArray=[];
+    for(var k in metrics) {
+      resultArray.push({
+        "leaf": 0,
+        "context": {},
+        "text":k,
+        "id": k,
+        "allowChildren":1
+        });
+    }
+    res.send( JSON.stringify(resultArray) );
   });
 });
 
@@ -61,22 +82,30 @@ app.get('/metrics', function(req, res){
   });
 });
 
+
 app.get('/series',getSeriesData);
 
 // Support graphite style 'render' urls too.
 app.get('/render',getSeriesData);
+app.post('/render',getSeriesData);
 
 function getSeriesData(req,res) {
-  var tz= req.query.tz;
+  var dataSource= req.query;
+
+  if(typeof(req.body) === 'object' && typeof(req.body.target) != 'undefined') {
+    dataSource= req.body;
+  }
+
+  var tz= dataSource.tz;
   if( !tz ) tz="Europe/London";
-  var from= parseMoment(req.query.from, "yesterday", tz);
-  var to= parseMoment(req.query.until, "now", tz);
+  var from= parseMoment(dataSource.from, "yesterday", tz);
+  var to= parseMoment(dataSource.until, "now", tz);
   if( to <= from  || from < 0 || to < 0 ) throw new Error( "Calculated/Passed time frame invalid, '" + from + "' -> '"+ to +"'");
   var now= new Date().getTime();
 
   //TODO: danger, no checking of params!!!
-  var metrics= req.query.target;
-  var format= req.query.format;
+  var metrics= dataSource.target;
+  var format= dataSource.format;
 
 	if( !format ) format= "json";
 	
